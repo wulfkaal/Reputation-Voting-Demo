@@ -21,7 +21,8 @@ You can even look at the source of the page and set breakpoints in the Sources t
 ### React
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app)
-This means that webpack and babel configuration are hidden. You can assume full availability to ES7 syntax.
+This means that webpack and babel configuration are hidden. You can assume full availability to ES6 syntax.
+Some additional features are available such as async/await and object spread operator. See the Create React App page for info on language features.
 
 Page routing is handled via [react-router-dom](https://www.npmjs.com/package/react-router-dom)
 To create a new path on the client, update src/index.js:

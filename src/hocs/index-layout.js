@@ -36,7 +36,7 @@ const styles = theme => ({
 })
 
 const LayoutHOC = Page => class Layout extends React.Component {
-  
+
   render () {
     
     return (
