@@ -81,7 +81,7 @@ withStyles(styles)(MyComponent)
 
 ### Patterns in this project
 
-#### Container/Presenter
+#### [Container/Presenter](https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0)
 
 /src/containers contains the top level components that represent a url route.
 These containers should encapsulate layout and Redux. Knowledge of Redux should never be pushed
@@ -90,7 +90,7 @@ down to presenter components.
 /src/presenters contains components that have actual UI elements. props passed to the component 
 function should contain everything you need to render the component.
 
-#### High Order Components
+#### [High Order Components](https://reactjs.org/docs/higher-order-components.html)
 
 A High Order Component is one that is a function that takes a component as a parameter
 and wrapps the component and returns a new component. This is useful for security, layout
