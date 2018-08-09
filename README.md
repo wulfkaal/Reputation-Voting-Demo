@@ -93,7 +93,7 @@ function should contain everything you need to render the component.
 #### [High Order Components](https://reactjs.org/docs/higher-order-components.html)
 
 A High Order Component is one that is a function that takes a component as a parameter
-and wrapps the component and returns a new component. This is useful for security, layout
+and wraps the component and returns a new component. This is useful for security, layout
 and anything else that should apply to multiple components.
 See /hocs folder for examples.
 
