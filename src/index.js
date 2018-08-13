@@ -1,13 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react'
+import ReactDOM from 'react-dom'
 import {
   BrowserRouter as Router,
   Route,
   Switch
 } from 'react-router-dom'
-import IndexContainer from './containers/index';
-import ProposalsContainer from './containers/proposals';
-import registerServiceWorker from './registerServiceWorker';
+import IndexContainer from './containers/index'
+import ProposalsContainer from './containers/proposals'
+import NewProposalContainer from './containers/new-proposal'
+import registerServiceWorker from './registerServiceWorker'
 import store from './store'
 import { Provider } from 'react-redux'
 
@@ -15,11 +16,12 @@ ReactDOM.render(
   <Provider store={store}>
     <Router>
       <Switch>
+        <Route path="/proposals/new" component={NewProposalContainer} />
         <Route path="/proposals/:id" component={ProposalsContainer} />
         <Route path="/" component={IndexContainer} />
       </Switch>
     </Router>
   </Provider>, 
   document.getElementById('root')
-);
-registerServiceWorker();
+)
+registerServiceWorker()

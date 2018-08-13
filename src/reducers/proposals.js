@@ -1,17 +1,20 @@
 import merge from 'lodash/merge'
 import {
-  UPDATE_SEM_BALANCE
+  RECEIVE_PROPOSAL,
+  RESET_NEW_PROPOSAL
 } from '../actions/proposals'
 
 const initialState = {
-  1: {id: 1, url: 'https://www.hackernoon.com/', semBalance: 50},
-  2: {id: 2, url: 'https://www.medium.com/', semBalance: 25}
+  new: {_id: 'new', url: '', stake: true}
 }
 
 const proposals = (state = initialState, action) => {
   switch(action.type) {
-  case UPDATE_SEM_BALANCE:
-    return merge({}, state, action.balance)
+  case RECEIVE_PROPOSAL:
+    let proposal = merge({}, state[action.proposal._id], action.proposal)
+    return merge({}, state, {[action.proposal._id]: proposal})
+  case RESET_NEW_PROPOSAL:
+    return merge({}, state, {['new']: {_id: 'new', url: '', stake: true}})
   default:
     return state
   }

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import ProposalsLayout from '../hocs/proposals-layout'
 import {connect} from 'react-redux'
-import SetUrl from '../presenters/proposals/set-url'
 import Information from '../presenters/proposals/information'
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography'
@@ -39,7 +38,7 @@ class Proposals extends Component {
         </Grid>
         <Grid container spacing={16}>
           <Grid item xs={12}>
-            <SetUrl proposal={this.props.proposal} />
+            
           </Grid>  
         </Grid>
       </div>
