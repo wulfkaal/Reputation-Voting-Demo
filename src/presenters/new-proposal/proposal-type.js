@@ -50,20 +50,15 @@ const styles = theme => ({
 
 
 const proposalType = (props) => {
+  let switchSubText = 'Your REP tokens will be staked'
+  if(!props.proposal.stake){
+    switchSubText = 'No REP tokens at stake'
+  }
   
   return (
     <div>
-      <Grid container spacing={16}>
-        <Grid item xs={2}>
-          <Typography 
-            variant='subheading' 
-            className={props.classes.contentRight}
-            >
-            Review<br/>
-            (no SEM tokens at stake)  
-          </Typography>
-        </Grid>  
-        <Grid item xs={1}>
+      <Grid container spacing={16}> 
+        <Grid item xs={12}>
           <FormGroup row>
             <FormControlLabel
               control={
@@ -86,19 +81,18 @@ const proposalType = (props) => {
                   value="checkedB"
                 />
               }
-              label=""
+              label="VOTE AND PUBLISH"
+              labelPlacement='start'
             />
           </FormGroup>
         </Grid>  
-        <Grid item xs={5}>
-          <Typography 
-            variant='subheading'
-            className={props.classes.contentLeft}
-          >
-            Vote to publish<br/>
-            (stake SEM tokens)
+      </Grid>
+      <Grid container spacing={16}> 
+        <Grid item xs={12}>
+          <Typography variant='caption'>
+            {switchSubText}
           </Typography>
-        </Grid>  
+        </Grid>
       </Grid>
     </div>
   )

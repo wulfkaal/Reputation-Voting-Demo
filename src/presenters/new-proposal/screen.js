@@ -1,13 +1,13 @@
 import React from 'react'
-import Paper from '@material-ui/core/Paper'
+import Card from '@material-ui/core/Card'
+import CardHeader from '@material-ui/core/CardHeader'
 import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import ProposalType from './proposal-type'
 import baseComponentStyle from '../../jss/base-component'
-import Typography from '@material-ui/core/Typography'
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator'
-import InputAdornment from '@material-ui/core/InputAdornment';
+import InputAdornment from '@material-ui/core/InputAdornment'
 
 const screen = (props) => {
   return (
@@ -19,50 +19,64 @@ const screen = (props) => {
         }}
         onError={errors => console.log(errors)}
       >
-        <Paper className={props.classes.paper}>
-          <Grid container spacing={16}>
-            <Grid item xs={12}>
-              <Typography variant='display1'>
-                Submit a news article URL for review / vote
-              </Typography>
-            </Grid>  
-          </Grid>
-          <Grid container spacing={16}>
-            <Grid item xs={12}>
-              <ProposalType 
-                saveProposal={props.saveProposal} 
-                proposal={props.proposal}
-              />
+        <Card className={props.classes.cardWithHeader}>
+          <CardHeader
+            classes={{
+              root: props.classes.cardHeader,
+              title: props.classes.cardHeaderContent,
+              subheader: props.classes.cardHeaderContent,
+            }}
+            title="Submit a news article to be verified"
+            subheader="Enter URL (website address) to be verified"
+          />
+          <div className={props.classes.cardContent}>
+            <Grid container spacing={16}>
+
             </Grid>
-          </Grid>
-          <Grid container spacing={16}>
-            <Grid item xs={3}>
-              <TextValidator
-                name="url"
-                label="URL"
-                placeholder="URL"
-                margin="normal"
-                value={props.proposal.url}
-                validators={['required']}
-                errorMessages={['required']}
-                onChange={(e) => {
-                 props.saveProposal({
-                   _id: props.proposal._id, 
-                   url: e.target.value
-                 })
-                }}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">https://</InputAdornment>,
-                }}
-              />
-            </Grid>  
-            <Grid item xs={6} className={props.classes.contentLeft}>
-              <Button type="submit" variant="contained" color="primary" className={props.classes.button}>
-                Submit
-              </Button>
+            <Grid container spacing={16}>
+              <Grid item xs={12} sm={4}>
+                <ProposalType 
+                  saveProposal={props.saveProposal} 
+                  proposal={props.proposal}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextValidator
+                  name="url"
+                  label="URL"
+                  placeholder="URL"
+                  className={props.classes.inputFullWidth}
+                  margin="normal"
+                  autoFocus={true}
+                  value={props.proposal.url}
+                  validators={['required']}
+                  errorMessages={['required']}
+                  onChange={(e) => {
+                   props.saveProposal({
+                     _id: props.proposal._id, 
+                     url: e.target.value
+                   })
+                  }}
+                  InputProps={{
+                    startAdornment: 
+                    <InputAdornment position="start">https://</InputAdornment>
+                  }}
+                />
+              </Grid>  
             </Grid>
-          </Grid>
-        </Paper>
+            <Grid container spacing={16}>
+              <Grid item xs={12} className={props.classes.contentRight}>
+                <Button 
+                  type="submit" 
+                  variant="contained" 
+                  color="secondary" 
+                  className={props.classes.button}>
+                  Submit
+                </Button>
+              </Grid>
+            </Grid>
+          </div>
+        </Card>
       </ValidatorForm>
     </div>
   )

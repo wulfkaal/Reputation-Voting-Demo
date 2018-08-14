@@ -6,6 +6,8 @@ import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import { withStyles } from '@material-ui/core/styles'
 import AddIcon from '@material-ui/icons/Add'
+import {connect} from 'react-redux'
+import {getUser} from '../actions/users'
 
 const styles = theme => ({
   pageTitle: {
@@ -25,17 +27,39 @@ const styles = theme => ({
     overflow: 'hidden',
     position: 'relative',
     display: 'flex',
-    width: '90%',
+    width: '100%',
     marginLeft: 'auto',
-    marginRight: 'auto'
+    marginRight: 'auto',
+    [theme.breakpoints.up('md')]: {
+      width: '960px',
+    },
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing.unit * 2
+    padding: theme.spacing.unit * 2,
+    marginTop: '40px'
   },
 })
 
+const mapStateToProps = (state, ownProps) => {  
+  return {
+    user: state.users['wulf@semada.io']
+  }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    getUser: email => {
+      return dispatch(getUser(email))
+    }
+  }
+}
+
 const LayoutHOC = Page => class Layout extends React.Component {
+  componentDidMount() {
+    // TODO : Remove hard coding
+    this.props.getUser('wulf@semada.io')
+  }
   
   render () {
     
@@ -43,10 +67,21 @@ const LayoutHOC = Page => class Layout extends React.Component {
       <div>
         <AppBar position="static">
           <Toolbar>
-            <Typography variant="title" color="inherit" className={this.props.classes.pageTitle}>
-            Proposal
+            <Typography 
+              variant="title" 
+              color="inherit" 
+              className={this.props.classes.pageTitle}>
+            Semada
             </Typography>
             
+            <Typography>
+              SEM Balance: <b>{this.props.user ? this.props.user.sem: ''}</b>
+            </Typography>
+            &nbsp;
+            <Typography>
+              REP Balance: <b>{this.props.user ? this.props.user.rep: ''}</b>
+            </Typography>
+              
             <Button color='inherit'
               onClick={() => this.props.history.push('/proposals/new')}
             >
@@ -67,4 +102,6 @@ const LayoutHOC = Page => class Layout extends React.Component {
   }
 }
 
-export default Page => withStyles(styles)(AppWrapper(LayoutHOC(Page)))
+export default Page => withStyles(styles)(AppWrapper(
+  connect(mapStateToProps, mapDispatchToProps)(LayoutHOC(Page))
+))
