@@ -35,7 +35,7 @@ const proposals = (state = initialState, action) => {
     
     return merge({}, state, {[action.proposal._id]: proposal})
   case RESET_NEW_PROPOSAL:
-    return merge({}, state, {new: {_id: 'new', url: '', stake: true}})
+    return merge({}, state, initialState)
   default:
     return state
   }

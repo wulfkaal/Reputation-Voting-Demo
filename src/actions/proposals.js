@@ -1,12 +1,23 @@
 export const RECEIVE_PROPOSAL = 'RECEIVE_PROPOSAL'
 export const RESET_NEW_PROPOSAL = 'RESET_NEW_PROPOSAL'
 
-export const PROPOSAL_STATUSES = Object.freeze({active: 1, pass: 2, fail: 3, timeout: 4})
+export const PROPOSAL_STATUSES = Object.freeze({
+  active: 1, 
+  pass: 2, 
+  fail: 3, 
+  timeout: 4
+})
 
 export const saveProposal = proposal => {
   return {
     proposal: proposal,
     type: RECEIVE_PROPOSAL
+  }
+}
+
+export const resetNewProposal = () => {
+  return {
+    type: RESET_NEW_PROPOSAL
   }
 }
 

@@ -8,6 +8,7 @@ import { withStyles } from '@material-ui/core/styles'
 import AddIcon from '@material-ui/icons/Add'
 import {connect} from 'react-redux'
 import {getUser} from '../actions/users'
+import {resetNewProposal} from '../actions/proposals'
 
 const styles = theme => ({
   pageTitle: {
@@ -51,6 +52,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     getUser: email => {
       return dispatch(getUser(email))
+    },
+    handleNewProposalClick: () => {
+      dispatch(resetNewProposal())
+      ownProps.history.push('/proposals/new')  
     }
   }
 }
@@ -83,7 +88,9 @@ const LayoutHOC = Page => class Layout extends React.Component {
             </Typography>
               
             <Button color='inherit'
-              onClick={() => this.props.history.push('/proposals/new')}
+              onClick={() => {
+                this.props.handleNewProposalClick()
+              }}
             >
               <AddIcon />
               New Proposal
