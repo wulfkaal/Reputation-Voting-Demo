@@ -27,6 +27,7 @@ export default theme => (
       marginLeft: '10px',
       marginRight: '10px',
       borderRadius: '5px',
+      boxShadow: '0px 2px 4px -1px rgba(120,120,120,1)'
     },
     cardHeaderContent: {
       color: theme.palette.primary.contrastText,
@@ -35,9 +36,16 @@ export default theme => (
       paddingTop: '30px',
       paddingLeft: '30px',
       paddingRight: '30px',
+      wordBreak: 'break-all',
+      wordWrap: 'break-word'
     },
     inputFullWidth: {
       width: '100%'
+    },
+    chartContainer: {
+      
+      height: '250px',
+      width: '250px'
     }
   }
 )

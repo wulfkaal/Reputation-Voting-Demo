@@ -58,7 +58,7 @@ const screen = (props) => {
                   Your SEM Balance
                 </Typography>
                 <Typography variant='title'>
-                  {props.user ? props.user.sem : ''}
+                  {props.user ? props.user.sem : ''} SEM
                 </Typography>
               </Grid>  
             </Grid>

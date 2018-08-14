@@ -45,6 +45,7 @@ class Proposal extends Component {
     let id = this.props.match.params.id
     let result = await this.props.getProposal(id)
     await this.props.startTimer(result.proposal)
+    
   }
 
   render() {
