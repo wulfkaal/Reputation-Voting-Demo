@@ -14,13 +14,16 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     saveProposal: proposal => {
       dispatch(saveProposal(proposal))
     },
     persistProposal: proposal => {
       dispatch(persistProposal(proposal))
+      .then((result) => {
+        ownProps.history.push(`/proposals/${result.proposal._id}/pay`)
+      })
     }
   }
 }

@@ -6,7 +6,9 @@ import {
   Switch
 } from 'react-router-dom'
 import IndexContainer from './containers/index'
-import ProposalsContainer from './containers/proposals'
+import ProposalContainer from './containers/proposal'
+import PayProposalContainer from './containers/pay-proposal'
+import PayConfirmedProposalContainer from './containers/pay-confirmed-proposal'
 import NewProposalContainer from './containers/new-proposal'
 import registerServiceWorker from './registerServiceWorker'
 import store from './store'
@@ -17,7 +19,9 @@ ReactDOM.render(
     <Router>
       <Switch>
         <Route path="/proposals/new" component={NewProposalContainer} />
-        <Route path="/proposals/:id" component={ProposalsContainer} />
+        <Route path="/proposals/:id/pay" component={PayProposalContainer} />
+        <Route path="/proposals/:id/payconfirmed" component={PayConfirmedProposalContainer} />
+        <Route path="/proposals/:id" component={ProposalContainer} />
         <Route path="/" component={IndexContainer} />
       </Switch>
     </Router>
