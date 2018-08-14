@@ -6,13 +6,19 @@ import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import { withStyles } from '@material-ui/core/styles'
 import AddIcon from '@material-ui/icons/Add'
+import ListIcon from '@material-ui/icons/List'
 import {connect} from 'react-redux'
 import {getUser} from '../actions/users'
 import {resetNewProposal} from '../actions/proposals'
+import logoImage from './logo.png'
 
 const styles = theme => ({
-  pageTitle: {
-    flexGrow: 1,
+  logo: {
+    maxHeight: '80px',
+    maxWidth: '100px'
+  },
+  logoContainer: {
+    flexGrow: 1
   },
   contentBase: {
     zIndex: 1,
@@ -39,7 +45,7 @@ const styles = theme => ({
     flexGrow: 1,
     padding: theme.spacing.unit * 2,
     marginTop: '40px'
-  },
+  }
 })
 
 const mapStateToProps = (state, ownProps) => {  
@@ -72,12 +78,9 @@ const LayoutHOC = Page => class Layout extends React.Component {
       <div>
         <AppBar position="static">
           <Toolbar>
-            <Typography 
-              variant="title" 
-              color="inherit" 
-              className={this.props.classes.pageTitle}>
-            Semada
-            </Typography>
+            <div className={this.props.classes.logoContainer}>
+              <img src={logoImage} className={this.props.classes.logo} />  
+            </div>
             
             <Typography>
               SEM Balance: <b>{this.props.user ? this.props.user.sem: ''}</b>
@@ -86,6 +89,15 @@ const LayoutHOC = Page => class Layout extends React.Component {
             <Typography>
               REP Balance: <b>{this.props.user ? this.props.user.rep: ''}</b>
             </Typography>
+            
+            <Button color='inherit'
+              onClick={() => {
+                this.props.history.push('/proposals')
+              }}
+            >
+              <ListIcon />
+              View All Proposals
+            </Button>
               
             <Button color='inherit'
               onClick={() => {
