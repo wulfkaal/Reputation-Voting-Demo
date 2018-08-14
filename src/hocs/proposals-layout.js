@@ -5,6 +5,7 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import { withStyles } from '@material-ui/core/styles'
+import AddIcon from '@material-ui/icons/Add'
 
 const styles = theme => ({
   pageTitle: {
@@ -47,9 +48,10 @@ const LayoutHOC = Page => class Layout extends React.Component {
             </Typography>
             
             <Button color='inherit'
-              onClick={() => this.props.history.push('/')}
+              onClick={() => this.props.history.push('/proposals/new')}
             >
-              Home
+              <AddIcon />
+              New Proposal
             </Button>
           </Toolbar>
         </AppBar>
