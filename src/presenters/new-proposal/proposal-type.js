@@ -52,7 +52,7 @@ const styles = theme => ({
 const proposalType = (props) => {
   let switchSubText = 'Your REP tokens will be staked'
   if(!props.proposal.stake){
-    switchSubText = 'No REP tokens at stake'
+    switchSubText = 'Your REP tokens will not be staked'
   }
   
   return (

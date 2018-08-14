@@ -1,5 +1,6 @@
 import React from 'react'
-import Paper from '@material-ui/core/Paper'
+import Card from '@material-ui/core/Card'
+import CardHeader from '@material-ui/core/CardHeader'
 import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
@@ -17,43 +18,64 @@ const screen = (props) => {
         }}
         onError={errors => console.log(errors)}
       >
-        <Paper className={props.classes.paper}>
-          <Grid container spacing={16}>
-            <Grid item xs={12}>
-              <Typography variant='display1'>
-                Pay for proposal to be validated
-              </Typography>
-            </Grid>  
-          </Grid>
-          <Grid container spacing={16}>
-            <Grid item xs={12}>
-              <Typography variant='subheading'>
-                URL: {props.proposal.url}
-              </Typography>
-              <Typography variant='subheading'>
-                Stake SEM Tokens: {props.proposal.stake ? 'YES' : 'NO'}
-              </Typography>
-              <Typography variant='subheading'>
-                Cost: 50 SEM
-              </Typography>
-              <Typography variant='subheading'>
-                Your SEM Balance: 100 SEM
-              </Typography>
-            </Grid>  
-          </Grid>
-          <Grid container spacing={16}>
-            <Grid item xs={12}>
-              <Button 
-                type="submit" 
-                variant="contained" 
-                color="primary" 
-                className={props.classes.button}
-              >
-                Pay 50 SEM
-              </Button>
+        <Card className={props.classes.cardWithHeader}>
+          <CardHeader
+            classes={{
+              root: props.classes.cardHeader,
+              title: props.classes.cardHeaderContent,
+              subheader: props.classes.cardHeaderContent,
+            }}
+            title="Pay for news article to be verified"
+            subheader="Verification begins after payment"
+          />
+          <div className={props.classes.cardContent}>
+            <Grid container spacing={16}>
+              <Grid item xs={12}>
+                <Typography variant='caption'>
+                  News Article to Verify
+                </Typography>
+                <Typography variant='title'>
+                  {props.proposal.url}
+                </Typography>
+                <br/>
+                <Typography variant='caption'>
+                  
+                    Vote and Publish?
+                </Typography>
+                <Typography variant='title'>
+                  {props.proposal.stake ? 
+                    'YES - Your REP tokens will be staked' : 'NO - Your REP tokens will not be staked'}
+                </Typography>
+                <br/>
+                <Typography variant='caption'>
+                  Cost
+                </Typography>
+                <Typography variant='title'>
+                  50 SEM
+                </Typography>
+                <br/>
+                <Typography variant='caption'>
+                  Your SEM Balance
+                </Typography>
+                <Typography variant='title'>
+                  {props.user ? props.user.sem : ''}
+                </Typography>
+              </Grid>  
             </Grid>
-          </Grid>
-        </Paper>
+            <Grid container spacing={16}>
+              <Grid item xs={12} className={props.classes.contentRight}>
+                <Button 
+                  type="submit" 
+                  variant="contained" 
+                  color="secondary" 
+                  className={props.classes.button}
+                >
+                  Pay 50 SEM
+                </Button>
+              </Grid>
+            </Grid>
+          </div>
+        </Card>
       </ValidatorForm>
     </div>
   )
