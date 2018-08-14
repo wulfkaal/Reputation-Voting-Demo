@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import ProposalsLayout from '../hocs/proposals-layout'
 import {connect} from 'react-redux'
+import PassProposalScreen from '../presenters/proposal/pass-screen'
+import FailProposalScreen from '../presenters/proposal/fail-screen'
+import TimeoutProposalScreen from '../presenters/proposal/timeout-screen'
 import ActiveProposalScreen from '../presenters/proposal/active-screen'
 import {
   PROPOSAL_STATUSES,
@@ -24,9 +27,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     startTimer: proposal => {
       return setInterval(() => {
         
-        let remaining = Math.floor(proposal.voteTimeEnd 
-          - (new Date().getTime() / 1000))
-        remaining = remaining < 0 ? 0 : remaining
+        let remaining = proposal.voteTimeEnd - (new Date().getTime())
+        remaining = remaining < 0 ? 0 : Math.floor(remaining / 1000)
         
         dispatch(saveProposal({
           _id: proposal._id,
@@ -50,11 +52,19 @@ class Proposal extends Component {
       let display
       
       switch(this.props.proposal.status){
+      case PROPOSAL_STATUSES.pass:
+        display = <PassProposalScreen {...this.props} />
+        break;
+      case PROPOSAL_STATUSES.fail:
+        display = <FailProposalScreen {...this.props} />
+        break;
+      case PROPOSAL_STATUSES.timeout:
+        display = <TimeoutProposalScreen {...this.props} />
+        break;
       case PROPOSAL_STATUSES.active:
         display = <ActiveProposalScreen {...this.props} />
         break;
       default:
-        display = <ActiveProposalScreen {...this.props} />
         break;
       }
       

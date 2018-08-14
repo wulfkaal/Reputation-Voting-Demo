@@ -5,6 +5,7 @@ import FormGroup from '@material-ui/core/FormGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Switch from '@material-ui/core/Switch'
 import Typography from '@material-ui/core/Typography'
+import baseComponentStyle from '../../jss/base-component'
 
 const styles = theme => ({
   iOSSwitchBase: {
@@ -53,13 +54,16 @@ const proposalType = (props) => {
   return (
     <div>
       <Grid container spacing={16}>
-        <Grid item xs={4}>
-          <Typography variant='subheading'>
+        <Grid item xs={2}>
+          <Typography 
+            variant='subheading' 
+            className={props.classes.contentRight}
+            >
             Review<br/>
             (no SEM tokens at stake)  
           </Typography>
         </Grid>  
-        <Grid item xs={4}>
+        <Grid item xs={1}>
           <FormGroup row>
             <FormControlLabel
               control={
@@ -82,12 +86,15 @@ const proposalType = (props) => {
                   value="checkedB"
                 />
               }
-              label="iOS style"
+              label=""
             />
           </FormGroup>
         </Grid>  
-        <Grid item xs={4}>
-          <Typography variant='subheading'>
+        <Grid item xs={5}>
+          <Typography 
+            variant='subheading'
+            className={props.classes.contentLeft}
+          >
             Vote to publish<br/>
             (stake SEM tokens)
           </Typography>
@@ -97,4 +104,9 @@ const proposalType = (props) => {
   )
 }
 
-export default withStyles(styles)(proposalType)
+export default withStyles((theme) => ({
+  ...styles(theme),
+  ...baseComponentStyle(theme)
+}),
+{withTheme: true}
+)(proposalType)

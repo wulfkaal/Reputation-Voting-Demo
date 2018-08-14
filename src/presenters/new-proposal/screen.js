@@ -21,7 +21,7 @@ const screen = (props) => {
       >
         <Paper className={props.classes.paper}>
           <Grid container spacing={16}>
-            <Grid item xs={12} className={props.classes.contentCenter}>
+            <Grid item xs={12}>
               <Typography variant='display1'>
                 Submit a news article URL for review / vote
               </Typography>
@@ -36,7 +36,7 @@ const screen = (props) => {
             </Grid>
           </Grid>
           <Grid container spacing={16}>
-            <Grid item xs={6} className={props.classes.contentRight}>
+            <Grid item xs={3}>
               <TextValidator
                 name="url"
                 label="URL"

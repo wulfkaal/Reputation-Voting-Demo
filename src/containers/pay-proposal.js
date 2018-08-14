@@ -22,7 +22,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(getProposal(id))
     },
     payProposal: async (proposal) => {
-      proposal.voteTimeEnd = (new Date().getTime() / 1000) + 10 
+      proposal.voteTimeEnd = (new Date().getTime()) + (10 * 1000)
     
       await dispatch(saveProposal(proposal))
       
