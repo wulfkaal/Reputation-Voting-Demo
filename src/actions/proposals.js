@@ -44,10 +44,12 @@ export const persistProposal = (proposal) => {
     
     let body = await response.json()
     
-    return dispatch({
-      proposal: body,
-      type: RECEIVE_PROPOSAL
-    })
+    if(body._id) {
+      return dispatch({
+        proposal: body,
+        type: RECEIVE_PROPOSAL
+      })
+    }
   }
 }
 

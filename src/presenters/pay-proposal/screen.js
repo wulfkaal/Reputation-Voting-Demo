@@ -14,7 +14,7 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.payProposal(props.proposal)
+          props.payProposal(props.user, props.proposal)
         }}
         onError={errors => console.log(errors)}
       >
@@ -42,7 +42,10 @@ const screen = (props) => {
                   Cost
                 </Typography>
                 <Typography variant='title'>
-                  50 SEM
+                  1 SEM 
+                </Typography>
+                <Typography variant='subheading'>
+                  (1 SEM = $0.17 USD - Updated 5 minutes ago from Binance)
                 </Typography>
                 <br/>
                 <Typography variant='caption'>

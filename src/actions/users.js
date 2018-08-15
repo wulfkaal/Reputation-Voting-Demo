@@ -15,6 +15,8 @@ export const persistUser = (user) => {
     // mongo requires _id to be a valid 24 byte hex string, so remove new
     if(user._id === 'new'){
       delete user._id  
+    } else {
+      url = url + `/${user._id}`
     }
             
     let response = await fetch(url, {
@@ -29,10 +31,13 @@ export const persistUser = (user) => {
     
     let body = await response.json()
     
-    return dispatch({
-      user: body,
-      type: RECEIVE_USER
-    })
+    if(body._id) {
+      return dispatch({
+        user: body,
+        type: RECEIVE_USER
+      })
+    }
+
   }
 }
 

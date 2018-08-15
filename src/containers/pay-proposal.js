@@ -7,12 +7,17 @@ import {
   saveProposal,
   persistProposal
 } from '../actions/proposals'
+import {
+  saveUser,
+  persistUser
+} from '../actions/users'
 
 const mapStateToProps = (state, ownProps) => {  
   let id = ownProps.match.params.id
   
   return {
-    proposal: state.proposals[id]
+    proposal: state.proposals[id],
+    user: state.users['wulf@semada.io']
   }
 }
 
@@ -21,9 +26,15 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     getProposal: id => {
       dispatch(getProposal(id))
     },
-    payProposal: async (proposal) => {
+    payProposal: async (user, proposal) => {
       proposal.voteTimeEnd = (new Date().getTime()) + (10 * 1000)
-    
+      
+      // TODO: don't hardcode SEM reduction
+      user.sem = user.sem - 1
+      await dispatch(saveUser(user))
+      
+      await dispatch(persistUser(user))
+      
       await dispatch(saveProposal(proposal))
       
       await dispatch(persistProposal(proposal))
