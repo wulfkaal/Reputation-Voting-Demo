@@ -1,57 +1,61 @@
 import React, { Component } from 'react'
-import ProposalsLayout from '../hocs/proposals-layout'
+import ProposalsWideLayout from '../hocs/proposals-wide-layout'
 import {connect} from 'react-redux'
-import NewProposalScreen from '../presenters/new-proposal/screen'
+import ProposalSwimLanesScreen from '../presenters/proposal-swim-lanes/screen'
 import {
-  saveProposal,
-  persistProposal
+  getProposals,
+  saveProposal
 } from '../actions/proposals'
 import {
   getUser
 } from '../actions/users'
-
+import values from 'lodash/values'
 
 const mapStateToProps = (state, ownProps) => {  
   return {
-    proposal: state.proposals.new,
-    user: state.users['wulf@semada.io']
+    proposals: state.proposals
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    saveProposal: proposal => {
-      dispatch(saveProposal(proposal))
+    getProposals: daoId => {
+      dispatch(getProposals(daoId))
     },
-    persistProposal: (proposal, userId) => {
-      proposal.userId = userId
-      dispatch(persistProposal(proposal))
-      .then((result) => {
-        ownProps.history.push(`/proposals/${result.proposal._id}/pay`)
-      })
-    },
-    getUser: email => {
-      return dispatch(getUser(email))
+    startTimer: () => {
+      return setInterval(() => {
+        let proposalList = values(ownProps.proposals)
+        for(let i = 0; i < proposalList.length; i++){
+          let remaining = proposalList[i].voteTimeEnd - (new Date().getTime())
+          remaining = remaining < 0 ? 0 : Math.floor(remaining / 1000)
+          
+          dispatch(saveProposal({
+            _id: proposalList[i]._id,
+            voteTimeRemaining: remaining
+          }))
+        }
+
+      }, 1000)
     }
   }
 }
 
 class ProposalSwimLanes extends Component {
 
-  async componentDidMount() {
-    // TODO : Remove hard coding
-    this.props.getUser('wulf@semada.io')
+  componentDidMount() {
+    this.props.getProposals(1)
+    this.props.startTimer()
   }
 
   render() {
     return (
       <div>
-        <NewProposalScreen {...this.props} />
+        <ProposalSwimLanesScreen {...this.props} />
       </div>
     )
   }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(
-  ProposalsLayout(ProposalSwimLanes)
+  ProposalsWideLayout(ProposalSwimLanes)
 )

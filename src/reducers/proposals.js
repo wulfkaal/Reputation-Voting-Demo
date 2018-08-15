@@ -27,7 +27,7 @@ const proposals = (state = initialState, action) => {
     } else if(proposal.noVotes >= 5) {
       proposal.status = PROPOSAL_STATUSES.fail
     } else if(proposal.voteTimeEnd < now) {
-      proposal.status = PROPOSAL_STATUSES.timeout
+      proposal.status = PROPOSAL_STATUSES.pass
     } else {
       proposal.status = PROPOSAL_STATUSES.active
     }

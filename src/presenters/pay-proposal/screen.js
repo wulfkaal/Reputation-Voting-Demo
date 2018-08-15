@@ -39,15 +39,6 @@ const screen = (props) => {
                 </Typography>
                 <br/>
                 <Typography variant='caption'>
-                  
-                    Vote and Publish?
-                </Typography>
-                <Typography variant='title'>
-                  {props.proposal.stake ? 
-                    'YES - Your REP tokens will be staked' : 'NO - Your REP tokens will not be staked'}
-                </Typography>
-                <br/>
-                <Typography variant='caption'>
                   Cost
                 </Typography>
                 <Typography variant='title'>

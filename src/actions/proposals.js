@@ -67,3 +67,27 @@ export const getProposal = (id) => {
     
   }
 }
+
+export const getProposals = (daoId) => {
+  return async (dispatch) => {
+    let response = await fetch(`http://localhost:3001/proposals/dao/${daoId}`, {
+      method: 'GET',
+      mode: 'cors'
+    })
+    
+    let body = await response.json()
+    
+    if(body.proposals.length){
+      for(let i = 0; i < body.proposals.length; i++){
+        dispatch({
+          proposal: body.proposals[i],
+          type: RECEIVE_PROPOSAL
+        })
+      }
+    }
+    
+    return {
+      proposals: body
+    }
+  }
+}

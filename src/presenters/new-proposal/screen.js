@@ -34,13 +34,13 @@ const screen = (props) => {
 
             </Grid>
             <Grid container spacing={16}>
-              <Grid item xs={12} sm={4}>
+              {/* <Grid item xs={12} sm={4}>
                 <ProposalType 
                   saveProposal={props.saveProposal} 
                   proposal={props.proposal}
                 />
-              </Grid>
-              <Grid item xs={12} sm={6}>
+              </Grid> */}
+              <Grid item xs={10}>
                 <TextValidator
                   name="url"
                   label="URL"

@@ -19,7 +19,8 @@ export default theme => (
     cardWithHeader: {
       display: 'flex',
       flexDirection: 'column',
-      overflow: 'visible'
+      overflow: 'visible',
+      marginBottom: '10px'
     },
     cardHeader: {
       backgroundColor: theme.palette.subPrimary.main,

@@ -25,6 +25,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     persistProposal: (proposal, userId) => {
       proposal.userId = userId
+      // TODO: don't hardcode dao ID
+      proposal.daoId = 1
       dispatch(persistProposal(proposal))
       .then((result) => {
         ownProps.history.push(`/proposals/${result.proposal._id}/pay`)
