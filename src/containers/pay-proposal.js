@@ -27,7 +27,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(getProposal(id))
     },
     payProposal: async (user, proposal) => {
-      proposal.voteTimeEnd = (new Date().getTime()) + (10 * 1000)
+      proposal.voteTimeEnd = (new Date().getTime()) + (20 * 1000)
       
       // TODO: don't hardcode SEM reduction
       user.sem = user.sem - 1
