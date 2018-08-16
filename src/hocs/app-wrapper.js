@@ -76,6 +76,7 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
         let repStaked = Math.floor(Math.random() * 5)
         switch(vote){
         case 0:
+        case 1:
           proposal.yesVotes += 1
           proposal.repStaked += repStaked
           break;
@@ -96,10 +97,13 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
         } else {
           proposal.status = PROPOSAL_STATUSES.timeout
         }
+        
+        //set random REP % once voting is complete/timed out
+        proposal.repPercent = Math.floor(Math.random() * 100)
       }
       this.props.baseSaveProposal(proposal)
       this.props.basePersistProposal(proposal)
-
+      
     }
   }
   

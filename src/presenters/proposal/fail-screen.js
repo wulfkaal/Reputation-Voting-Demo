@@ -65,7 +65,9 @@ const screen = (props) => {
             <Grid item xs={12} sm={6}>
               <VoteChart 
                 yes={props.proposal.yesVotes} 
-                no={props.proposal.noVotes} />
+                no={props.proposal.noVotes}
+                update={':'}
+              />
             </Grid>
           </Grid>
         </div>

@@ -17,9 +17,6 @@ const proposalItem = (props) => {
   
   yesVotePercent = isNaN(yesVotePercent) ? 0 : yesVotePercent
   noVotePercent = isNaN(noVotePercent) ? 0 : noVotePercent
-  
-  let repPercent = Math.floor(100 * 
-    (props.proposal.repStaked / props.totalRepStaked))
     
   return (
     <div>
@@ -28,7 +25,7 @@ const proposalItem = (props) => {
         onClick={() => props.history.push(`/proposals/${props.proposal._id}`)}>
         
         <Typography variant='body1'>
-          {repPercent}%
+          {props.proposal.repPercent}%
           <br/>
           REP
         </Typography>

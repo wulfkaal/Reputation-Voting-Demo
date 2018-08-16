@@ -16,7 +16,6 @@ const screen = (props) => {
   .map((proposal, i) => {
     return (
       <ProposalItem 
-        totalRepStaked={props.totalRepStaked}
         proposal={proposal}
         history={props.history} />
     )
@@ -27,7 +26,6 @@ const screen = (props) => {
   .map((proposal, i) => {
     return (
       <ProposalItem 
-        totalRepStaked={props.totalRepStaked}
         proposal={proposal}
         history={props.history} />
     )
@@ -38,7 +36,6 @@ const screen = (props) => {
   .map((proposal, i) => {
     return (
       <ProposalItem 
-        totalRepStaked={props.totalRepStaked}
         proposal={proposal}
         history={props.history} />
     )
@@ -49,7 +46,6 @@ const screen = (props) => {
     .map((proposal, i) => {
       return (
         <ProposalItem 
-          totalRepStaked={props.totalRepStaked}
           proposal={proposal}
           history={props.history} />
       )
