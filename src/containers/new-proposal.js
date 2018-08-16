@@ -24,6 +24,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(saveProposal(proposal))
     },
     persistProposal: (proposal, userId) => {
+      
       proposal.userId = userId
       // TODO: don't hardcode dao ID
       proposal.daoId = 1

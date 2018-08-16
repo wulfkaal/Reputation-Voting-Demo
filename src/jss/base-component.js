@@ -1,5 +1,8 @@
 export default theme => (
   {
+    root: {
+      flexGrow: 1
+    },
     paper: {
       overflow: 'hidden',
       padding: '5px'

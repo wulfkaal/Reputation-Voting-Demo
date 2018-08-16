@@ -44,14 +44,14 @@ const screen = (props) => {
                 Yes Votes
               </Typography>
               <Typography variant='title'>
-                2
+                {props.proposal.yesVotes}
               </Typography>
               <br/>
               <Typography variant='caption'>
                 No Votes
               </Typography>
               <Typography variant='title'>
-                1
+                {props.proposal.noVotes}
               </Typography>
               <br/>
               <Typography variant='caption'>
@@ -61,13 +61,11 @@ const screen = (props) => {
                 {voteTimeEnd}
               </Typography>
               <br/>
-
-              {/* <Typography variant='display1'>
-                Vote time remaining {props.proposal.voteTimeRemaining}
-              </Typography> */}
             </Grid>  
             <Grid item xs={12} sm={6}>
-              <VoteChart yes={2} no={1} />
+              <VoteChart 
+                yes={props.proposal.yesVotes} 
+                no={props.proposal.noVotes} />
             </Grid>
           </Grid>
         </div>

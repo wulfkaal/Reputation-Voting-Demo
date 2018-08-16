@@ -11,7 +11,10 @@ const initialState = {
     url: '', 
     stake: true, 
     status: PROPOSAL_STATUSES.active,
-    voteTimeRemaining: ''
+    voteTimeRemaining: '',
+    yesVotes: 0,
+    noVotes: 0,
+    repStaked: 0
   }
 }
 
@@ -19,20 +22,6 @@ const proposals = (state = initialState, action) => {
   switch(action.type) {
   case RECEIVE_PROPOSAL:
     let proposal = merge({}, state[action.proposal._id], action.proposal)
-    //HACK: setting proposal status in reducer.
-    //This should probably happen in the API.
-    let now = new Date().getTime()
-    if(proposal.yesVotes >= 5) {
-      proposal.status = PROPOSAL_STATUSES.pass
-    } else if(proposal.noVotes >= 5) {
-      proposal.status = PROPOSAL_STATUSES.fail
-    } else if(proposal.voteTimeEnd < now) {
-      proposal.status = PROPOSAL_STATUSES.pass
-    } else {
-      proposal.status = PROPOSAL_STATUSES.active
-    }
-    
-    
     return merge({}, state, {[action.proposal._id]: proposal})
   case RESET_NEW_PROPOSAL:
     return merge({}, state, initialState)

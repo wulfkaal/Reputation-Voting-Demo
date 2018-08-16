@@ -24,28 +24,20 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     getProposal: id => {
       return dispatch(getProposal(id))
     },
-    startTimer: proposal => {
-      return setInterval(() => {
-        
-        let remaining = proposal.voteTimeEnd - (new Date().getTime())
-        remaining = remaining < 0 ? 0 : Math.floor(remaining / 1000)
-        
-        dispatch(saveProposal({
-          _id: proposal._id,
-          voteTimeRemaining: remaining
-        }))
-      }, 1000)
-    }
   }
 }
 
 class Proposal extends Component {
   
-  async componentDidMount() {
+  componentDidMount() {
     let id = this.props.match.params.id
-    let result = await this.props.getProposal(id)
-    await this.props.startTimer(result.proposal)
-    
+    this.props.getProposal(id)
+
+    if(this.props.proposal) {
+      if (!this.props.proposal.voteTimeEnd){
+        this.props.history.push(`/proposals/${id}/pay`)
+      }
+    }
   }
 
   render() {

@@ -10,6 +10,7 @@ import VoteChart from './vote-chart'
 const screen = (props) => {
   let voteTimeEnd = new Date(props.proposal.voteTimeEnd)
   .toUTCString()
+
   
   return (
     <div>
@@ -37,21 +38,21 @@ const screen = (props) => {
                 Minimum Quorum Required
               </Typography>
               <Typography variant='title'>
-                7 votes (60% of total votes)
+                6 votes (60% of total votes)
               </Typography>
               <br/>
               <Typography variant='caption'>
                 Yes Votes
               </Typography>
               <Typography variant='title'>
-                1
+                {props.proposal.yesVotes}
               </Typography>
               <br/>
               <Typography variant='caption'>
                 No Votes
               </Typography>
               <Typography variant='title'>
-                7
+                {props.proposal.noVotes}
               </Typography>
               <br/>
               <Typography variant='caption'>
@@ -70,7 +71,9 @@ const screen = (props) => {
               <br/>
             </Grid>  
             <Grid item xs={12} sm={6}>
-              <VoteChart yes={1} no={7} />
+              <VoteChart 
+                yes={props.proposal.yesVotes} 
+                no={props.proposal.noVotes} />
             </Grid>
           </Grid>
         </div>

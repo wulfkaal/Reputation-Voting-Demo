@@ -10,7 +10,7 @@ export const saveUser = user => {
 
 export const persistUser = (user) => {
   return async (dispatch) => {
-    let url = 'http://localhost:3001/users'
+    let url = 'process.env.API_URL/users'
     
     // mongo requires _id to be a valid 24 byte hex string, so remove new
     if(user._id === 'new'){
@@ -43,7 +43,7 @@ export const persistUser = (user) => {
 
 export const getUser = (email) => {
   return async (dispatch) => {
-    let response = await fetch(`http://localhost:3001/users/${email}`, {
+    let response = await fetch(`process.env.API_URL/users/${email}`, {
       method: 'GET',
       mode: 'cors'
     })

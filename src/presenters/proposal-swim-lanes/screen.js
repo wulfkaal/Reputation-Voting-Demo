@@ -10,38 +10,31 @@ import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import {PROPOSAL_STATUSES} from '../../actions/proposals'
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
 import ImageIcon from '@material-ui/icons/Image';
+import ProposalItem from './proposal-item'
 
 const screen = (props) => {
   
   let active = values(props.proposals)
-  .filter(p => p.status === PROPOSAL_STATUSES.active && p._id !== 'new')
+  .filter(p => p._id !== 'new' && p.status === PROPOSAL_STATUSES.active)
   .map((proposal, i) => {
     return (
-      <ListItem 
-        button
-        onClick={() => props.history.push(`/proposals/${proposal._id}`)}>
-        <ListItemText inset 
-          primary={proposal.url} 
-          secondary={proposal.stake ? 'Staked REP' : 'Review Only'} />
-      </ListItem>
+      <ProposalItem 
+        totalRepStaked={props.totalRepStaked}
+        proposal={proposal}
+        history={props.history} />
     )
   })
-  
+    
   let pass = values(props.proposals)
   .filter(p => p.status === PROPOSAL_STATUSES.pass)
   .map((proposal, i) => {
     return (
-      <ListItem 
-        button
-        onClick={() => props.history.push(`/proposals/${proposal._id}`)}>
-        <ListItemText inset 
-          primary={proposal.url} 
-          secondary={proposal.stake ? 'Staked REP' : 'Review Only'} />
-      </ListItem>
+      <ProposalItem 
+        totalRepStaked={props.totalRepStaked}
+        proposal={proposal}
+        history={props.history} />
     )
   })
   
@@ -49,13 +42,10 @@ const screen = (props) => {
   .filter(p => p.status === PROPOSAL_STATUSES.fail)
   .map((proposal, i) => {
     return (
-      <ListItem 
-        button
-        onClick={() => props.history.push(`/proposals/${proposal._id}`)}>
-        <ListItemText inset 
-          primary={proposal.url} 
-          secondary={proposal.stake ? 'Staked REP' : 'Review Only'} />
-      </ListItem>
+      <ProposalItem 
+        totalRepStaked={props.totalRepStaked}
+        proposal={proposal}
+        history={props.history} />
     )
   })
   
@@ -63,13 +53,10 @@ const screen = (props) => {
     .filter(p => p.status === PROPOSAL_STATUSES.timeout)
     .map((proposal, i) => {
       return (
-        <ListItem 
-          button
-          onClick={() => props.history.push(`/proposals/${proposal._id}`)}>
-          <ListItemText inset 
-            primary={proposal.url} 
-            secondary={proposal.stake ? 'Staked REP' : 'Review Only'} />
-        </ListItem>
+        <ProposalItem 
+          totalRepStaked={props.totalRepStaked}
+          proposal={proposal}
+          history={props.history} />
       )
     })
   
@@ -103,7 +90,7 @@ const screen = (props) => {
                   subheader: props.classes.cardHeaderContent,
                 }}
                 title="Pass"
-                subheader="Majority 'Yes' votes"
+                subheader="Majority 'Yes' votes (Yes wins tie)"
               />
               <div className={props.classes.cardContent}>
                 <List component="nav">

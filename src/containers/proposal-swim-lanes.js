@@ -48,9 +48,15 @@ class ProposalSwimLanes extends Component {
   }
 
   render() {
+    let totalRepStaked = values(this.props.proposals)
+      .map(p => p.repStaked)
+      .reduce((p, n) => p + n)
+    
     return (
       <div>
-        <ProposalSwimLanesScreen {...this.props} />
+        <ProposalSwimLanesScreen 
+          {...this.props} 
+          totalRepStaked={totalRepStaked} />
       </div>
     )
   }
