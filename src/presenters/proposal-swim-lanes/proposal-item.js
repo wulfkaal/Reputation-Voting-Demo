@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid'
 import baseComponentStyle from '../../jss/base-component'
 import Typography from '@material-ui/core/Typography'
 import ListItem from '@material-ui/core/ListItem';
+import {PROPOSAL_STATUSES} from '../../actions/proposals'
 
 
 const proposalItem = (props) => {
@@ -17,7 +18,18 @@ const proposalItem = (props) => {
   
   yesVotePercent = isNaN(yesVotePercent) ? 0 : yesVotePercent
   noVotePercent = isNaN(noVotePercent) ? 0 : noVotePercent
-    
+  
+  let repPercent
+  if(props.proposal.status !== PROPOSAL_STATUSES.active) {
+    repPercent = (
+      <div>
+        {props.proposal.repPercent}%
+        <br/>
+        REP
+      </div>
+    )
+  }
+  
   return (
     <div>
       <ListItem 
@@ -25,9 +37,7 @@ const proposalItem = (props) => {
         onClick={() => props.history.push(`/proposals/${props.proposal._id}`)}>
         
         <Typography variant='body1'>
-          {props.proposal.repPercent}%
-          <br/>
-          REP
+          {repPercent}
         </Typography>
         <div className={props.classes.root}>
           <Grid container spacing={8}>

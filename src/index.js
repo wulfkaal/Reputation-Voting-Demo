@@ -27,7 +27,7 @@ ReactDOM.render(
         <Route path="/proposals/:id" component={ProposalContainer} />
         <Route path="/proposals" component={ProposalSwimLanesContainer} />
         <Route path="/users/:email" component={UserContainer} />
-        <Route path="/" component={IndexContainer} />
+        <Route path="/" component={ProposalSwimLanesContainer} />
       </Switch>
     </Router>
   </Provider>, 
