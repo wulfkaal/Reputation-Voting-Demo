@@ -14,7 +14,9 @@ import {
 const mapStateToProps = (state, ownProps) => {  
   return {
     baseProposals: values(state.proposals)
-      .filter(p => p._id !== 'new' && p.status === PROPOSAL_STATUSES.active) 
+      .filter(p => p._id !== 'new' && 
+        p.status === PROPOSAL_STATUSES.active &&
+        p.voteTimeEnd)
   }
 }
 
@@ -51,6 +53,7 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     
   }
   
+  //Voting simulation
   async manageProposals() {
     let proposals = this.props.baseProposals
         
@@ -63,7 +66,7 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
       // (including voteTimeRemaining)
       let now = new Date().getTime()
       let remaining = proposal.voteTimeEnd - now
-      
+            
       remaining = remaining < 0 ? 0 : Math.floor(remaining / 1000)
       proposal.voteTimeRemaining = remaining
       
@@ -79,6 +82,8 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
         case 2:
           proposal.noVotes += 1
           proposal.repStaked += repStaked
+          break;
+        default:
           break;
         }
       } else {
@@ -118,7 +123,8 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
             theme={this.pageContext.theme}
             sheetsManager={this.pageContext.sheetsManager}
           >
-            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+            {/* CssBaseline kickstart an elegant, consistent, 
+              and simple baseline to build upon. */}
             <CssBaseline />
             
             <Page pageContext={this.pageContext} {...this.props} />
@@ -129,5 +135,5 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
   }
 }
 
-export default Page => connect(mapStateToProps, mapDispatchToProps)
-  (AppWrapperHOC(Page))
+export default Page => 
+  connect(mapStateToProps, mapDispatchToProps)(AppWrapperHOC(Page))

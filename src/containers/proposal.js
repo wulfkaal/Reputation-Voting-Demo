@@ -7,8 +7,7 @@ import TimeoutProposalScreen from '../presenters/proposal/timeout-screen'
 import ActiveProposalScreen from '../presenters/proposal/active-screen'
 import {
   PROPOSAL_STATUSES,
-  getProposal,
-  saveProposal
+  getProposal
 } from '../actions/proposals'
 
 const mapStateToProps = (state, ownProps) => {  

@@ -3,15 +3,10 @@ import values from 'lodash/values'
 import Card from '@material-ui/core/Card'
 import CardHeader from '@material-ui/core/CardHeader'
 import { withStyles } from '@material-ui/core/styles'
-import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import baseComponentStyle from '../../jss/base-component'
-import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator'
-import InputAdornment from '@material-ui/core/InputAdornment'
 import {PROPOSAL_STATUSES} from '../../actions/proposals'
 import List from '@material-ui/core/List';
-import Avatar from '@material-ui/core/Avatar';
-import ImageIcon from '@material-ui/icons/Image';
 import ProposalItem from './proposal-item'
 
 const screen = (props) => {

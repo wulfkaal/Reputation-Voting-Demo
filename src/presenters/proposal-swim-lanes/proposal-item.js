@@ -1,16 +1,9 @@
 import React from 'react'
-import Card from '@material-ui/core/Card'
-import CardHeader from '@material-ui/core/CardHeader'
 import { withStyles } from '@material-ui/core/styles'
-import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import baseComponentStyle from '../../jss/base-component'
 import Typography from '@material-ui/core/Typography'
-import { ValidatorForm} from 'react-material-ui-form-validator'
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import {PROPOSAL_STATUSES} from '../../actions/proposals'
-import Avatar from '@material-ui/core/Avatar';
 
 
 const proposalItem = (props) => {
@@ -19,8 +12,6 @@ const proposalItem = (props) => {
   // yes votes
   // no votes
   let totalVotes = props.proposal.yesVotes + props.proposal.noVotes
-  let yesVotes = props.proposal.yesVotes
-  let noVotes = props.proposal.noVotes
   let yesVotePercent = Math.floor(100 * (props.proposal.yesVotes / totalVotes))
   let noVotePercent = Math.floor(100 * (props.proposal.noVotes / totalVotes))
   

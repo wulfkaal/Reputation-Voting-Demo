@@ -6,9 +6,6 @@ import {
   getProposals,
   saveProposal
 } from '../actions/proposals'
-import {
-  getUser
-} from '../actions/users'
 import values from 'lodash/values'
 
 const mapStateToProps = (state, ownProps) => {  

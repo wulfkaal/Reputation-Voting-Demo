@@ -79,7 +79,7 @@ const LayoutHOC = Page => class Layout extends React.Component {
         <AppBar position="static">
           <Toolbar>
             <div className={this.props.classes.logoContainer}>
-              <img src={logoImage} className={this.props.classes.logo} />  
+              <img src={logoImage} className={this.props.classes.logo} alt='Semada' />  
             </div>
             
             <Typography>
