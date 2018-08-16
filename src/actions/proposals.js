@@ -23,7 +23,7 @@ export const resetNewProposal = () => {
 
 export const persistProposal = (proposal) => {
   return async (dispatch) => {
-    let url = 'process.env.API_URL/proposals'
+    let url = `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals`
     
     // mongo requires _id to be a valid 24 char hex string, so remove new
     if(proposal._id === 'new'){
@@ -55,7 +55,7 @@ export const persistProposal = (proposal) => {
 
 export const getProposal = (id) => {
   return async (dispatch) => {
-    let response = await fetch(`process.env.API_URL/proposals/${id}`, {
+    let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/${id}`, {
       method: 'GET',
       mode: 'cors'
     })
@@ -72,7 +72,7 @@ export const getProposal = (id) => {
 
 export const getProposals = (daoId) => {
   return async (dispatch) => {
-    let response = await fetch(`process.env.API_URL/proposals/dao/${daoId}`, {
+    let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/dao/${daoId}`, {
       method: 'GET',
       mode: 'cors'
     })
