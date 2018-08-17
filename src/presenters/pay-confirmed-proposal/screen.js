@@ -44,11 +44,8 @@ const screen = (props) => {
                 </Typography>
                 <Typography variant='caption'>
                   <br/>
-                  Your news article proposal is submitted for a vote by DAO
-                  members and can be viewed&nbsp;
-                  <Link to={{pathname: `/proposals/${props.proposal._id}`}}>
-                    here
-                  </Link>
+                  Your news article proposal has been submitted for voting by DAO
+                  members
                 </Typography>
                 
               </Grid>  
