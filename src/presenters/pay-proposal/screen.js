@@ -64,7 +64,7 @@ const screen = (props) => {
                   color="secondary" 
                   className={props.classes.button}
                 >
-                  Pay 50 SEM
+                  Pay 1 SEM
                 </Button>
               </Grid>
             </Grid>
