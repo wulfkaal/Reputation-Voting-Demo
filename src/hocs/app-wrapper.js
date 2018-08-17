@@ -78,11 +78,11 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
         case 0:
         case 1:
           proposal.yesVotes += 1
-          proposal.repStaked += repStaked
+          proposal.yesRepStaked += repStaked
           break;
         case 2:
           proposal.noVotes += 1
-          proposal.repStaked += repStaked
+          proposal.noRepStaked += repStaked
           break;
         default:
           break;

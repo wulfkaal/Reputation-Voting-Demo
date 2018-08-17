@@ -11,6 +11,12 @@ const screen = (props) => {
   let voteTimeEnd = new Date(props.proposal.voteTimeEnd)
   .toUTCString()
 
+  let totalRepStaked = props.proposal.yesRepStaked + props.proposal.noRepStaked
+  let yesRepPercent = Math.floor(100 * (props.proposal.yesRepStaked / totalRepStaked))
+  let noRepPercent = Math.floor(100 * (props.proposal.noRepStaked / totalRepStaked))
+  
+  yesRepPercent = isNaN(yesRepPercent) ? 0 : yesRepPercent
+  noRepPercent = isNaN(noRepPercent) ? 0 : noRepPercent
   
   return (
     <div>
@@ -38,21 +44,21 @@ const screen = (props) => {
                 Minimum Quorum Required
               </Typography>
               <Typography variant='title'>
-                6 votes (60% of total votes)
+                6 votes
               </Typography>
               <br/>
               <Typography variant='caption'>
-                Yes Votes
+                Yes REP
               </Typography>
               <Typography variant='title'>
-                {props.proposal.yesVotes}
+                {props.proposal.yesRepStaked} ({yesRepPercent}%)
               </Typography>
               <br/>
               <Typography variant='caption'>
-                No Votes
+                No REP
               </Typography>
               <Typography variant='title'>
-                {props.proposal.noVotes}
+                {props.proposal.noRepStaked} ({noRepPercent}%)
               </Typography>
               <br/>
               <Typography variant='caption'>

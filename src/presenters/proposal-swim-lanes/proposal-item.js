@@ -12,12 +12,12 @@ const proposalItem = (props) => {
   // % of DAO REP tokens allocated (random)
   // yes votes
   // no votes
-  let totalVotes = props.proposal.yesVotes + props.proposal.noVotes
-  let yesVotePercent = Math.floor(100 * (props.proposal.yesVotes / totalVotes))
-  let noVotePercent = Math.floor(100 * (props.proposal.noVotes / totalVotes))
+  let totalRepStaked = props.proposal.yesRepStaked + props.proposal.noRepStaked
+  let yesRepPercent = Math.floor(100 * (props.proposal.yesRepStaked / totalRepStaked))
+  let noRepPercent = Math.floor(100 * (props.proposal.noRepStaked / totalRepStaked))
   
-  yesVotePercent = isNaN(yesVotePercent) ? 0 : yesVotePercent
-  noVotePercent = isNaN(noVotePercent) ? 0 : noVotePercent
+  yesRepPercent = isNaN(yesRepPercent) ? 0 : yesRepPercent
+  noRepPercent = isNaN(noRepPercent) ? 0 : noRepPercent
   
   let repPercent
   if(props.proposal.status !== PROPOSAL_STATUSES.active) {
@@ -50,8 +50,8 @@ const proposalItem = (props) => {
             </Grid>
             <Grid item xs={6}>
               <Typography variant='caption'>
-                {props.proposal.yesVotes}&nbsp;
-                ({yesVotePercent}%)
+                {props.proposal.yesRepStaked}&nbsp;
+                ({yesRepPercent}%)
               </Typography>
             </Grid>
           </Grid>
@@ -65,8 +65,8 @@ const proposalItem = (props) => {
             </Grid>
             <Grid item xs={6}>
               <Typography variant='caption'>
-                {props.proposal.noVotes}&nbsp;
-                ({noVotePercent}%)
+                {props.proposal.noRepStaked}&nbsp;
+                ({noRepPercent}%)
               </Typography>
             </Grid>
           </Grid>

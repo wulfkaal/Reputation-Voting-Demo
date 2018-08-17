@@ -14,7 +14,8 @@ const initialState = {
     voteTimeRemaining: '',
     yesVotes: 0,
     noVotes: 0,
-    repStaked: 0
+    noRepStaked: 0,
+    yesRepStaked: 0
   }
 }
 
