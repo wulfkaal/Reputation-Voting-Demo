@@ -7,10 +7,15 @@ import Button from '@material-ui/core/Button'
 import { withStyles } from '@material-ui/core/styles'
 import AddIcon from '@material-ui/icons/Add'
 import ListIcon from '@material-ui/icons/List'
+import IconButton from '@material-ui/core/IconButton';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
 import {connect} from 'react-redux'
 import {getUser} from '../actions/users'
 import {resetNewProposal} from '../actions/proposals'
 import logoImage from './logo.png'
+
 
 const styles = theme => ({
   logo: {
@@ -67,13 +72,30 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 }
 
 const LayoutHOC = Page => class Layout extends React.Component {
+
+  componentWillMount(){
+    this.setState({
+      auth: true,
+      anchorEl: null,
+    });
+  }
+
   componentDidMount() {
     // TODO : Remove hard coding
-    this.props.getUser('wulf@semada.io')
+    this.props.getUser('wulf@semada.io');
   }
+
+  handleMenu = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
+  handleClose = () => {
+    this.setState({ anchorEl: null });
+  };
+
   
   render () {
-    
+   
     return (
       <div>
         <AppBar position="static">
@@ -107,6 +129,35 @@ const LayoutHOC = Page => class Layout extends React.Component {
               <AddIcon />
               New Proposal
             </Button>
+            { this.state.auth && (
+              <div>
+                <IconButton
+                  aria-owns={ Boolean(this.state.anchorEl) ? 'menu-appbar' : null}
+                  aria-haspopup="true"
+                  onClick={this.handleMenu}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={this.state.anchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={ Boolean(this.state.anchorEl) }
+                  onClose={this.handleClose}
+                >
+                  <MenuItem onClick={() => this.props.history.push(`/users/${this.props.user.email}`)} >Profile</MenuItem>
+                  <MenuItem onClick={this.handleClose} >My account</MenuItem>
+                </Menu>
+              </div>
+            )}
           </Toolbar>
         </AppBar>
         <div className={this.props.classes.contentBase}>
