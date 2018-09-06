@@ -7,8 +7,7 @@ import {
 const initialState = {
   new: {
     _id: 'new', 
-    name: '', 
-    stake: true, 
+    name: ''
   }
 }
 

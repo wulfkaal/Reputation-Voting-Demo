@@ -22,24 +22,36 @@ const screen = (props) => {
   
   return (
     <div align="center">
-          <Grid item xs={24} sm={12} md={6}>
-            <Card className={props.classes.cardWithHeader}>
-              <CardHeader
-                classes={{
-                  root: props.classes.cardHeader,
-                  title: props.classes.cardHeaderContent,
-                  subheader: props.classes.cardHeaderContent,
-                }}
-                title="Daos"
-                subheader="subheader"
-              />
-              <div className={props.classes.cardContent}>
-                <List component="nav">
-                  {daos}
-                </List>
-              </div>
-            </Card>            
-          </Grid>
+      <Grid item xs={12} sm={6} md={3}>
+        <Card className={props.classes.cardWithHeader}>
+          <div className={props.classes.cardContent}>
+            <button
+        onClick={() => props.history.push(`/daos/new`)}>Create DAO</button>
+          <br/>
+          <br/>
+          </div>
+        </Card> 
+        <br/>
+        <br/>           
+      </Grid>
+      <Grid item xs={24} sm={12} md={6}>
+        <Card className={props.classes.cardWithHeader}>
+          <CardHeader
+            classes={{
+              root: props.classes.cardHeader,
+              title: props.classes.cardHeaderContent,
+              subheader: props.classes.cardHeaderContent,
+            }}
+            title="Daos"
+            subheader=""
+          />
+          <div className={props.classes.cardContent}>
+            <List component="nav">
+              {daos}
+            </List>
+          </div>
+        </Card>            
+      </Grid>
     </div>
   )
 }

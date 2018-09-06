@@ -39,7 +39,7 @@ export const persistDao = (dao) => {
     
     if(body._id) {
       return dispatch({
-        daos: body,
+        dao: body,
         type: RECEIVE_DAO
       })
     }
