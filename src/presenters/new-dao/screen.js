@@ -5,8 +5,7 @@ import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import baseComponentStyle from '../../jss/base-component'
-import Typography from '@material-ui/core/Typography'
-import { ValidatorForm } from 'react-material-ui-form-validator'
+import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator'
 
 const screen = (props) => {
   return (
@@ -14,7 +13,7 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.history.push(`/proposals/${props.proposal._id}`)
+          props.persistDao({...props.dao}, props.user._id)
         }}
         onError={errors => console.log(errors)}
       >
@@ -25,28 +24,38 @@ const screen = (props) => {
               title: props.classes.cardHeaderContent,
               subheader: props.classes.cardHeaderContent,
             }}
-            title="Payment Confirmed"
-            subheader="Verification has begun"
+            title="Specify the name of the dao"
+            subheader="Enter name"
           />
           <div className={props.classes.cardContent}>
             <Grid container spacing={16}>
-              <Grid item xs={12}>
-                <Typography variant='title'>
-                  Thank you for your payment. 
-                </Typography>
-                <br/>
-                <Typography variant='caption'>
-                  New SEM balance
-                </Typography>
-                <Typography variant='title'>
-                  {props.user ? props.user.sem : ''} SEM (pending)
-                </Typography>
-                <Typography variant='caption'>
-                  <br/>
-                  Your news article proposal has been submitted for voting by DAO
-                  members
-                </Typography>
-                
+
+            </Grid>
+            <Grid container spacing={16}>
+              {/* <Grid item xs={12} sm={4}>
+                <ProposalType 
+                  saveDao={props.saveDao} 
+                  dao={props.dao}
+                />
+              </Grid> */}
+              <Grid item xs={10}>
+                <TextValidator
+                  name="name"
+                  label="name"
+                  placeholder="name"
+                  className={props.classes.inputFullWidth}
+                  margin="normal"
+                  autoFocus={true}
+                  value={props.dao.name}
+                  validators={['required']}
+                  errorMessages={['required']}
+                  onChange={(e) => {
+                   props.saveDao({
+                     _id: props.dao._id, 
+                     name: e.target.value
+                   })
+                  }}
+                />
               </Grid>  
             </Grid>
             <Grid container spacing={16}>
@@ -55,9 +64,8 @@ const screen = (props) => {
                   type="submit" 
                   variant="contained" 
                   color="secondary" 
-                  className={props.classes.button}
-                >
-                  View Proposal Status
+                  className={props.classes.button}>
+                  Submit
                 </Button>
               </Grid>
             </Grid>

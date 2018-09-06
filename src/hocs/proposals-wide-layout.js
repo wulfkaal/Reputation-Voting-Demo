@@ -106,6 +106,15 @@ const LayoutHOC = Page => class Layout extends React.Component {
             <Typography>
               REP Balance: <b>{this.props.user ? this.props.user.rep: ''}</b>
             </Typography>
+
+            <Button color='inherit'
+              onClick={() => {
+                this.props.history.push('/daos')
+              }}
+            >
+              <ListIcon />
+              View All Daos
+            </Button>
             
             <Button color='inherit'
               onClick={() => {
