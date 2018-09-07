@@ -13,6 +13,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import {connect} from 'react-redux'
 import {getUser} from '../actions/users'
+import {handleMenu} from '../actions/ui'
 import {resetNewProposal} from '../actions/proposals'
 import logoImage from './logo.png'
 
@@ -55,7 +56,9 @@ const styles = theme => ({
 
 const mapStateToProps = (state, ownProps) => {  
   return {
-    user: state.users['wulf@semada.io']
+    user: state.users['wulf@semada.io'],
+    auth: state.users.auth,
+    anchorEl: state.ui.anchorEl
   }
 }
 
@@ -67,33 +70,23 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleNewProposalClick: () => {
       dispatch(resetNewProposal())
       ownProps.history.push('/proposals/new')  
+    },
+    handleMenu: (event) => {
+      dispatch(handleMenu(event.currentTarget))
+    },
+    handleCloseMenu: () => {
+      dispatch(handleMenu(null))
     }
   }
 }
 
 const LayoutHOC = Page => class Layout extends React.Component {
 
-  componentWillMount(){
-    this.setState({
-      auth: true,
-      anchorEl: null,
-    });
-  }
-
-  componentDidMount() {
+ componentDidMount() {
     // TODO : Remove hard coding
     this.props.getUser('wulf@semada.io');
   }
 
-  handleMenu = event => {
-    this.setState({ anchorEl: event.currentTarget });
-  };
-
-  handleClose = () => {
-    this.setState({ anchorEl: null });
-  };
-
-  
   render () {
    
     return (
@@ -138,19 +131,19 @@ const LayoutHOC = Page => class Layout extends React.Component {
               <AddIcon />
               New Proposal
             </Button>
-            { this.state.auth && (
+            { this.props.auth && (
               <div>
                 <IconButton
-                  aria-owns={ Boolean(this.state.anchorEl) ? 'menu-appbar' : null}
+                  aria-owns={ Boolean(this.props.anchorEl) ? 'menu-appbar' : null}
                   aria-haspopup="true"
-                  onClick={this.handleMenu}
+                  onClick={this.props.handleMenu}
                   color="inherit"
                 >
                   <AccountCircle />
                 </IconButton>
                 <Menu
                   id="menu-appbar"
-                  anchorEl={this.state.anchorEl}
+                  anchorEl={this.props.anchorEl}
                   anchorOrigin={{
                     vertical: 'top',
                     horizontal: 'right',
@@ -159,11 +152,11 @@ const LayoutHOC = Page => class Layout extends React.Component {
                     vertical: 'top',
                     horizontal: 'right',
                   }}
-                  open={ Boolean(this.state.anchorEl) }
-                  onClose={this.handleClose}
+                  open={ Boolean(this.props.anchorEl) }
+                  onClose={this.props.handleClose}
                 >
                   <MenuItem onClick={() => this.props.history.push(`/users/${this.props.user.email}`)} >Profile</MenuItem>
-                  <MenuItem onClick={this.handleClose} >My account</MenuItem>
+                  <MenuItem onClick={this.props.handleClose} >My account</MenuItem>
                 </Menu>
               </div>
             )}

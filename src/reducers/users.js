@@ -4,6 +4,7 @@ import {
 } from '../actions/users'
 
 const initialState = {
+    auth: true
 }
 
 const users = (state = initialState, action) => {
