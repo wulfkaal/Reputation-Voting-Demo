@@ -133,8 +133,8 @@ const LayoutHOC = Page => class Layout extends React.Component {
               }}
               open={Boolean(this.props.daoMenuAnchorEl)} 
               onClose={this.props.handleCloseDaoMenu}>
-              <MenuItem onClick={() => this.props.history.push('/daos')}>Daos</MenuItem>
-              <MenuItem onClick={() => this.props.history.push('/proposals')}>Proposals</MenuItem>
+              <MenuItem onClick={() => this.props.history.push('/daos')}>Community Meetup</MenuItem>
+              <MenuItem onClick={() => this.props.history.push('/proposals')}>News Verification</MenuItem>
             </Menu>
               
             <Button color='inherit'
