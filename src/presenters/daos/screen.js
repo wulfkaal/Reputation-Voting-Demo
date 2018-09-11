@@ -1,5 +1,6 @@
 import React from 'react'
 import values from 'lodash/values'
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card'
 import CardHeader from '@material-ui/core/CardHeader'
 import { withStyles } from '@material-ui/core/styles'
@@ -25,8 +26,8 @@ const screen = (props) => {
       <Grid item xs={12} sm={6} md={3}>
         <Card className={props.classes.cardWithHeader}>
           <div className={props.classes.cardContent}>
-            <button
-        onClick={() => props.history.push(`/daos/new`)}>Create DAO</button>
+            <Button className={props.classes.button}
+        onClick={() => props.history.push(`/daos/new`)}>Create DAO</Button>
           <br/>
           <br/>
           </div>
