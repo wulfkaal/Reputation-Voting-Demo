@@ -147,8 +147,14 @@ const LayoutHOC = Page => class Layout extends React.Component {
               }}
               open={Boolean(this.props.daoMenuAnchorEl)} 
               onClose={this.props.handleCloseDaoMenu}>
-              <MenuItem onClick={() => this.props.history.push('/daos')}>Community Meetup</MenuItem>
-              <MenuItem onClick={() => this.props.history.push('/proposals')}>News Verification</MenuItem>
+              <MenuItem onClick={() => {
+                this.props.handleCloseDaoMenu()
+                this.props.history.push('/daos')
+              }}>Community Meetup</MenuItem>
+              <MenuItem onClick={() => {
+                this.props.handleCloseDaoMenu()
+                this.props.history.push('/proposals')
+              }}>News Verification</MenuItem>
             </Menu>
               
             <Button color='inherit'
@@ -182,7 +188,10 @@ const LayoutHOC = Page => class Layout extends React.Component {
                 open={ Boolean(this.props.profileMenuAnchorEl) }
                 onClose={this.props.handleCloseProfileMenu}
               >
-                <MenuItem onClick={() => this.props.history.push(`/users/${this.props.user.email}`)} >Profile</MenuItem>
+                <MenuItem onClick={() => {
+                  this.props.handleCloseProfileMenu()
+                  this.props.history.push(`/users/${this.props.user.email}`)
+                }} >Profile</MenuItem>
                 { this.props.auth && (
                   <MenuItem onClick={this.props.logout} >Logout</MenuItem>
                 )}
