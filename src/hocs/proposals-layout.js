@@ -60,7 +60,7 @@ const styles = theme => ({
 const mapStateToProps = (state, ownProps) => {  
   return {
     user: state.users['wulf@semada.io'],
-    auth: state.users.auth,
+    auth: state.auth.auth,
     profileMenuAnchorEl: state.ui.profileMenuAnchorEl,
     daoMenuAnchorEl: state.ui.daoMenuAnchorEl
   }
