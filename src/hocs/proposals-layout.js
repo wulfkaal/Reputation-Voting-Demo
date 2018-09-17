@@ -7,10 +7,19 @@ import Button from '@material-ui/core/Button'
 import { withStyles } from '@material-ui/core/styles'
 import AddIcon from '@material-ui/icons/Add'
 import ListIcon from '@material-ui/icons/List'
+import IconButton from '@material-ui/core/IconButton';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
 import {connect} from 'react-redux'
 import {getUser} from '../actions/users'
+import {
+  handleProfileMenu,
+  handleDaoMenu
+} from '../actions/ui'
 import {resetNewProposal} from '../actions/proposals'
 import logoImage from './logo.png'
+
 
 const styles = theme => ({
   logo: {
@@ -50,7 +59,10 @@ const styles = theme => ({
 
 const mapStateToProps = (state, ownProps) => {  
   return {
-    user: state.users['wulf@semada.io']
+    user: state.users['wulf@semada.io'],
+    auth: state.auth.auth,
+    profileMenuAnchorEl: state.ui.profileMenuAnchorEl,
+    daoMenuAnchorEl: state.ui.daoMenuAnchorEl
   }
 }
 
@@ -62,18 +74,31 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleNewProposalClick: () => {
       dispatch(resetNewProposal())
       ownProps.history.push('/proposals/new')  
+    },
+    handleProfileMenu: (event) => {
+      dispatch(handleProfileMenu(event.currentTarget))
+    },
+    handleCloseProfileMenu: () => {
+      dispatch(handleProfileMenu(null))
+    },
+    handleDaoMenu: (event) => {
+      dispatch(handleDaoMenu(event.currentTarget))
+    },
+    handleCloseDaoMenu: () => {
+      dispatch(handleDaoMenu(null))
     }
   }
 }
 
 const LayoutHOC = Page => class Layout extends React.Component {
-  componentDidMount() {
+
+ componentDidMount() {
     // TODO : Remove hard coding
-    this.props.getUser('wulf@semada.io')
+    this.props.getUser('wulf@semada.io');
   }
-  
+
   render () {
-    
+   
     return (
       <div>
         <AppBar position="static">
@@ -89,15 +114,32 @@ const LayoutHOC = Page => class Layout extends React.Component {
             <Typography>
               REP Balance: <b>{this.props.user ? this.props.user.rep: ''}</b>
             </Typography>
-            
-            <Button color='inherit'
-              onClick={() => {
-                this.props.history.push('/proposals')
-              }}
+
+            <Button
+              aria-owns={Boolean(this.props.daoMenuAnchorEl) ? 'render-props-menu' : null}
+              aria-haspopup="true"
+              onClick={this.props.handleDaoMenu}
+              color="inherit"
             >
-              <ListIcon />
-              View All Proposals
+            <ListIcon />
+              DAOS
             </Button>
+            <Menu 
+              id="render-props-menu" 
+              anchorEl={this.props.daoMenuAnchorEl} 
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(this.props.daoMenuAnchorEl)} 
+              onClose={this.props.handleCloseDaoMenu}>
+              <MenuItem onClick={() => this.props.history.push('/daos')}>Community Meetup</MenuItem>
+              <MenuItem onClick={() => this.props.history.push('/proposals')}>News Verification</MenuItem>
+            </Menu>
               
             <Button color='inherit'
               onClick={() => {
@@ -107,6 +149,35 @@ const LayoutHOC = Page => class Layout extends React.Component {
               <AddIcon />
               New Proposal
             </Button>
+            { this.props.auth && (
+              <div>
+                <IconButton
+                  aria-owns={ Boolean(this.props.profileMenuAnchorEl) ? 'menu-appbar' : null}
+                  aria-haspopup="true"
+                  onClick={this.props.handleProfileMenu}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={this.props.profileMenuAnchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={ Boolean(this.props.profileMenuAnchorEl) }
+                  onClose={this.props.handleCloseProfileMenu}
+                >
+                  <MenuItem onClick={() => this.props.history.push(`/users/${this.props.user.email}`)} >Profile</MenuItem>
+                  <MenuItem onClick={this.props.handleCloseProfileMenu} >My account</MenuItem>
+                </Menu>
+              </div>
+            )}
           </Toolbar>
         </AppBar>
         <div className={this.props.classes.contentBase}>

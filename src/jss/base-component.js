@@ -8,7 +8,13 @@ export default theme => (
       padding: '5px'
     },
     button: {
+      backgroundColor: theme.palette.subPrimary.main,
+      color: theme.palette.subPrimary.contrastText,
       margin: theme.spacing.unit,
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
+      }
     },
     contentLeft: {
       textAlign: 'left'
