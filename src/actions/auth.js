@@ -10,26 +10,34 @@ export const login = (auth0) => {
   }
 }
 
-export const authenticate = async (auth0) => {
-  let access_token, id_token, expires_at, err;
-  let result = await auth0.parseHash((err, authResult) => {
-    if (authResult && authResult.accessToken && authResult.idToken) {
-      access_token = authResult.accessToken;
-      id_token = authResult.idToken;
-      expires_at = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime());
-    } else if (err) {
-      err = err;
+export const authenticate = (auth0) => {
+  let access_token, id_token, expires_at
+  
+  return new Promise((res, rej) => {
+    
+    try {
+      auth0.parseHash((err, authResult) => {
+        if (authResult && authResult.accessToken && authResult.idToken) {
+          access_token = authResult.accessToken;
+          id_token = authResult.idToken;
+          expires_at = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime());
+        
+          res({
+            auth0: auth0,
+            access_token: access_token,
+            id_token: id_token,
+            expires_at : expires_at,
+            err: err,
+            type: AUTHENTICATE
+          })
+        }
+      })
+    } catch(err) {
+      rej(err)
     }
-    return {
-      auth0: auth0,
-      access_token: access_token,
-      id_token: id_token,
-      expires_at : expires_at,
-      err: err,
-      type: AUTHENTICATE
-    } 
+    
   })
-  return result
+
 }
 
 export const logout = () => {
