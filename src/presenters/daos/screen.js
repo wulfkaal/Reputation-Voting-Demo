@@ -23,6 +23,7 @@ const screen = (props) => {
   
   return (
     <div align="center">
+    { ( props.expires_at && new Date().getTime() < props.expires_at ) && (
       <Grid item xs={12} sm={6} md={3}>
         <Card className={props.classes.cardWithHeader}>
           <div className={props.classes.cardContent}>
@@ -35,6 +36,7 @@ const screen = (props) => {
         <br/>
         <br/>           
       </Grid>
+      )}
       <Grid item xs={24} sm={12} md={6}>
         <Card className={props.classes.cardWithHeader}>
           <CardHeader

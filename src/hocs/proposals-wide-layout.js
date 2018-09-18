@@ -156,16 +156,28 @@ const LayoutHOC = Page => class Layout extends React.Component {
                 this.props.history.push('/proposals')
               }}>News Verification</MenuItem>
             </Menu>
-              
-            <Button color='inherit'
-              onClick={() => {
-                this.props.handleNewProposalClick()
-              }}
+
+            {( ( this.props.expires_at == null ) || new Date().getTime() >= this.props.expires_at ) && (
+                <Button color='inherit'
+              onClick={ () => {
+                  this.props.handleCloseProfileMenu()
+                  this.props.login(this.props.auth0)
+                  }}
             >
-              <AddIcon />
-              New Proposal
+              Login
             </Button>
+            )}
+
+            { ( this.props.expires_at && new Date().getTime() < this.props.expires_at ) && (
             <div>
+              <Button color='inherit'
+                onClick={() => {
+                  this.props.handleNewProposalClick()
+                }}
+              >
+                <AddIcon />
+                New Proposal
+              </Button>
               <IconButton
                 aria-owns={ Boolean(this.props.profileMenuAnchorEl) ? 'menu-appbar' : null}
                 aria-haspopup="true"
@@ -192,14 +204,13 @@ const LayoutHOC = Page => class Layout extends React.Component {
                   this.props.handleCloseProfileMenu()
                   this.props.history.push(`/users/${this.props.user.email}`)
                 }} >Profile</MenuItem>
-                { this.props.auth && (
-                  <MenuItem onClick={this.props.logout} >Logout</MenuItem>
-                )}
-                { !this.props.auth && (
-                  <MenuItem onClick={() => this.props.login(this.props.auth0)} >Login</MenuItem>
-                )}
+                <MenuItem onClick={ () => {
+                  this.props.handleCloseProfileMenu()
+                  this.props.logout()
+                  }}>Logout</MenuItem>
               </Menu>
             </div>
+            )}   
           </Toolbar>
         </AppBar>
         <div className={this.props.classes.contentBase}>
