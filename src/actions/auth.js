@@ -2,10 +2,10 @@ export const LOGIN = 'LOGIN'
 export const AUTHENTICATE = 'AUTHENTICATE'
 export const LOGOUT = 'LOGOUT'
 
-export const login = (auth0) => {
-  auth0.authorize();
+export const login = () => {
+  // auth0.authorize();
   return {
-    auth0: auth0,
+    // auth0: auth0,
     type: LOGIN
   }
 }

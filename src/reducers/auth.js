@@ -16,14 +16,15 @@ const initialState = {
   }),
   access_token: null,
   id_token: null,
-  expires_at: null
+  expires_at: null,
+  web3: null
 }
 
 const auth = (state = initialState, action) => {
   switch(action.type) {
   case LOGIN:
-    let tempAuth0 = merge({}, state.auth0, action.auth0)
-    let ret = merge({}, state, {auth0: tempAuth0})
+    // let tempAuth0 = merge({}, state.auth0, action.auth0)
+    let ret = merge({}, state)
     return ret
   case AUTHENTICATE:
     return merge({}, state, {access_token : action.access_token, id_token : action.id_token, expires_at : action.expires_at })
