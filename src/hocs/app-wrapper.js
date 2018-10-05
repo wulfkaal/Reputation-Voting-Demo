@@ -1,18 +1,28 @@
 import React from 'react'
+import Web3 from 'web3';
 import getPageContext from '../config/get-page-context';
 import JssProvider from 'react-jss/lib/JssProvider';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import {connect} from 'react-redux'
 import values from 'lodash/values'
+import { saveDaoFactory } from '../actions/auth'
 import {
   PROPOSAL_STATUSES,
   saveProposal,
   persistProposal
 } from '../actions/proposals'
+import {
+  login,
+  logout
+} from '../actions/auth'
 
 const mapStateToProps = (state, ownProps) => {  
   return {
+    web3: state.auth.web3,
+    access_token: state.auth.access_token,
+    daoFactoryContractAbi: state.auth.daoFactoryContractAbi,
+    daoFactoryContractAddress: state.auth.daoFactoryContractAddress,
     baseProposals: values(state.proposals)
       .filter(p => p._id !== 'new' && 
         p.status === PROPOSAL_STATUSES.active &&
@@ -28,6 +38,88 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     basePersistProposal: (proposal) => {
       dispatch(persistProposal(proposal))
     },
+    saveDaoFactory: () => {
+      dispatch(saveDaoFactory())
+    },
+    login: (web3) =>{
+      if (!window.web3) {
+        window.alert('Please install MetaMask first.')
+        return;
+      }
+      if (!web3) {
+        web3 = new Web3(window.web3.currentProvider)
+      }
+      let promise = new Promise((resolve, reject) => {
+        window.web3.eth.getCoinbase(function(err, account) {
+          if(err === null) {
+            return resolve({publicAddress: account})
+          } else {
+            return reject("error!")
+          }
+        })
+      })
+      promise.then(
+        (result) => {
+          let publicAddress = result['publicAddress']
+          let nonce = Math.floor(Math.random() * 10000)
+          let email = "test20@test.com"
+          let signature = null
+          console.log("Public Address : " + publicAddress)
+          fetch(
+            `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/publicaddress/${publicAddress}`
+          ).then(response => response.json())
+          // If yes, retrieve it. If no, create it.
+          .then(
+            (usersRes) => {
+              return usersRes['users'].length ? usersRes['users'][0] : fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users`, {
+                                                  body: JSON.stringify({ publicAddress, nonce, email }),
+                                                  headers: {
+                                                    'Content-Type': 'application/json'
+                                                  },
+                                                  method: 'POST'
+                                                }).then(response => response.json())
+          })
+          // Popup MetaMask confirmation modal to sign message
+          .then((res) => {
+            nonce = res['nonce']
+            return new Promise((resolve, reject) =>
+              web3.eth.personal.sign(
+                web3.utils.utf8ToHex(`I am signing my one-time nonce: ${nonce}`),
+                publicAddress,
+                (err, signature) => {
+                  if (err) return reject(err);
+                  return resolve({ publicAddress, signature });
+                }
+              )
+            );
+          })
+          // Send signature to backend on the /auth route
+          .then( (signRes) => {
+            signature = signRes['signature']
+            console.log("Signature : " +signature)
+            fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/auth`, {
+              body: JSON.stringify({ publicAddress, signature }),
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              method: 'POST'
+            })
+            .then(response => response.json())
+            .then((tokenRes) => {
+              dispatch(login(web3, tokenRes['accessToken']))
+              console.log("Access Token : " + tokenRes['accessToken'])
+            })
+          })
+          // Pass accessToken back to parent component (to save it in localStorage)
+          .catch(err => {
+            window.alert(err);
+          });
+        }
+      ).catch(err => {
+        alert('Please activate MetaMask first.') 
+        return; 
+      })
+    },
   }
 }
 
@@ -40,17 +132,27 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
   pageContext = null;
 
   componentDidMount() {
+
+    if (!(this.props.web3 && this.props.access_token)){
+      this.props.login(this.props.web3) 
+    }
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side');
     if (jssStyles && jssStyles.parentNode) {
       jssStyles.parentNode.removeChild(jssStyles);
     }
-    
     clearInterval(this.timer)
     this.timer = setInterval(() => {
       this.manageProposals()
     }, 1000)
     
+    if (!(this.props.daoFactoryContractAbi && this.props.daoFactoryContractAddress)){
+      this.manageDaos() 
+    }
+  }
+
+  async manageDaos(){
+    this.props.saveDaoFactory()
   }
   
   //Voting simulation
@@ -112,7 +214,6 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
   }
   
   render () {
-    // const { Component, pageProps, reduxStore } = this.props;
     
     return (
       <div>

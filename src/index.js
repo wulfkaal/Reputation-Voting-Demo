@@ -17,7 +17,6 @@ import DaosContainer from './containers/daos'
 import registerServiceWorker from './registerServiceWorker'
 import store from './store'
 import { Provider } from 'react-redux'
-import CallbackContainer from './containers/callback';
 
 ReactDOM.render(
   <Provider store={store}>
@@ -33,7 +32,6 @@ ReactDOM.render(
         <Route path="/daos/:id" component={DaoContainer} />
         <Route path="/daos" component={DaosContainer} />
         <Route path="/users/:email" component={UserContainer} />
-        <Route path="/callback" component={CallbackContainer}/>
         <Route path="/" component={ProposalSwimLanesContainer} />
       </Switch>
     </Router>

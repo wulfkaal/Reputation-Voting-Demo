@@ -6,7 +6,11 @@ import { getDaos } from '../actions/daos'
 
 const mapStateToProps = (state, ownProps) => {  
   return {
-    daos: state.daos
+    daos: state.daos,
+    web3: state.auth.web3,
+    daoFactoryContractAbi: state.auth.daoFactoryContractAbi,
+    daoFactoryContractAddress: state.auth.daoFactoryContractAddress,
+    access_token: state.auth.access_token
   }
 }
 

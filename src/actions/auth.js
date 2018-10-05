@@ -1,50 +1,44 @@
 export const LOGIN = 'LOGIN'
-export const AUTHENTICATE = 'AUTHENTICATE'
 export const LOGOUT = 'LOGOUT'
+export const SAVE_DAO_FACTORY = 'SAVE_DAO_FACTORY'
 
-export const login = () => {
-  // auth0.authorize();
+export const login = (web3, accessToken) => {
   return {
-    // auth0: auth0,
+    web3: web3,
+    access_token: accessToken,
     type: LOGIN
   }
 }
 
-export const authenticate = (auth0) => {
-  let access_token, id_token, expires_at
-  
-  return new Promise((res, rej) => {
-    
-    try {
-      auth0.parseHash((err, authResult) => {
-        if (authResult && authResult.accessToken && authResult.idToken) {
-          access_token = authResult.accessToken;
-          id_token = authResult.idToken;
-          expires_at = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime());
-        
-          res({
-            auth0: auth0,
-            access_token: access_token,
-            id_token: id_token,
-            expires_at : expires_at,
-            err: err,
-            type: AUTHENTICATE
-          })
-        }
-      })
-    } catch(err) {
-      rej(err)
-    }
-    
-  })
-
-}
 
 export const logout = () => {
   return {
     access_token: null,
-    id_token: null,
-    expires_at : null,
     type: LOGOUT
+  }
+}
+
+
+export const saveDaoFactory = () => {
+  console.log("enter saveDaoFactory")
+  return async (dispatch) => {
+    let url = `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/contracts/daoFactory`          
+    let response = await fetch(url, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+    
+    let body = await response.json()
+    if(body._id) {
+      return dispatch({
+        daoFactoryContractAbi: body['abi'],
+        daoFactoryContractAddress: body['address'],
+        type: SAVE_DAO_FACTORY
+      })
+    }
   }
 }

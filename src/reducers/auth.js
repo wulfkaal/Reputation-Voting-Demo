@@ -1,33 +1,23 @@
 import merge from 'lodash/merge'
-import auth0 from 'auth0-js';
 import {
   LOGIN,
-  AUTHENTICATE,
-  LOGOUT
+  LOGOUT,
+  SAVE_DAO_FACTORY
 } from '../actions/auth'
 
 const initialState = {
-  auth0: new auth0.WebAuth({
-    domain: process.env.REACT_APP_AUTH_CONFIG_DOMAIN,
-    clientID: process.env.REACT_APP_AUTH_CONFIG_CLIENTID,
-    redirectUri: process.env.REACT_APP_AUTH_CONFIG_CALLBACK,
-    responseType: 'token id_token',
-    scope: 'openid'
-  }),
   access_token: null,
-  id_token: null,
-  expires_at: null,
-  web3: null
+  web3: null,
+  daoFactoryContractAbi: null,
+  daoFactoryContractAddress: null
 }
 
 const auth = (state = initialState, action) => {
   switch(action.type) {
+    case SAVE_DAO_FACTORY:
+    return merge({}, state, {'daoFactoryContractAbi': action.daoFactoryContractAbi, 'daoFactoryContractAddress': action.daoFactoryContractAddress})
   case LOGIN:
-    // let tempAuth0 = merge({}, state.auth0, action.auth0)
-    let ret = merge({}, state)
-    return ret
-  case AUTHENTICATE:
-    return merge({}, state, {access_token : action.access_token, id_token : action.id_token, expires_at : action.expires_at })
+    return merge({}, state, {"web3": action.web3, "access_token" : action.access_token})
   case LOGOUT:
     return merge({}, state, initialState)
   default:

@@ -8,7 +8,11 @@ const mapStateToProps = (state, ownProps) => {
   let id = ownProps.match.params.id
   
   return {
-    dao: state.daos[id]
+    dao: state.daos[id],
+    web3: state.auth.web3,
+    daoFactoryContractAbi: state.auth.daoFactoryContractAbi,
+    daoFactoryContractAddress: state.auth.daoFactoryContractAddress,
+    access_token: state.auth.access_token
   }
 }
 

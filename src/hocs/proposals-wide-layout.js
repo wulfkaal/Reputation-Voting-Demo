@@ -61,12 +61,8 @@ const styles = theme => ({
 const mapStateToProps = (state, ownProps) => {  
   return {
     user: state.users['wulf@semada.io'],
-    auth: state.auth.auth,
     web3: state.auth.web3,
     access_token: state.auth.access_token,
-    id_token: state.auth.id_token,
-    expires_at: state.auth.expires_at,
-    auth0: state.auth.auth0,
     profileMenuAnchorEl: state.ui.profileMenuAnchorEl,
     daoMenuAnchorEl: state.ui.daoMenuAnchorEl
   }
@@ -116,7 +112,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           let nonce = Math.floor(Math.random() * 10000)
           let email = "test20@test.com"
           let signature = null
-          console.log(publicAddress)
+          console.log("Public Address : " + publicAddress)
           fetch(
             `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/publicaddress/${publicAddress}`
           ).then(response => response.json())
@@ -148,7 +144,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           // Send signature to backend on the /auth route
           .then( (signRes) => {
             signature = signRes['signature']
-            console.log(signature)
+            console.log("Signature : " +signature)
             fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/auth`, {
               body: JSON.stringify({ publicAddress, signature }),
               headers: {
@@ -158,7 +154,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             })
             .then(response => response.json())
             .then((tokenRes) => {
-              console.log(tokenRes)
+              dispatch(login(web3, tokenRes['accessToken']))
+              console.log("Access Token : " + tokenRes['accessToken'])
             })
           })
           // Pass accessToken back to parent component (to save it in localStorage)
@@ -170,7 +167,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         alert('Please activate MetaMask first.') 
         return; 
       })
-      dispatch(login())
     },
     logout: () =>{
       dispatch(logout())
@@ -247,7 +243,7 @@ const LayoutHOC = Page => class Layout extends React.Component {
             </Button>
             )}
 
-            { ( this.props.expires_at && new Date().getTime() < this.props.expires_at ) && (
+            { ( this.props.access_token ) && (
             <div>
               <Button color='inherit'
                 onClick={() => {

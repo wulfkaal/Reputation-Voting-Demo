@@ -23,12 +23,14 @@ const screen = (props) => {
   
   return (
     <div align="center">
-    { ( props.expires_at && new Date().getTime() < props.expires_at ) && (
+    { ( props.access_token) && (
       <Grid item xs={12} sm={6} md={3}>
         <Card className={props.classes.cardWithHeader}>
           <div className={props.classes.cardContent}>
             <Button className={props.classes.button}
-        onClick={() => props.history.push(`/daos/new`)}>Create DAO</Button>
+        onClick={() => 
+          props.history.push(`/daos/new`)
+        }>Create DAO</Button>
           <br/>
           <br/>
           </div>
