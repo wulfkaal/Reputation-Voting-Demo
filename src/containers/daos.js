@@ -8,8 +8,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     daos: state.daos,
     web3: state.auth.web3,
-    daoFactoryContractAbi: state.auth.daoFactoryContractAbi,
-    daoFactoryContractAddress: state.auth.daoFactoryContractAddress,
+    daoFactoryContract: state.auth.daoFactoryContract,
     access_token: state.auth.access_token,
     publicAddress: state.auth.publicAddress
   }
@@ -17,8 +16,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    getDaos: () => {
-      dispatch(getDaos())
+    getDaos: (daoFactoryContract) => {
+      dispatch(getDaos(daoFactoryContract))
     }
   }
 }
@@ -26,7 +25,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 class DaoList extends Component {
 
   componentDidMount() {
-    this.props.getDaos()
+    this.props.getDaos(this.props.daoFactoryContract)
   }
 
   render() {

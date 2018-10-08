@@ -15,11 +15,7 @@ export const resetNewDao = () => {
   }
 }
 
-export const persistDao = (publicAddress, dao, web3, access_token, daoFactoryContractAbi, daoFactoryContractAddress) => {
-  var daoFactoryContract = new web3.eth.Contract(daoFactoryContractAbi, daoFactoryContractAddress, {
-    from: publicAddress, // default from address
-    gasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
-  });
+export const persistDao = (publicAddress, dao, web3, access_token, daoFactoryContract) => {
   daoFactoryContract.methods.createChildContract(dao.name, 100, 100).send({from: publicAddress})
   .then(function(receipt){
     console.log("Receipt : ")
@@ -76,7 +72,7 @@ export const getDao = (id) => {
   }
 }
 
-export const getDaos = () => {
+export const getDaos = (daoFactoryContract) => {
   return async (dispatch) => {
     let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
       method: 'GET',

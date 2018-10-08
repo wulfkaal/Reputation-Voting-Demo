@@ -8,8 +8,6 @@ import {
 const initialState = {
   access_token: null,
   web3: null,
-  daoFactoryContractAbi: null,
-  daoFactoryContractAddress: null,
   publicAddress: null,
   repBalance: null
 }
@@ -18,11 +16,9 @@ const auth = (state = initialState, action) => {
   switch(action.type) {
     case SAVE_CONTRACT_DETAILS:
     return merge({}, state, {
-      'daoFactoryContractAbi': action.daoFactoryContractAbi, 
-      'daoFactoryContractAddress': action.daoFactoryContractAddress,
-      'repContractAbi':action.repContractAbi,
-      'repContractAddress': action.repContractAddress,
-      'repBalance': action.repBalance
+      'repBalance': action.repBalance,
+      'daoFactoryContract': action.daoFactoryContract,
+      'repContract': action.repContract
     })
   case LOGIN:
     return merge({}, state, {"web3": action.web3, "access_token" : action.access_token, "publicAddress": action.publicAddress})

@@ -48,7 +48,10 @@ export const saveContractDetails = (publicAddress, web3) => {
           repContractAddress=contractJson.address
         }
     }
-
+    var daoFactoryContract = new web3.eth.Contract(daoFactoryContractAbi, daoFactoryContractAddress, {
+      from: publicAddress, // default from address
+      gasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
+    });
     var repContract = new web3.eth.Contract(repContractAbi, repContractAddress, {
       from: publicAddress, // default from address
       gasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
@@ -64,11 +67,9 @@ export const saveContractDetails = (publicAddress, web3) => {
           repBalance = (repBalanceBN.div(divisor)).toString()
         }
         return dispatch({
+          daoFactoryContract: daoFactoryContract,
+          repContract: repContract,
           repBalance: repBalance,
-          daoFactoryContractAbi: daoFactoryContractAbi,
-          daoFactoryContractAddress: daoFactoryContractAddress,
-          repContractAbi: repContractAbi,
-          repContractAddress: repContractAddress,
           type: SAVE_CONTRACT_DETAILS
         })
       })

@@ -1,5 +1,4 @@
 import React from 'react'
-import Web3 from 'web3';
 import AppWrapper from './app-wrapper'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -19,7 +18,6 @@ import {
   handleDaoMenu
 } from '../actions/ui'
 import {
-  login,
   logout
 } from '../actions/auth'
 import {resetNewProposal} from '../actions/proposals'
@@ -90,85 +88,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleCloseDaoMenu: () => {
       dispatch(handleDaoMenu(null))
     },
-    login: (web3) =>{
-      if (!window.web3) {
-        window.alert('Please install MetaMask first.')
-        return;
-      }
-      if (!web3) {
-        web3 = new Web3(window.web3.currentProvider)
-      }
-      let promise = new Promise((resolve, reject) => {
-        window.web3.eth.getCoinbase(function(err, account) {
-          if(err === null) {
-            return resolve({publicAddress: account})
-          } else {
-            return reject("error!")
-          }
-        })
-      })
-      promise.then(
-        (result) => {
-          let publicAddress = result['publicAddress']
-          let nonce = Math.floor(Math.random() * 10000)
-          let email = "test20@test.com"
-          let signature = null
-          console.log("Public Address : " + publicAddress)
-          fetch(
-            `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/publicaddress/${publicAddress}`
-          ).then(response => response.json())
-          // If yes, retrieve it. If no, create it.
-          .then(
-            (usersRes) => {
-              return usersRes['users'].length ? usersRes['users'][0] : fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users`, {
-                                                  body: JSON.stringify({ publicAddress, nonce, email }),
-                                                  headers: {
-                                                    'Content-Type': 'application/json'
-                                                  },
-                                                  method: 'POST'
-                                                }).then(response => response.json())
-          })
-          // Popup MetaMask confirmation modal to sign message
-          .then((res) => {
-            nonce = res['nonce']
-            return new Promise((resolve, reject) =>
-              web3.eth.personal.sign(
-                web3.utils.utf8ToHex(`I am signing my one-time nonce: ${nonce}`),
-                publicAddress,
-                (err, signature) => {
-                  if (err) return reject(err);
-                  return resolve({ publicAddress, signature });
-                }
-              )
-            );
-          })
-          // Send signature to backend on the /auth route
-          .then( (signRes) => {
-            signature = signRes['signature']
-            console.log("Signature : " +signature)
-            fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/auth`, {
-              body: JSON.stringify({ publicAddress, signature }),
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              method: 'POST'
-            })
-            .then(response => response.json())
-            .then((tokenRes) => {
-              dispatch(login(web3, tokenRes['accessToken']))
-              console.log("Access Token : " + tokenRes['accessToken'])
-            })
-          })
-          // Pass accessToken back to parent component (to save it in localStorage)
-          .catch(err => {
-            window.alert(err);
-          });
-        }
-      ).catch(err => {
-        alert('Please activate MetaMask first.') 
-        return; 
-      })
-    },
     logout: () =>{
       dispatch(logout())
     }
@@ -232,17 +151,6 @@ const LayoutHOC = Page => class Layout extends React.Component {
                 this.props.history.push('/proposals')
               }}>News Verification</MenuItem>
             </Menu>
-
-            {( ( this.props.expires_at == null ) || new Date().getTime() >= this.props.expires_at ) && (
-                <Button color='inherit'
-              onClick={ () => {
-                  this.props.handleCloseProfileMenu()
-                  this.props.login(this.props.web3)
-                  }}
-            >
-              Login
-            </Button>
-            )}
 
             { ( this.props.access_token ) && (
             <div>

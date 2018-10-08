@@ -10,8 +10,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     dao: state.daos[id],
     web3: state.auth.web3,
-    daoFactoryContractAbi: state.auth.daoFactoryContractAbi,
-    daoFactoryContractAddress: state.auth.daoFactoryContractAddress,
+    daoFactoryContract: state.auth.daoFactoryContract,
     access_token: state.auth.access_token,
     publicAddress: state.auth.publicAddress
   }
