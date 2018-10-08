@@ -6,7 +6,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import {connect} from 'react-redux'
 import values from 'lodash/values'
-import { saveDaoFactory } from '../actions/auth'
+import { saveContractDetails } from '../actions/auth'
 import {
   PROPOSAL_STATUSES,
   saveProposal,
@@ -38,8 +38,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     basePersistProposal: (proposal) => {
       dispatch(persistProposal(proposal))
     },
-    saveDaoFactory: () => {
-      dispatch(saveDaoFactory())
+    saveContractDetails: (publicAddress, web3) => {
+      
     },
     login: (web3) =>{
       if (!window.web3) {
@@ -106,8 +106,11 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             })
             .then(response => response.json())
             .then((tokenRes) => {
-              dispatch(login(web3, tokenRes['accessToken']))
+              dispatch(login(publicAddress, web3, tokenRes['accessToken']))
               console.log("Access Token : " + tokenRes['accessToken'])
+            })
+            .then(()=>{
+              dispatch(saveContractDetails(publicAddress, web3))
             })
           })
           // Pass accessToken back to parent component (to save it in localStorage)
@@ -131,6 +134,7 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     
   pageContext = null;
 
+
   componentDidMount() {
 
     if (!(this.props.web3 && this.props.access_token)){
@@ -145,14 +149,6 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     this.timer = setInterval(() => {
       this.manageProposals()
     }, 1000)
-    
-    if (!(this.props.daoFactoryContractAbi && this.props.daoFactoryContractAddress)){
-      this.manageDaos() 
-    }
-  }
-
-  async manageDaos(){
-    this.props.saveDaoFactory()
   }
   
   //Voting simulation

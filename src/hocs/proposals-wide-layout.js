@@ -64,7 +64,8 @@ const mapStateToProps = (state, ownProps) => {
     web3: state.auth.web3,
     access_token: state.auth.access_token,
     profileMenuAnchorEl: state.ui.profileMenuAnchorEl,
-    daoMenuAnchorEl: state.ui.daoMenuAnchorEl
+    daoMenuAnchorEl: state.ui.daoMenuAnchorEl,
+    repBalance: state.auth.repBalance
   }
 }
 
@@ -197,7 +198,7 @@ const LayoutHOC = Page => class Layout extends React.Component {
             </Typography>
             &nbsp;
             <Typography>
-              REP Balance: <b>{this.props.user ? this.props.user.rep: ''}</b>
+              REP Balance: <b>{this.props.repBalance ? this.props.repBalance : ''}</b>
             </Typography>
 
             <Button

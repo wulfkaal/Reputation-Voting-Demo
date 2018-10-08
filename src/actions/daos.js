@@ -15,12 +15,12 @@ export const resetNewDao = () => {
   }
 }
 
-export const persistDao = (dao, web3, access_token, daoFactoryContractAbi, daoFactoryContractAddress) => {
+export const persistDao = (publicAddress, dao, web3, access_token, daoFactoryContractAbi, daoFactoryContractAddress) => {
   var daoFactoryContract = new web3.eth.Contract(daoFactoryContractAbi, daoFactoryContractAddress, {
-    from: '0x266d87471ca6b42e345eb9b51dafd57f25033db0', // default from address
+    from: publicAddress, // default from address
     gasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
   });
-  daoFactoryContract.methods.createChildContract(dao.name, 100, 100).send({from: '0x266d87471ca6b42e345eb9b51dafd57f25033db0'})
+  daoFactoryContract.methods.createChildContract(dao.name, 100, 100).send({from: publicAddress})
   .then(function(receipt){
     console.log("Receipt : ")
     console.log(receipt)

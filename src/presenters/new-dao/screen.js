@@ -13,7 +13,7 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.persistDao({...props.dao}, props.user._id, props.web3, props.access_token, props.daoFactoryContractAbi, props.daoFactoryContractAddress)
+          props.persistDao(props.publicAddress, {...props.dao}, props.user._id, props.web3, props.access_token, props.daoFactoryContractAbi, props.daoFactoryContractAddress)
         }}
         onError={errors => console.log(errors)}
       >
