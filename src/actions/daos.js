@@ -72,26 +72,30 @@ export const getDao = (id) => {
   }
 }
 
-export const getDaos = (daoFactoryContract) => {
+export const getDaos = (daoFactoryContract, daoContractAbi, web3, publicAddress) => {
   return async (dispatch) => {
-    let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
-      method: 'GET',
-      mode: 'cors'
-    })
-    
-    let body = await response.json()
-    
-    if(body.daos.length){
-      for(let i = 0; i < body.daos.length; i++){
-        dispatch({
-          dao: body.daos[i],
-          type: RECEIVE_DAO
-        })
-      }
+    var daos=[];
+    let daoContracts = await daoFactoryContract.methods.getDeployedChildContracts().call()
+    console.log(daoContracts)
+    for (var i = 0; i < daoContracts.length; i++) {
+      var daoContractJson = {}
+      let daoContractAddress = daoContracts[i];
+      daoContractJson['address'] = daoContractAddress
+      var daoContract = new web3.eth.Contract(daoContractAbi, daoContractAddress, {
+        from: publicAddress, // default from address
+        gasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
+      });
+      daoContractJson['_id']=daoContractAddress
+      let name = await daoContract.methods.name().call()
+      daoContractJson['name'] = name
+      daos.push(daoContractJson)
+      dispatch({
+        dao: daoContractJson,
+        type: RECEIVE_DAO
+      })
     }
-    
     return {
-      daos: body
+      daos: daos
     }
   }
 }

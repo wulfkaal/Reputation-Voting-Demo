@@ -115,7 +115,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           })
           // Pass accessToken back to parent component (to save it in localStorage)
           .catch(err => {
-            window.alert(err);
+            window.alert('Please ensure sign with MetaMask first.');
           });
         }
       ).catch(err => {

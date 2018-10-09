@@ -38,6 +38,8 @@ export const saveContractDetails = (publicAddress, web3) => {
     var repContractAbi;
     var repContractAddress;
     var repBalance;
+    var daoContractAbi;
+    // var proposalContractAbi;
     for (var i = 0; i < body.length; i++) {
         let contractJson = body[i];
         if(contractJson.name && contractJson.name === "daoFactory"){
@@ -46,6 +48,8 @@ export const saveContractDetails = (publicAddress, web3) => {
         }else if(contractJson.name && contractJson.name === "Sem1"){
           repContractAbi=contractJson.abi
           repContractAddress=contractJson.address
+        }else if (contractJson.name && contractJson.name === "test1"){
+          daoContractAbi=contractJson.abi
         }
     }
     var daoFactoryContract = new web3.eth.Contract(daoFactoryContractAbi, daoFactoryContractAddress, {
@@ -67,6 +71,7 @@ export const saveContractDetails = (publicAddress, web3) => {
           repBalance = (repBalanceBN.div(divisor)).toString()
         }
         return dispatch({
+          daoContractAbi: daoContractAbi,
           daoFactoryContract: daoFactoryContract,
           repContract: repContract,
           repBalance: repBalance,

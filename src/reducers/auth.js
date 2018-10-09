@@ -16,6 +16,7 @@ const auth = (state = initialState, action) => {
   switch(action.type) {
     case SAVE_CONTRACT_DETAILS:
     return merge({}, state, {
+      'daoContractAbi': action.daoContractAbi,
       'repBalance': action.repBalance,
       'daoFactoryContract': action.daoFactoryContract,
       'repContract': action.repContract
