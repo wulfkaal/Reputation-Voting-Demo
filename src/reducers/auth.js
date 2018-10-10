@@ -1,34 +1,28 @@
 import merge from 'lodash/merge'
-import auth0 from 'auth0-js';
 import {
   LOGIN,
-  AUTHENTICATE,
-  LOGOUT
+  LOGOUT,
+  SAVE_CONTRACT_DETAILS
 } from '../actions/auth'
 
-// TODO: do not include .env files in git, split out var's by environment
 const initialState = {
-  auth0: new auth0.WebAuth({
-    domain: process.env.REACT_APP_AUTH_CONFIG_DOMAIN,
-    clientID: process.env.REACT_APP_AUTH_CONFIG_CLIENTID,
-    redirectUri: process.env.REACT_APP_AUTH_CONFIG_CALLBACK,
-    responseType: 'token id_token',
-    scope: 'openid'
-  }),
   access_token: null,
-  id_token: null,
-  expires_at: null,
-  auth: false
+  web3: null,
+  publicAddress: null,
+  repBalance: null
 }
 
 const auth = (state = initialState, action) => {
   switch(action.type) {
+    case SAVE_CONTRACT_DETAILS:
+    return merge({}, state, {
+      'daoContractAbi': action.daoContractAbi,
+      'repBalance': action.repBalance,
+      'daoFactoryContract': action.daoFactoryContract,
+      'repContract': action.repContract
+    })
   case LOGIN:
-    console.log(process.env.REACT_APP_AUTH_CONFIG_DOMAIN)
-    let tempAuth0 = merge({}, state.auth0, action.auth0)
-    return merge({}, state, {auth0: tempAuth0, auth : true})
-  case AUTHENTICATE:
-    return merge({}, state, {access_token : action.access_token, id_token : action.id_token, expires_at : action.expires_at })
+    return merge({}, state, {"web3": action.web3, "access_token" : action.access_token, "publicAddress": action.publicAddress})
   case LOGOUT:
     return merge({}, state, initialState)
   default:

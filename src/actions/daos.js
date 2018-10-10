@@ -1,7 +1,8 @@
 export const RECEIVE_DAO = 'RECEIVE_DAO'
 export const RESET_NEW_DAO = 'RESET_NEW_DAO'
 
-export const saveDao = dao => {
+
+export const saveDao = (dao) => {
   return {
     dao: dao,
     type: RECEIVE_DAO
@@ -14,7 +15,15 @@ export const resetNewDao = () => {
   }
 }
 
-export const persistDao = (dao) => {
+export const persistDao = (publicAddress, dao, web3, access_token, daoFactoryContract) => {
+  daoFactoryContract.methods.createChildContract(dao.name, 100, 100).send({from: publicAddress})
+  .then(function(receipt){
+    console.log("Receipt : ")
+    console.log(receipt)
+  })
+  .catch(function(error){
+      console.log(error)
+  });
   return async (dispatch) => {
     let url = `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`
     
@@ -63,26 +72,30 @@ export const getDao = (id) => {
   }
 }
 
-export const getDaos = () => {
+export const getDaos = (daoFactoryContract, daoContractAbi, web3, publicAddress) => {
   return async (dispatch) => {
-    let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
-      method: 'GET',
-      mode: 'cors'
-    })
-    
-    let body = await response.json()
-    
-    if(body.daos.length){
-      for(let i = 0; i < body.daos.length; i++){
-        dispatch({
-          dao: body.daos[i],
-          type: RECEIVE_DAO
-        })
-      }
+    var daos=[];
+    let daoContracts = await daoFactoryContract.methods.getDeployedChildContracts().call()
+    console.log(daoContracts)
+    for (var i = 0; i < daoContracts.length; i++) {
+      var daoContractJson = {}
+      let daoContractAddress = daoContracts[i];
+      daoContractJson['address'] = daoContractAddress
+      var daoContract = new web3.eth.Contract(daoContractAbi, daoContractAddress, {
+        from: publicAddress, // default from address
+        gasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
+      });
+      daoContractJson['_id']=daoContractAddress
+      let name = await daoContract.methods.name().call()
+      daoContractJson['name'] = name
+      daos.push(daoContractJson)
+      dispatch({
+        dao: daoContractJson,
+        type: RECEIVE_DAO
+      })
     }
-    
     return {
-      daos: body
+      daos: daos
     }
   }
 }

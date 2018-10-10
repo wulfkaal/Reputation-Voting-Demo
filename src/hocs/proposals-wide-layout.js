@@ -18,7 +18,6 @@ import {
   handleDaoMenu
 } from '../actions/ui'
 import {
-  login,
   logout
 } from '../actions/auth'
 import {resetNewProposal} from '../actions/proposals'
@@ -60,13 +59,11 @@ const styles = theme => ({
 const mapStateToProps = (state, ownProps) => {  
   return {
     user: state.users['wulf@semada.io'],
-    auth: state.auth.auth,
+    web3: state.auth.web3,
     access_token: state.auth.access_token,
-    id_token: state.auth.id_token,
-    expires_at: state.auth.expires_at,
-    auth0: state.auth.auth0,
     profileMenuAnchorEl: state.ui.profileMenuAnchorEl,
-    daoMenuAnchorEl: state.ui.daoMenuAnchorEl
+    daoMenuAnchorEl: state.ui.daoMenuAnchorEl,
+    repBalance: state.auth.repBalance
   }
 }
 
@@ -91,14 +88,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleCloseDaoMenu: () => {
       dispatch(handleDaoMenu(null))
     },
-    login: (auth0) =>{
-      dispatch(login(auth0))
-    },
     logout: () =>{
       dispatch(logout())
     }
   }
 }
+
 
 const LayoutHOC = Page => class Layout extends React.Component {
 
@@ -122,7 +117,7 @@ const LayoutHOC = Page => class Layout extends React.Component {
             </Typography>
             &nbsp;
             <Typography>
-              REP Balance: <b>{this.props.user ? this.props.user.rep: ''}</b>
+              REP Balance: <b>{this.props.repBalance ? this.props.repBalance : ''}</b>
             </Typography>
 
             <Button
@@ -156,16 +151,17 @@ const LayoutHOC = Page => class Layout extends React.Component {
                 this.props.history.push('/proposals')
               }}>News Verification</MenuItem>
             </Menu>
-              
-            <Button color='inherit'
-              onClick={() => {
-                this.props.handleNewProposalClick()
-              }}
-            >
-              <AddIcon />
-              New Proposal
-            </Button>
+
+            { ( this.props.access_token ) && (
             <div>
+              <Button color='inherit'
+                onClick={() => {
+                  this.props.handleNewProposalClick()
+                }}
+              >
+                <AddIcon />
+                New Proposal
+              </Button>
               <IconButton
                 aria-owns={ Boolean(this.props.profileMenuAnchorEl) ? 'menu-appbar' : null}
                 aria-haspopup="true"
@@ -192,14 +188,13 @@ const LayoutHOC = Page => class Layout extends React.Component {
                   this.props.handleCloseProfileMenu()
                   this.props.history.push(`/users/${this.props.user.email}`)
                 }} >Profile</MenuItem>
-                { this.props.auth && (
-                  <MenuItem onClick={this.props.logout} >Logout</MenuItem>
-                )}
-                { !this.props.auth && (
-                  <MenuItem onClick={() => this.props.login(this.props.auth0)} >Login</MenuItem>
-                )}
+                <MenuItem onClick={ () => {
+                  this.props.handleCloseProfileMenu()
+                  this.props.logout()
+                  }}>Logout</MenuItem>
               </Menu>
             </div>
+            )}   
           </Toolbar>
         </AppBar>
         <div className={this.props.classes.contentBase}>

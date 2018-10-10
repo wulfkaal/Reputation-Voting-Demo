@@ -13,6 +13,10 @@ import {
 
 const mapStateToProps = (state, ownProps) => {  
   return {
+    web3: state.auth.web3,
+    access_token: state.auth.access_token,
+    daoFactoryContract: state.auth.daoFactoryContract,
+    publicAddress: state.auth.publicAddress,
     proposal: state.proposal,
     dao: state.daos.new,
     user: state.users['wulf@semada.io']
@@ -21,13 +25,13 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    saveDao: dao => {
+  
+    saveDao: (dao) => {
       dispatch(saveDao(dao))
     },
-    persistDao: (dao, userId) => {
-      
+    persistDao: (publicAddress, dao, userId, web3, access_token, daoFactoryContract) => {
       dao.userId = userId
-      dispatch(persistDao(dao))
+      dispatch(persistDao(publicAddress, dao, web3, access_token, daoFactoryContract))
       .then((result) => {
         ownProps.history.push(`/daos/${result.dao._id}`)
       })
