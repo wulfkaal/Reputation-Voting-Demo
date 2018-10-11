@@ -17,6 +17,7 @@ const screen = (props) => {
       return (
         <Dao 
           dao={dao}
+          handleViewDaoClick={() => props.handleViewDaoClick(dao._id)}
         />
       )
     })

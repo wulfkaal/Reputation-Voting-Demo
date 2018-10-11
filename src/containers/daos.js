@@ -14,7 +14,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     getDaos: () => {
       dispatch(getDaos())
-    }
+    },
+    handleViewDaoClick: id => {
+      ownProps.history.push(`/daos/${id}/proposals`)  
+    },
   }
 }
 

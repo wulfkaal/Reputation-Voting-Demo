@@ -11,7 +11,7 @@ const dao = (props) => {
     <div>
       <ListItem 
         button
-        onClick={() => props.history.push(`/daos/${props.dao._id}`)}>
+        onClick={() => props.handleViewDaoClick()}>
         
         <Typography variant='body1'>
           { props.dao.name }
