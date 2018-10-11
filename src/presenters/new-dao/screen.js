@@ -13,8 +13,8 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.persistDao(props.publicAddress, {...props.dao}, props.user._id, props.web3, props.access_token, props.daoFactoryContract)
-        }}
+          props.persistDao(props.dao)
+        }} 
         onError={errors => console.log(errors)}
       >
         <Card className={props.classes.cardWithHeader}>
@@ -32,12 +32,6 @@ const screen = (props) => {
 
             </Grid>
             <Grid container spacing={16}>
-              {/* <Grid item xs={12} sm={4}>
-                <ProposalType 
-                  saveDao={props.saveDao} 
-                  dao={props.dao}
-                />
-              </Grid> */}
               <Grid item xs={10}>
                 <TextValidator
                   name="name"
@@ -65,7 +59,7 @@ const screen = (props) => {
                   variant="contained" 
                   color="secondary" 
                   className={props.classes.button}>
-                  Submit
+                  Save
                 </Button>
               </Grid>
             </Grid>

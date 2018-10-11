@@ -58,70 +58,77 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           }
         })
       })
-      promise.then(
-        (result) => {
-          let publicAddress = result['publicAddress']
-          let nonce = Math.floor(Math.random() * 10000)
-          let email = "test20@test.com"
-          let signature = null
-          console.log("Public Address : " + publicAddress)
-          fetch(
-            `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/publicaddress/${publicAddress}`
-          ).then(response => response.json())
-          // If yes, retrieve it. If no, create it.
-          .then(
-            (usersRes) => {
-              return usersRes['users'].length ? usersRes['users'][0] : fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users`, {
-                                                  body: JSON.stringify({ publicAddress, nonce, email }),
-                                                  headers: {
-                                                    'Content-Type': 'application/json'
-                                                  },
-                                                  method: 'POST'
-                                                }).then(response => response.json())
-          })
-          // Popup MetaMask confirmation modal to sign message
-          .then((res) => {
-            nonce = res['nonce']
-            return new Promise((resolve, reject) =>
-              web3.eth.personal.sign(
-                web3.utils.utf8ToHex(`I am signing my one-time nonce: ${nonce}`),
-                publicAddress,
-                (err, signature) => {
-                  if (err) return reject(err);
-                  return resolve({ publicAddress, signature });
-                }
-              )
-            );
-          })
-          // Send signature to backend on the /auth route
-          .then( (signRes) => {
-            signature = signRes['signature']
-            console.log("Signature : " +signature)
-            fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/auth`, {
-              body: JSON.stringify({ publicAddress, signature }),
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              method: 'POST'
+      
+      // TODO: do something with this so not getting prompted to sign everytime
+      if(!ownProps.access_token){
+        promise.then(
+          (result) => {
+            let publicAddress = result['publicAddress']
+            let nonce = Math.floor(Math.random() * 10000)
+            let email = "test20@test.com"
+            let signature = null
+            console.log("Public Address : " + publicAddress)
+            fetch(
+              `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/publicaddress/${publicAddress}`
+            ).then(response => response.json())
+            // If yes, retrieve it. If no, create it.
+            .then(
+              (usersRes) => {
+                return usersRes['users'].length ? usersRes['users'][0] : fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users`, {
+                                                    body: JSON.stringify({ publicAddress, nonce, email }),
+                                                    headers: {
+                                                      'Content-Type': 'application/json'
+                                                    },
+                                                    method: 'POST'
+                                                  }).then(response => response.json())
             })
-            .then(response => response.json())
-            .then((tokenRes) => {
-              dispatch(login(publicAddress, web3, tokenRes['accessToken']))
-              console.log("Access Token : " + tokenRes['accessToken'])
+            // Popup MetaMask confirmation modal to sign message
+            .then((res) => {
+              nonce = res['nonce']
+              return new Promise((resolve, reject) =>
+                web3.eth.personal.sign(
+                  web3.utils.utf8ToHex(`I am signing my one-time nonce: ${nonce}`),
+                  publicAddress,
+                  (err, signature) => {
+                    if (err) return reject(err);
+                    return resolve({ publicAddress, signature });
+                  }
+                )
+              );
             })
-            .then(()=>{
-              dispatch(saveContractDetails(publicAddress, web3))
+            // Send signature to backend on the /auth route
+            .then( (signRes) => {
+              signature = signRes['signature']
+              console.log("Signature : " +signature)
+              fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/auth`, {
+                body: JSON.stringify({ publicAddress, signature }),
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                method: 'POST'
+              })
+              .then(response => response.json()) 
+              .then((tokenRes) => {
+                dispatch(login(publicAddress, web3, tokenRes['accessToken']))
+                console.log("Access Token : " + tokenRes['accessToken'])
+              })
+              // TODO: Radhika, what is this code used for? 
+              // I commented out for now as its breaking.
+              // .then(()=>{
+              //   dispatch(saveContractDetails(publicAddress, web3))
+              // })
             })
-          })
-          // Pass accessToken back to parent component (to save it in localStorage)
-          .catch(err => {
-            window.alert('Please ensure sign with MetaMask first.');
-          });
-        }
-      ).catch(err => {
-        alert('Please activate MetaMask first.') 
-        return; 
-      })
+            // Pass accessToken back to parent component (to save it in localStorage)
+            .catch(err => {
+              window.alert('Please ensure sign with MetaMask first.');
+            });
+          }
+        ).catch(err => {
+          alert('Please activate MetaMask first.') 
+          return; 
+        })
+      }
+      
     },
   }
 }

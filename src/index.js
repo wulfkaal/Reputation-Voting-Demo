@@ -29,6 +29,8 @@ ReactDOM.render(
         <Route path="/proposals/:id" component={ProposalContainer} />
         <Route path="/proposals" component={ProposalSwimLanesContainer} />
         <Route path="/daos/new" component={NewDaoContainer} />
+        <Route path="/daos/:id/proposals" 
+          component={ProposalSwimLanesContainer} />
         <Route path="/daos/:id" component={DaoContainer} />
         <Route path="/daos" component={DaosContainer} />
         <Route path="/users/:email" component={UserContainer} />

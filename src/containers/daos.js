@@ -26,7 +26,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 class DaoList extends Component {
 
   componentDidMount() {
-    this.props.getDaos(this.props.daoFactoryContract, this.props.daoContractAbi, this.props.web3, this.props.publicAddress)
+    // TODO: fix getDaos to pull from API/db instead of contract
+    // this.props.getDaos(this.props.daoFactoryContract, this.props.daoContractAbi, this.props.web3, this.props.publicAddress)
   }
 
   render() {

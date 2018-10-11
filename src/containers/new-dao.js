@@ -7,6 +7,9 @@ import {
   persistDao
 } from '../actions/daos'
 import {
+  persistProposal
+} from '../actions/proposals'
+import {
   getUser
 } from '../actions/users'
 
@@ -29,12 +32,27 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     saveDao: (dao) => {
       dispatch(saveDao(dao))
     },
-    persistDao: (publicAddress, dao, userId, web3, access_token, daoFactoryContract) => {
-      dao.userId = userId
-      dispatch(persistDao(publicAddress, dao, web3, access_token, daoFactoryContract))
-      .then((result) => {
-        ownProps.history.push(`/daos/${result.dao._id}`)
-      })
+    persistDao: async (dao) => {
+      // TODO: call SemadaCore.newProposal()
+      
+      // API Create Proposal
+      await dispatch(persistProposal({
+        _id: 'new',
+        name: 'New DAO',
+        evidence: ''
+      }))
+      
+      //TODO: Show waiting animation while voting occurs
+      
+      //TODO: Call SemadaCore.checkProposal() to close validation pool
+      
+      //TODO: if yes votes win, create DAO
+      // TODO: link new DAO to proposal?
+      // API Create DAO
+      let newDao = await dispatch(persistDao(dao))
+      
+      // redirect to Proposal view for new DAO
+      ownProps.history.push(`/daos/${newDao.dao._id}/proposals`)
     },
     getUser: email => {
       return dispatch(getUser(email))

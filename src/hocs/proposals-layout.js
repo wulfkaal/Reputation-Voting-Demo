@@ -21,6 +21,7 @@ import {
   logout
 } from '../actions/auth'
 import {resetNewProposal} from '../actions/proposals'
+import {resetNewDao} from '../actions/daos'
 import logoImage from './logo.png'
 
 
@@ -80,17 +81,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(resetNewProposal())
       ownProps.history.push('/proposals/new')  
     },
+    handleViewDaosClick: () => {
+      ownProps.history.push('/daos')  
+    },
     handleProfileMenu: (event) => {
       dispatch(handleProfileMenu(event.currentTarget))
     },
     handleCloseProfileMenu: () => {
       dispatch(handleProfileMenu(null))
-    },
-    handleDaoMenu: (event) => {
-      dispatch(handleDaoMenu(event.currentTarget))
-    },
-    handleCloseDaoMenu: () => {
-      dispatch(handleDaoMenu(null))
     },
     logout: () =>{
       dispatch(logout())
@@ -123,37 +121,15 @@ const LayoutHOC = Page => class Layout extends React.Component {
               REP Balance: <b>{this.props.repBalance ? this.props.repBalance : ''}</b>
             </Typography>
 
-            <Button
-              aria-owns={Boolean(this.props.daoMenuAnchorEl) ? 'render-props-menu' : null}
-              aria-haspopup="true"
-              onClick={this.props.handleDaoMenu}
-              color="inherit"
+            <Button color='inherit'
+              onClick={() => {
+                this.props.handleViewDaosClick()
+              }}
             >
-            <ListIcon />
-              DAOS
+              <ListIcon />
+              View DAO's
             </Button>
-            <Menu 
-              id="render-props-menu" 
-              anchorEl={this.props.daoMenuAnchorEl} 
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(this.props.daoMenuAnchorEl)} 
-              onClose={this.props.handleCloseDaoMenu}>
-              <MenuItem onClick={() => {
-                this.props.handleCloseDaoMenu()
-                this.props.history.push('/daos')
-              }}>Community Meetup</MenuItem>
-              <MenuItem onClick={() => {
-                this.props.handleCloseDaoMenu()
-                this.props.history.push('/proposals')}
-              }>News Verification</MenuItem>
-            </Menu>
+
             { ( this.props.access_token ) && (
             <div>
                 <Button color='inherit'
