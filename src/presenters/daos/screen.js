@@ -18,6 +18,7 @@ const screen = (props) => {
         <Dao 
           dao={dao}
           handleViewDaoClick={() => props.handleViewDaoClick(dao._id)}
+          joinDao={() => props.joinDao(dao._id)}
         />
       )
     })

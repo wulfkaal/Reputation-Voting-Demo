@@ -34,7 +34,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     persistDao: async (dao) => {
       // TODO: call SemadaCore.newProposal()
-      
+      // TODO: link proposal in db to semadacore
       // API Create Proposal
       await dispatch(persistProposal({
         _id: 'new',
