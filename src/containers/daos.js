@@ -6,19 +6,14 @@ import { getDaos } from '../actions/daos'
 
 const mapStateToProps = (state, ownProps) => {  
   return {
-    daos: state.daos,
-    web3: state.auth.web3,
-    daoContractAbi: state.auth.daoContractAbi,
-    daoFactoryContract: state.auth.daoFactoryContract,
-    access_token: state.auth.access_token,
-    publicAddress: state.auth.publicAddress
+    daos: state.daos
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    getDaos: (daoFactoryContract, daoContractAbi, web3, publicAddress) => {
-      dispatch(getDaos(daoFactoryContract, daoContractAbi, web3, publicAddress))
+    getDaos: () => {
+      dispatch(getDaos())
     }
   }
 }
@@ -26,8 +21,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 class DaoList extends Component {
 
   componentDidMount() {
-    // TODO: fix getDaos to pull from API/db instead of contract
-    // this.props.getDaos(this.props.daoFactoryContract, this.props.daoContractAbi, this.props.web3, this.props.publicAddress)
+    this.props.getDaos()
   }
 
   render() {

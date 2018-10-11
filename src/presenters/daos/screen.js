@@ -17,7 +17,7 @@ const screen = (props) => {
       return (
         <Dao 
           dao={dao}
-          history={props.history} />
+        />
       )
     })
   
