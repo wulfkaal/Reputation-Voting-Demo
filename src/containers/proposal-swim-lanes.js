@@ -9,8 +9,11 @@ import {
 import values from 'lodash/values'
 
 const mapStateToProps = (state, ownProps) => {  
+  let daoId = ownProps.match.params.id
+  
   return {
-    proposals: state.proposals
+    proposals: values(state.proposals)
+      .filter(e => e.daoId === daoId)
   }
 }
 
@@ -40,8 +43,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 class ProposalSwimLanes extends Component {
 
   componentDidMount() {
-    this.props.getProposals(1)
-    this.props.startTimer()
+    let daoId = this.props.match.params.id
+    this.props.getProposals(daoId)
+    // this.props.startTimer()
   }
 
   render() {
