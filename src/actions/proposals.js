@@ -55,7 +55,8 @@ export const persistProposal = (proposal) => {
 
 export const getProposal = (id) => {
   return async (dispatch) => {
-    let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/${id}`, {
+    let response = await fetch(
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/${id}`, {
       method: 'GET',
       mode: 'cors'
     })
@@ -72,7 +73,8 @@ export const getProposal = (id) => {
 
 export const getProposals = (daoId) => {
   return async (dispatch) => {
-    let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/dao/${daoId}`, {
+    let response = await fetch(
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/dao/${daoId}`, {
       method: 'GET',
       mode: 'cors'
     })

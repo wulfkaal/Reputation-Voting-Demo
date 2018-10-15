@@ -60,7 +60,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       })
       
       // TODO: do something with this so not getting prompted to sign everytime
-      if(!ownProps.access_token){
+      if(1==2){
         promise.then(
           (result) => {
             let publicAddress = result['publicAddress']
