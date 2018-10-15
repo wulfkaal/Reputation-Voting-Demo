@@ -4,7 +4,8 @@ import {connect} from 'react-redux'
 import NewDaoScreen from '../presenters/new-dao/screen'
 import {
   saveDao,
-  persistDao
+  persistDao,
+  resetNewDao
 } from '../actions/daos'
 import {
   persistProposal
@@ -12,7 +13,9 @@ import {
 import {
   getUser
 } from '../actions/users'
-
+import truffleContract from "truffle-contract"
+import SemadaCoreContract from '../contracts/SemadaCore.json'
+import Web3 from 'web3';
 
 const mapStateToProps = (state, ownProps) => {  
   return {
@@ -34,6 +37,29 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     persistDao: async (dao) => {
       // TODO: call SemadaCore.newProposal()
+      console.log("Persist DAO")
+      let web3
+      if (!window.web3) {
+        window.alert('Please install MetaMask first.')
+        return;
+      }
+      if (!web3) {
+        web3 = new Web3(window.web3.currentProvider)
+      }
+      
+      let publicAddress = await web3.eth.getCoinbase()
+      console.log(publicAddress)
+      const CoreContract = truffleContract(SemadaCoreContract);
+      CoreContract.setProvider(web3.currentProvider);
+      CoreContract.deployed().then(function(instance) {
+        console.log("contract instance:")
+        console.log(instance);
+        instance.createDummyDao({from: publicAddress, value:2})
+        .then(function(val) {
+          console.log(val);
+        });
+      });
+      
       // TODO: link proposal in db to semadacore DAO?
       // API Create Proposal
       await dispatch(persistProposal({
@@ -50,6 +76,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       // TODO: link new DAO to proposal?
       // API Create DAO
       let newDao = await dispatch(persistDao(dao))
+      await dispatch(resetNewDao())
       
       // redirect to Proposal view for new DAO
       ownProps.history.push(`/daos/${newDao.dao._id}/proposals`)

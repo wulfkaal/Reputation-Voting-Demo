@@ -34,6 +34,10 @@ contract SemadaCore is SafeMath {
     function getProposal(uint256 _proposalIndex) view public returns (address, string, string, uint256, string) {
         return (validationPool[_proposalIndex].from, validationPool[_proposalIndex].tokenSymbol, validationPool[_proposalIndex].name, validationPool[_proposalIndex].timeout, validationPool[_proposalIndex].evidence);
     }
+    
+    function getTokenNumberIndex() public view returns (uint256){
+      return tokenNumberIndex;
+    }
 
 
     function voteInternal(uint256 _proposalIndex, address _from, uint256 _rep, bool _vote)  public payable {
@@ -77,7 +81,8 @@ contract SemadaCore is SafeMath {
     }
 
     function createDummyDao() public payable returns (address tokenAddress) {
-        return  address((new REP).value(msg.value)("SEM1", "Token given name"));
+      tokenNumberIndex = safeAdd(tokenNumberIndex, 1);
+      return  address((new REP).value(msg.value)("SEM1", "Token given name"));
     }
     
     function newProposalInternal(address _tokenAddress, uint256 _mintRep, address _from,
