@@ -14,14 +14,14 @@
 
 module.exports = {
   networks: {
-    localhost: {
+    development: {
       host: "localhost", 
-      port: 8546,
+      port: 8545,
       network_id: "*" 
     },  
     ropsten: {
       host: "localhost",
-      port: 8545,
+      port: 8546,
       network_id: "3",
       from: "0x266d87471ca6b42e345eb9b51dafd57f25033db0",
     }
