@@ -18,6 +18,7 @@
     "react-scripts": "1.1.4",
     "redux": "^4.0.0",
     "redux-thunk": "^2.3.0",
+    "truffle-contract": "^3.0.6",
     "web3": "^1.0.0-beta.36"
   },
   "scripts": {
@@ -25,9 +26,13 @@
     "dev": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "link-contracts": "run-script-os",
+    "link-contracts:linux:darwin": "cd src && ln -s ../build/contracts contracts",
+    "link-contracts:win32": "cd src && mklink \\D contracts ..\\..\\build\\contracts"
   },
   "devDependencies": {
+    "run-script-os": "^1.0.3",
     "uninstall": "0.0.0"
   }
 }

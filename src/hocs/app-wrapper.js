@@ -1,5 +1,8 @@
 import React from 'react'
 import Web3 from 'web3';
+import truffleContract from "truffle-contract";
+import SemadaCoreContract from '../contracts/SemadaCore.json';
+import SafeMathContract from '../contracts/SafeMath.json';
 import getPageContext from '../config/get-page-context';
 import JssProvider from 'react-jss/lib/JssProvider';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -58,9 +61,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           }
         })
       })
-      
+
       // TODO: do something with this so not getting prompted to sign everytime
-      if(1==2){
+      if(1==1){
         promise.then(
           (result) => {
             let publicAddress = result['publicAddress']
@@ -111,6 +114,16 @@ const mapDispatchToProps = (dispatch, ownProps) => {
               .then((tokenRes) => {
                 dispatch(login(publicAddress, web3, tokenRes['accessToken']))
                 console.log("Access Token : " + tokenRes['accessToken'])
+              }).then(() => {
+                const CoreContract = truffleContract(SemadaCoreContract);
+                CoreContract.setProvider(web3.currentProvider);
+                CoreContract.deployed().then(function(instance) {
+                  console.log("contract instance:")
+                  console.log(instance);
+                  instance.createDummyDao({from: publicAddress, value:10}).then(function(val) {
+                    console.log(val);
+                  });
+                });
               })
               // TODO: Radhika, what is this code used for? 
               // I commented out for now as its breaking.

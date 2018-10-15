@@ -1,7 +1,6 @@
-var Migrations = artifacts.require("./Migrations.sol");
+var Migrations = artifacts.require("../contracts/Migrations.sol");
 
 module.exports = function(deployer) {
   deployer.deploy(Migrations);
-  deployer.deploy(artifacts.require("./Sem1.sol"));
-  deployer.deploy(artifacts.require("./VotingContract.sol"));
+  deployer.deploy(artifacts.require("../contracts/SemadaCore.sol"));
 };
