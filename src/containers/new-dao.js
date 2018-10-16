@@ -34,8 +34,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(saveDao(dao))
     },
     persistDao: async (web3, semadaCore, dao) => {
-      // TODO: link proposal in db to semadacore DAO?
-      // API Create Proposal
+      
+      // This proposal belongs to the Anchor DAO
       await dispatch(persistProposal({
         _id: 'new',
         name: 'New DAO',
@@ -49,9 +49,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       let semadaCoreInstance = await semadaCore.deployed()
       
       try {
-        await semadaCoreInstance.createDao(dao.name, 
+        let trx = await semadaCoreInstance.createDao(dao.name, 
           {from: publicAddress, value:2})  
-        // TODO: link new DAO to proposal?
+        // get the proposalIndex to use for checking the vote outcome later
+        let proposalIndex = trx.logs[0].args.proposalIndex
+        console.log(`New Proposal Index: ${proposalIndex}`)
+        
         // API Create DAO
         let newDao = await dispatch(persistDao(dao))
         await dispatch(resetNewDao())

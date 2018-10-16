@@ -26,6 +26,8 @@ contract SemadaCore is SafeMath {
   }
 
   mapping(uint256 => Pool) validationPool;
+  
+  event NewProposalCreated(uint256 proposalIndex);
 
   function getTokenAddress(string _tokenSymbol) 
   public view returns (address tokenAddress){
@@ -46,7 +48,11 @@ contract SemadaCore is SafeMath {
   function joinDao(string _tokenSymbol) 
   public payable {
 
-    newProposalInternal(_tokenSymbol, 
+    proposalIndex = safeAdd(proposalIndex, 1);
+
+    newProposalInternal(
+      proposalIndex,
+      _tokenSymbol, 
       "Join DAO",
       "Join DAO",
       msg.sender, 
@@ -66,7 +72,7 @@ contract SemadaCore is SafeMath {
   }
   
   function createDao(string _tokenName) 
-  public payable returns (address tokenAddress) {
+  public payable {
     
     tokenNumberIndex = safeAdd(tokenNumberIndex, 1);
     
@@ -78,14 +84,19 @@ contract SemadaCore is SafeMath {
       
     erc20SymbolAddresses[_tokenSymbol] = _tokenAddress;
     
+    proposalIndex = safeAdd(proposalIndex, 1);
+    
+    NewProposalCreated(proposalIndex);
+    
     newProposalInternal(
+      proposalIndex,
       _tokenSymbol, 
       _tokenName, 
       _tokenName,
       msg.sender,
       msg.value);
       
-    return _tokenAddress;
+    
   }
   
   function newProposal(
@@ -94,7 +105,11 @@ contract SemadaCore is SafeMath {
     string _proposalEvidence
     ) public payable {
       
-    newProposalInternal(_tokenSymbol,
+    proposalIndex = safeAdd(proposalIndex, 1);
+    
+    newProposalInternal(
+      proposalIndex,
+      _tokenSymbol,
       _proposalName,
       _proposalEvidence,
       msg.sender,
@@ -102,13 +117,12 @@ contract SemadaCore is SafeMath {
   }
   
   function newProposalInternal(
+    uint256 _proposalIndex,
     string _tokenSymbol, 
     string _proposalName, 
     string _proposalEvidence,
     address _from,
     uint256 _value) internal {
-      
-    proposalIndex = safeAdd(proposalIndex, 1);
 
     //setting timeout to 180 seconds
     Pool storage pool = validationPool[proposalIndex];
