@@ -1,7 +1,8 @@
 import merge from 'lodash/merge'
 import {
   RECEIVE_DAO,
-  RESET_NEW_DAO
+  RESET_NEW_DAO,
+  RECEIVE_REP_BALANCE
 } from '../actions/daos'
 
 const initialState = {
@@ -18,6 +19,8 @@ const daos = (state = initialState, action) => {
     return merge({}, state, {[action.dao._id]: dao})
   case RESET_NEW_DAO:
     return merge({}, state, initialState)
+  case RECEIVE_REP_BALANCE:
+    return merge({}, state, {rep: action.rep})
   default:
     return state
   }

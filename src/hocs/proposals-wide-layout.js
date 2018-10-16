@@ -63,7 +63,7 @@ const mapStateToProps = (state, ownProps) => {
     access_token: state.auth.access_token,
     profileMenuAnchorEl: state.ui.profileMenuAnchorEl,
     daoMenuAnchorEl: state.ui.daoMenuAnchorEl,
-    repBalance: state.auth.repBalance
+    repBalance: state.daos.rep
   }
 }
 
@@ -114,7 +114,9 @@ const LayoutHOC = Page => class Layout extends React.Component {
             </Typography>
             &nbsp;
             <Typography>
-              REP Balance: <b>{this.props.repBalance ? this.props.repBalance : ''}</b>
+              REP Balance: <b>{
+                isNaN(this.props.repBalance) ? '' : this.props.repBalance
+              }</b>
             </Typography>
 
             <Button color='inherit'

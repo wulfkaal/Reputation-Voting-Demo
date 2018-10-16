@@ -23,6 +23,7 @@ const mapStateToProps = (state, ownProps) => {
     web3: state.auth.web3,
     access_token: state.auth.access_token,
     semadaCore: state.auth.semadaCore,
+    repBalance: state.daos.rep,
     baseProposals: values(state.proposals)
       .filter(p => p._id !== 'new' && 
         p.status === PROPOSAL_STATUSES.active &&
