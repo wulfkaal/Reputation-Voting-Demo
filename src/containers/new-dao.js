@@ -13,13 +13,11 @@ import {
 import {
   getUser
 } from '../actions/users'
-import truffleContract from "truffle-contract"
-import SemadaCoreContract from '../contracts/SemadaCore.json'
-import Web3 from 'web3';
+import getWeb3 from '../utils/get-web3'
+
 
 const mapStateToProps = (state, ownProps) => {  
   return {
-    web3: state.auth.web3,
     access_token: state.auth.access_token,
     daoFactoryContract: state.auth.daoFactoryContract,
     publicAddress: state.auth.publicAddress,
@@ -35,31 +33,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     saveDao: (dao) => {
       dispatch(saveDao(dao))
     },
-    persistDao: async (dao) => {
-      // TODO: call SemadaCore.newProposal()
-      console.log("Persist DAO")
-      let web3
-      if (!window.web3) {
-        window.alert('Please install MetaMask first.')
-        return;
-      }
-      if (!web3) {
-        web3 = new Web3(window.web3.currentProvider)
-      }
-      
-      let publicAddress = await web3.eth.getCoinbase()
-      console.log(publicAddress)
-      const CoreContract = truffleContract(SemadaCoreContract);
-      CoreContract.setProvider(web3.currentProvider);
-      CoreContract.deployed().then(function(instance) {
-        console.log("contract instance:")
-        console.log(instance);
-        instance.createDummyDao({from: publicAddress, value:2})
-        .then(function(val) {
-          console.log(val);
-        });
-      });
-      
+    persistDao: async (web3, semadaCore, dao) => {
       // TODO: link proposal in db to semadacore DAO?
       // API Create Proposal
       await dispatch(persistProposal({
@@ -68,18 +42,30 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         evidence: ''
       }))
       
+      web3 = getWeb3(web3)
+      
+      let publicAddress = await web3.eth.getCoinbase()
+      semadaCore.setProvider(web3.currentProvider)
+      let semadaCoreInstance = await semadaCore.deployed()
+      
+      try {
+        await semadaCoreInstance.createDao(dao.name, 
+          {from: publicAddress, value:2})  
+        // TODO: link new DAO to proposal?
+        // API Create DAO
+        let newDao = await dispatch(persistDao(dao))
+        await dispatch(resetNewDao())
+        
+        // redirect to Proposal view for new DAO
+        ownProps.history.push(`/daos/${newDao.dao._id}/proposals`)
+      } catch (e) {
+        alert(`Failed to submit new DAO proposal: ${e}`)  
+      }
+      
       //TODO: Show waiting animation while voting occurs
       
       //TODO: Call SemadaCore.checkProposal() to close validation pool
       
-      //TODO: if yes votes win, create DAO
-      // TODO: link new DAO to proposal?
-      // API Create DAO
-      let newDao = await dispatch(persistDao(dao))
-      await dispatch(resetNewDao())
-      
-      // redirect to Proposal view for new DAO
-      ownProps.history.push(`/daos/${newDao.dao._id}/proposals`)
     },
     getUser: email => {
       return dispatch(getUser(email))

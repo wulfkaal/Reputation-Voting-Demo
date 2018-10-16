@@ -22,7 +22,11 @@ const auth = (state = initialState, action) => {
       'repContract': action.repContract
     })
   case LOGIN:
-    return merge({}, state, {"web3": action.web3, "access_token" : action.access_token, "publicAddress": action.publicAddress})
+    return merge({}, state, {
+      "web3": action.web3, 
+      "access_token" : action.access_token, 
+      "semadaCore": action.semadaCore
+    })
   case LOGOUT:
     return merge({}, state, initialState)
   default:

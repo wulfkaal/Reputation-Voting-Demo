@@ -16,6 +16,7 @@ const screen = (props) => {
     .map((dao, i) => {
       return (
         <Dao 
+          key={dao._id}
           dao={dao}
           handleViewDaoClick={() => props.handleViewDaoClick(dao._id)}
           joinDao={() => props.joinDao(dao._id)}

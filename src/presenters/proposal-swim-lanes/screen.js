@@ -16,6 +16,7 @@ const screen = (props) => {
   .map((proposal, i) => {
     return (
       <ProposalItem 
+        key={proposal._id}
         proposal={proposal}
         history={props.history} />
     )

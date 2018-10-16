@@ -23,8 +23,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     web3: state.auth.web3,
     access_token: state.auth.access_token,
-    daoFactoryContractAbi: state.auth.daoFactoryContractAbi,
-    daoFactoryContractAddress: state.auth.daoFactoryContractAddress,
+    semadaCore: state.auth.semadaCore,
     baseProposals: values(state.proposals)
       .filter(p => p._id !== 'new' && 
         p.status === PROPOSAL_STATUSES.active &&
@@ -111,24 +110,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
               })
               .then(response => response.json()) 
               .then((tokenRes) => {
-                dispatch(login(publicAddress, web3, tokenRes['accessToken']))
-                console.log("Access Token : " + tokenRes['accessToken'])
-              }).then(() => {
-                // const CoreContract = truffleContract(SemadaCoreContract);
-                // CoreContract.setProvider(web3.currentProvider);
-                // CoreContract.deployed().then(function(instance) {
-                //   console.log("contract instance:")
-                //   console.log(instance);
-                //   instance.createDummyDao({from: publicAddress, value:2}).then(function(val) {
-                //     console.log(val);
-                //   });
-                // });
+                const contract = truffleContract(SemadaCoreContract);
+                dispatch(login(web3, tokenRes['accessToken'], contract))
               })
-              // TODO: Radhika, what is this code used for? 
-              // I commented out for now as its breaking.
-              // .then(()=>{
-              //   dispatch(saveContractDetails(publicAddress, web3))
-              // })
             })
             // Pass accessToken back to parent component (to save it in localStorage)
             .catch(err => {

@@ -2,11 +2,11 @@ export const LOGIN = 'LOGIN'
 export const LOGOUT = 'LOGOUT'
 export const SAVE_CONTRACT_DETAILS = 'SAVE_CONTRACT_DETAILS'
 
-export const login = (publicAddress, web3, accessToken) => {
+export const login = (web3, accessToken, semadaCore) => {
   return {
-    publicAddress: publicAddress,
     web3: web3,
     access_token: accessToken,
+    semadaCore: semadaCore,
     type: LOGIN
   }
 }
