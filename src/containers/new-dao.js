@@ -53,7 +53,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           {from: publicAddress, value:2})  
         // get the proposalIndex to use for checking the vote outcome later
         let proposalIndex = trx.logs[0].args.proposalIndex
-        console.log(`New Proposal Index: ${proposalIndex}`)
+        alert(`New Proposal Index: ${proposalIndex}`)
         
         // API Create DAO
         let newDao = await dispatch(persistDao(dao))
