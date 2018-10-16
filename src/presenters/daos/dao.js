@@ -7,6 +7,8 @@ import Grid from '@material-ui/core/Grid'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemText from '@material-ui/core/ListItemText'
 import Button from '@material-ui/core/Button'
+import IconButton from '@material-ui/core/IconButton';
+import CommentIcon from '@material-ui/icons/Comment';
 
 const dao = (props) => {
   // TODO: make button click take precedence over list click
@@ -14,20 +16,21 @@ const dao = (props) => {
     <div>
       <ListItem 
         button
-        onClick={() => props.joinDao()}>
-        <Grid item xs={12} sm={6}>
-          <Typography variant='body1'>
-            <ListItemText primary={ props.dao.name } />
-          </Typography>
-        </Grid>
-        <Grid item xs={12} sm={6} className={props.classes.contentRight}>
-          <ListItemSecondaryAction>
-            <Button className={props.classes.button}
-              onClick={() => props.joinDao()} >
-              Join DAO
-            </Button>
-          </ListItemSecondaryAction>
-        </Grid>
+        key={props.dao._id}
+        role={undefined}
+        onClick={() => props.handleViewDaoClick()}
+        >
+        
+        <Typography variant='body1'>
+          <ListItemText primary={ props.dao.name } />
+        </Typography>
+      
+        <ListItemSecondaryAction>
+          <Button className={props.classes.button}
+            onClick={() => props.joinDao()} >
+            Join DAO
+          </Button>
+        </ListItemSecondaryAction>
       </ListItem>
     </div>
   )

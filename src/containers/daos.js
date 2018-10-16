@@ -30,15 +30,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       semadaCore.setProvider(web3.currentProvider)
       let semadaCoreInstance = await semadaCore.deployed()
       
-      try {
-        let getProposalTrx = await semadaCoreInstance.getProposal(dao.proposalIndex)
-        let tokenSymbol = getProposalTrx[1]
-        console.log("tokenSymbol : " + tokenSymbol)
-        let trx = await semadaCoreInstance.joinDao(tokenSymbol, 
+      try {        
+        let trx = await semadaCoreInstance.joinDao(dao.tokenNumberIndex, 
           {from: publicAddress, value:2000000})  
+          
         let proposalIndex = trx.logs[0].args.proposalIndex
-        alert(`New Proposal Index: ${proposalIndex}`)
-
+        
         await dispatch(persistProposal({
           _id: 'new',
           daoId: dao._id,

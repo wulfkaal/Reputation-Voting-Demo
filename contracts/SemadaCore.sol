@@ -28,6 +28,7 @@ contract SemadaCore is SafeMath {
   mapping(uint256 => Pool) validationPool;
   
   event NewProposalCreated(uint256 proposalIndex);
+  event NewDaoCreated(uint256 tokenNumberIndex);
 
   function getTokenAddress(uint256 _tokenNumberIndex) 
   public view returns (address tokenAddress){
@@ -103,8 +104,9 @@ contract SemadaCore is SafeMath {
     
     proposalIndex = safeAdd(proposalIndex, 1);
     
-    emit NewProposalCreated(proposalIndex);
-    
+    NewDaoCreated(tokenNumberIndex);
+    NewProposalCreated(proposalIndex);
+        
     newProposalInternal(
       proposalIndex,
       tokenNumberIndex, 
