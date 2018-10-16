@@ -8,7 +8,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import {connect} from 'react-redux'
 import values from 'lodash/values'
-import { saveContractDetails } from '../actions/auth'
 import {
   PROPOSAL_STATUSES,
   saveProposal,
@@ -61,7 +60,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       })
 
       // TODO: do something with this so not getting prompted to sign everytime
-      if(1==1){
+      if(true){
         promise.then(
           (result) => {
             let publicAddress = result['publicAddress']

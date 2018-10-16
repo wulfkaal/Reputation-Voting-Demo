@@ -8,7 +8,7 @@ contract SemadaCore is SafeMath {
   uint256 public proposalIndex;
   uint256 public tokenNumberIndex;
 
-  mapping(string => address) erc20SymbolAddresses;
+  mapping(uint256 => address) erc20SymbolAddresses;
 
   struct Vote {
     address from;
@@ -18,7 +18,7 @@ contract SemadaCore is SafeMath {
 
   struct Pool { 
     address from;  
-    string tokenSymbol;
+    uint256 tokenNumberIndex;
     string name; 
     uint256 timeout;  
     string evidence;  
@@ -29,30 +29,32 @@ contract SemadaCore is SafeMath {
   
   event NewProposalCreated(uint256 proposalIndex);
 
-  function getTokenAddress(string _tokenSymbol) 
+  function getTokenAddress(uint256 _tokenNumberIndex) 
   public view returns (address tokenAddress){
     
-    return erc20SymbolAddresses[_tokenSymbol];
+    return erc20SymbolAddresses[_tokenNumberIndex];
   }
   
   function getProposal(uint256 _proposalIndex) view 
-  public returns (address, string, string, uint256, string) {
+  public returns (address, uint256, string, uint256, string) {
     
     return (validationPool[_proposalIndex].from, 
-      validationPool[_proposalIndex].tokenSymbol, 
+      validationPool[_proposalIndex].tokenNumberIndex, 
       validationPool[_proposalIndex].name, 
       validationPool[_proposalIndex].timeout, 
       validationPool[_proposalIndex].evidence);
   }
 
-  function joinDao(string _tokenSymbol) 
+  function joinDao(uint256 _tokenNumberIndex) 
   public payable {
 
     proposalIndex = safeAdd(proposalIndex, 1);
 
+    emit NewProposalCreated(proposalIndex);
+
     newProposalInternal(
       proposalIndex,
-      _tokenSymbol, 
+      _tokenNumberIndex, 
       "Join DAO",
       "Join DAO",
       msg.sender, 
@@ -70,37 +72,50 @@ contract SemadaCore is SafeMath {
     }
     return string(bytesString);
   }
-  
+
+  function uintToBytes(uint v) pure returns (bytes32 ret) {
+    if (v == 0) {
+        ret = '0';
+    }
+    else {
+        while (v > 0) {
+            ret = bytes32(uint(ret) / (2 ** 8));
+            ret |= bytes32(((v % 10) + 48) * 2 ** (8 * 31));
+            v /= 10;
+        }
+    }
+    return ret;
+  }
+
+ 
   function createDao(string _tokenName) 
   public payable {
     
     tokenNumberIndex = safeAdd(tokenNumberIndex, 1);
     
     string memory _tokenSymbol = 
-      bytes32ToString(bytes32(tokenNumberIndex));
+      bytes32ToString(uintToBytes(tokenNumberIndex));
       
     address _tokenAddress = 
       (new REP).value(msg.value)(_tokenSymbol, _tokenName);
       
-    erc20SymbolAddresses[_tokenSymbol] = _tokenAddress;
+    erc20SymbolAddresses[tokenNumberIndex] = _tokenAddress;
     
     proposalIndex = safeAdd(proposalIndex, 1);
     
-    NewProposalCreated(proposalIndex);
+    emit NewProposalCreated(proposalIndex);
     
     newProposalInternal(
       proposalIndex,
-      _tokenSymbol, 
+      tokenNumberIndex, 
       _tokenName, 
       _tokenName,
       msg.sender,
-      msg.value);
-      
-    
+      msg.value);    
   }
   
   function newProposal(
-    string _tokenSymbol,
+    uint256 _tokenNumberIndex,
     string _proposalName,
     string _proposalEvidence
     ) public payable {
@@ -109,7 +124,7 @@ contract SemadaCore is SafeMath {
     
     newProposalInternal(
       proposalIndex,
-      _tokenSymbol,
+      _tokenNumberIndex,
       _proposalName,
       _proposalEvidence,
       msg.sender,
@@ -118,22 +133,22 @@ contract SemadaCore is SafeMath {
   
   function newProposalInternal(
     uint256 _proposalIndex,
-    string _tokenSymbol, 
+    uint256 _tokenNumberIndex, 
     string _proposalName, 
     string _proposalEvidence,
     address _from,
     uint256 _value) internal {
 
     //setting timeout to 180 seconds
-    Pool storage pool = validationPool[proposalIndex];
+    Pool storage pool = validationPool[_proposalIndex];
     pool.from = _from;
+    pool.tokenNumberIndex = _tokenNumberIndex;
     pool.name = _proposalName;
     pool.timeout = now + 180;
     pool.evidence = _proposalEvidence;
-    pool.tokenSymbol = _tokenSymbol;
 
-    voteInternal(proposalIndex, _from, _value/2, true);
-    voteInternal(proposalIndex, _from, _value/2, false);
+    voteInternal(_proposalIndex, _from, _value/2, true);
+    voteInternal(_proposalIndex, _from, _value/2, false);
   }
   
   function vote(
@@ -159,7 +174,7 @@ contract SemadaCore is SafeMath {
     
     Pool storage pool = validationPool[_proposalIndex];
       
-    REP rep = REP(erc20SymbolAddresses[pool.tokenSymbol]);
+    REP rep = REP(erc20SymbolAddresses[pool.tokenNumberIndex]);
     
     Vote memory newVote = Vote({from:_from, rep:_value, vote:_vote});
     
@@ -172,7 +187,7 @@ contract SemadaCore is SafeMath {
       Pool memory pool = validationPool[_proposalIndex];
       address tokenAddress;
       if(now >= pool.timeout){
-          tokenAddress = erc20SymbolAddresses[pool.tokenSymbol];
+          tokenAddress = erc20SymbolAddresses[pool.tokenNumberIndex];
           uint totalRep;
           uint totalYesRep;
           Vote[] memory votes = pool.votes;

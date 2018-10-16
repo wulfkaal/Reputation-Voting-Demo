@@ -7,6 +7,7 @@ import {
   persistProposal
 } from '../actions/proposals'
 import {PROPOSAL_STATUSES} from '../actions/proposals'
+import getWeb3 from '../utils/get-web3'
 
 const mapStateToProps = (state, ownProps) => {  
   return {
@@ -22,26 +23,41 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleViewDaoClick: id => {
       ownProps.history.push(`/daos/${id}/proposals`)  
     },
-    joinDao: async (daoId) => {
-      // TODO: call SemadaCore.newProposal()
-      // TODO: link proposal in db to semadacore
-      // API Create Proposal
-      await dispatch(persistProposal({
-        _id: 'new',
-        daoId: daoId,
-        name: 'Join DAO',
-        evidence: '',
-        status: PROPOSAL_STATUSES.active
-      }))
+    joinDao: async (web3, semadaCore, dao) => {
+     
+      web3 = getWeb3(web3)
+      let publicAddress = await web3.eth.getCoinbase()
+      semadaCore.setProvider(web3.currentProvider)
+      let semadaCoreInstance = await semadaCore.deployed()
       
+      try {
+        let getProposalTrx = await semadaCoreInstance.getProposal(dao.proposalIndex)
+        let tokenSymbol = getProposalTrx[1]
+        console.log("tokenSymbol : " + tokenSymbol)
+        let trx = await semadaCoreInstance.joinDao(tokenSymbol, 
+          {from: publicAddress, value:2000000})  
+        let proposalIndex = trx.logs[0].args.proposalIndex
+        alert(`New Proposal Index: ${proposalIndex}`)
+
+        await dispatch(persistProposal({
+          _id: 'new',
+          daoId: dao._id,
+          name: 'Join DAO',
+          evidence: '',
+          proposalIndex: proposalIndex,
+          status: PROPOSAL_STATUSES.active
+        }))
+      } catch (e) {
+        alert(`Failed to submit new DAO proposal: ${e}`)  
+      }
+           
       //TODO: Show waiting animation while voting occurs
       
       //TODO: Call SemadaCore.checkProposal() to close validation pool
       
       //TODO: notify user whether they were voted in
       
-      // redirect to Proposal view for DAO they are joining
-      ownProps.history.push(`/daos/${daoId}/proposals`)
+      ownProps.history.push(`/daos/${dao._id}/proposals`)
     },
   }
 }
