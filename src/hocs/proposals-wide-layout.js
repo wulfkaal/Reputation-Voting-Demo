@@ -110,10 +110,6 @@ const LayoutHOC = Page => class Layout extends React.Component {
             </div>
             
             <Typography>
-              SEM Balance: <b>{this.props.user ? this.props.user.sem: ''}</b>
-            </Typography>
-            &nbsp;
-            <Typography>
               REP Balance: <b>{
                 isNaN(this.props.repBalance) ? '' : this.props.repBalance
               }</b>

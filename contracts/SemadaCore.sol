@@ -29,6 +29,8 @@ contract SemadaCore is SafeMath {
   
   event NewProposalCreated(uint256 proposalIndex);
   event NewDaoCreated(uint256 tokenNumberIndex);
+  event CheckVoteResult(bool ended);
+  event SemadaInfo(string message);
 
   function getTokenAddress(uint256 _tokenNumberIndex) 
   public view returns (address tokenAddress){
@@ -44,6 +46,13 @@ contract SemadaCore is SafeMath {
       validationPool[_proposalIndex].name, 
       validationPool[_proposalIndex].timeout, 
       validationPool[_proposalIndex].evidence);
+  }
+  
+  function getVote(uint256 _proposalIndex, uint256 _voteIndex) view
+  public returns (address, uint256, bool) {
+    return (validationPool[_proposalIndex].votes[_voteIndex].from,
+      validationPool[_proposalIndex].votes[_voteIndex].rep,
+      validationPool[_proposalIndex].votes[_voteIndex].vote);
   }
 
   function joinDao(uint256 _tokenNumberIndex) 
@@ -146,10 +155,11 @@ contract SemadaCore is SafeMath {
     pool.from = _from;
     pool.tokenNumberIndex = _tokenNumberIndex;
     pool.name = _proposalName;
-    pool.timeout = now + 180;
+    pool.timeout = now + 15;
     pool.evidence = _proposalEvidence;
 
     voteInternal(_proposalIndex, _from, _value/2, true);
+    //TODO: should false vote be 0 account?
     voteInternal(_proposalIndex, _from, _value/2, false);
   }
   
@@ -188,7 +198,12 @@ contract SemadaCore is SafeMath {
   function checkVote(uint256 _proposalIndex) public {
       Pool memory pool = validationPool[_proposalIndex];
       address tokenAddress;
+      SemadaInfo("In Check Vote");
+      SemadaInfo(bytes32ToString(uintToBytes(now)));
+      SemadaInfo(bytes32ToString(uintToBytes(pool.timeout)));
+      
       if(now >= pool.timeout){
+          emit CheckVoteResult(true);
           tokenAddress = erc20SymbolAddresses[pool.tokenNumberIndex];
           uint totalRep;
           uint totalYesRep;
@@ -199,25 +214,33 @@ contract SemadaCore is SafeMath {
               totalYesRep = safeAdd(totalYesRep, votes[i].rep);
             }
           }
+          
           bool winningVote;
           if(totalYesRep >= safeDiv(totalRep, 2)){
             winningVote = true;
           }
+          
           REP rep = REP(tokenAddress);
+          
           for(uint j = 0; j < votes.length; j++){
               uint256 betAmtWon;
               if(winningVote && votes[j].vote){
-                betAmtWon = safeMul(votes[j].rep, 
-                  safeDiv(totalRep, totalYesRep));
+              
+                betAmtWon = 
+                  safePercentageOf(votes[j].rep, totalYesRep, totalRep, 2);
                   
                 rep.transferFrom(this, votes[j].from, betAmtWon);
               } else if (!winningVote && !votes[j].vote){
-                betAmtWon = safeMul(votes[j].rep, 
-                  safeDiv(totalRep, safeSub(totalRep,totalYesRep)));
+                
+                betAmtWon = 
+                  safePercentageOf(votes[j].rep, 
+                    totalRep-totalYesRep, totalRep, 2);
                   
                 rep.transferFrom(this, votes[j].from, betAmtWon);
               }
             }
+      } else {
+        emit CheckVoteResult(false);
       }
   }
 }
