@@ -8,9 +8,6 @@ import {
   PROPOSAL_STATUSES
 } from '../actions/proposals'
 import { getDaos } from '../actions/daos'
-import {
-  getUser
-} from '../actions/users'
 import getWeb3 from '../utils/get-web3'
 
 
@@ -46,7 +43,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         {from: publicAddress, value:2})  
         let proposalIndex = trx.logs[0].args.proposalIndex
         let result = await dispatch(persistProposal({
-                        _id: 'new',
+                        _id: proposal._id,
                         userId: userId,
                         daoId: dao._id,
                         name: proposal.evidence,
@@ -54,7 +51,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                         proposalIndex: proposalIndex,
                         status: PROPOSAL_STATUSES.active
                       }))
-        ownProps.history.push(`/proposals/${result.proposal._id}/pay`)
+        ownProps.history.push(`/proposals/${result.proposal._id}`)
       } catch (e) {
         alert(`Failed to submit new proposal: ${e}`)  
       }

@@ -31,12 +31,6 @@ class Proposal extends Component {
   componentDidMount() {
     let id = this.props.match.params.id
     this.props.getProposal(id)
-
-    if(this.props.proposal) {
-      if (!this.props.proposal.voteTimeEnd){
-        this.props.history.push(`/proposals/${id}/pay`)
-      }
-    }
   }
 
   render() {

@@ -1,6 +1,5 @@
 export const LOGIN = 'LOGIN'
 export const LOGOUT = 'LOGOUT'
-export const SAVE_CONTRACT_DETAILS = 'SAVE_CONTRACT_DETAILS'
 
 export const login = (web3, accessToken, semadaCore) => {
   return {
