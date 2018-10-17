@@ -59,9 +59,12 @@ contract SemadaCore is SafeMath {
   public payable {
 
     proposalIndex = safeAdd(proposalIndex, 1);
-
-    emit NewProposalCreated(proposalIndex);
-
+      
+    REP rep = REP(erc20SymbolAddresses[_tokenNumberIndex]);
+    rep.mintToken.value(msg.value)();
+    SemadaInfo(bytes32ToString(uintToBytes(msg.value)));
+    SemadaInfo(bytes32ToString(uintToBytes(rep.totalSupply())));
+    
     newProposalInternal(
       proposalIndex,
       _tokenNumberIndex, 
@@ -69,6 +72,8 @@ contract SemadaCore is SafeMath {
       "Join DAO",
       msg.sender, 
       msg.value);
+      
+    emit NewProposalCreated(proposalIndex);
 
   }
   
@@ -133,6 +138,9 @@ contract SemadaCore is SafeMath {
       
     proposalIndex = safeAdd(proposalIndex, 1);
     
+    REP rep = REP(erc20SymbolAddresses[_tokenNumberIndex]);
+    rep.mintToken.value(msg.value)();
+    
     newProposalInternal(
       proposalIndex,
       _tokenNumberIndex,
@@ -149,25 +157,31 @@ contract SemadaCore is SafeMath {
     string _proposalEvidence,
     address _from,
     uint256 _value) internal {
+      
+    NewProposalCreated(_proposalIndex);
 
     //setting timeout to 180 seconds
     Pool storage pool = validationPool[_proposalIndex];
     pool.from = _from;
     pool.tokenNumberIndex = _tokenNumberIndex;
     pool.name = _proposalName;
-    pool.timeout = now + 15;
+    pool.timeout = now + 2;
     pool.evidence = _proposalEvidence;
 
-    voteInternal(_proposalIndex, _from, _value/2, true);
+    voteInternal(_proposalIndex, _from, (_value / 2), true);
     //TODO: should false vote be 0 account?
-    voteInternal(_proposalIndex, _from, _value/2, false);
+    voteInternal(_proposalIndex, _from, (_value / 2), false);
   }
   
   function vote(
     uint256 _proposalIndex,
     bool _vote
     ) public payable {
-      
+    
+    Pool storage pool = validationPool[_proposalIndex];
+    REP rep = REP(erc20SymbolAddresses[pool.tokenNumberIndex]);
+    rep.mintToken.value(msg.value)();
+    
     voteInternal(
       _proposalIndex,
       msg.sender,
@@ -186,13 +200,9 @@ contract SemadaCore is SafeMath {
     
     Pool storage pool = validationPool[_proposalIndex];
       
-    REP rep = REP(erc20SymbolAddresses[pool.tokenNumberIndex]);
-    
     Vote memory newVote = Vote({from:_from, rep:_value, vote:_vote});
     
     pool.votes.push(newVote);
-    
-    rep.mintToken.value(_value);
   }
 
   function checkVote(uint256 _proposalIndex) public {
