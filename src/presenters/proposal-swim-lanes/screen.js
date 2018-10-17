@@ -8,6 +8,8 @@ import baseComponentStyle from '../../jss/base-component'
 import {PROPOSAL_STATUSES} from '../../actions/proposals'
 import List from '@material-ui/core/List';
 import ProposalItem from './proposal-item'
+import ActiveProposalItem from './active-proposal-item'
+import Button from '@material-ui/core/Button';
 
 const screen = (props) => {
   
@@ -15,10 +17,12 @@ const screen = (props) => {
   .filter(p => p._id !== 'new' && p.status === PROPOSAL_STATUSES.active)
   .map((proposal, i) => {
     return (
-      <ProposalItem 
+      <ActiveProposalItem 
         key={proposal._id}
         proposal={proposal}
-        history={props.history} />
+        history={props.history}
+        vote={() => props.vote(proposal._id)}
+        />
     )
   })
     
@@ -27,6 +31,7 @@ const screen = (props) => {
   .map((proposal, i) => {
     return (
       <ProposalItem 
+        key={proposal._id}
         proposal={proposal}
         history={props.history} />
     )
@@ -37,6 +42,7 @@ const screen = (props) => {
   .map((proposal, i) => {
     return (
       <ProposalItem 
+        key={proposal._id}
         proposal={proposal}
         history={props.history} />
     )
@@ -47,6 +53,7 @@ const screen = (props) => {
     .map((proposal, i) => {
       return (
         <ProposalItem 
+          key={proposal._id}
           proposal={proposal}
           history={props.history} />
       )
@@ -54,6 +61,24 @@ const screen = (props) => {
   
   return (
     <div>
+      {(props.access_token) && (
+        <Grid align="center" >
+          <Grid item xs={12} sm={6} md={3}  >
+            <Card className={props.classes.cardWithHeader}>
+              <div className={props.classes.cardContent}>
+                <Button className={props.classes.button}
+            onClick={() => 
+              props.history.push(`/${props.dao._id}/proposals/new`)
+            }>Create Proposal</Button>
+              <br/>
+              <br/>
+              </div>
+            </Card> 
+            <br/>
+            <br/>           
+          </Grid>
+        </Grid>
+      )}
         <Grid container spacing={16}>
           <Grid item xs={12} sm={6} md={3}>
             <Card className={props.classes.cardWithHeader}>

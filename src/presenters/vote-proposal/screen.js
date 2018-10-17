@@ -6,7 +6,9 @@ import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import baseComponentStyle from '../../jss/base-component'
 import Typography from '@material-ui/core/Typography'
-import { ValidatorForm} from 'react-material-ui-form-validator'
+import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator'
+import InputAdornment from '@material-ui/core/InputAdornment'
+import Switch from '@material-ui/core/Switch';
 
 const screen = (props) => {
   return (
@@ -14,7 +16,7 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.payProposal(props.user, props.proposal)
+          props.voteProposal(props.proposal, props.web3, props.semadaCore)
         }}
         onError={errors => console.log(errors)}
       >
@@ -25,14 +27,14 @@ const screen = (props) => {
               title: props.classes.cardHeaderContent,
               subheader: props.classes.cardHeaderContent,
             }}
-            title="Pay for news article to be verified"
-            subheader="Verification begins after payment"
+            title="Vote for Proposal"
+            subheader="Vote using the REP tokens within time"
           />
           <div className={props.classes.cardContent}>
             <Grid container spacing={16}>
               <Grid item xs={12}>
                 <Typography variant='caption'>
-                  News Article to Verify
+                  Proposal to Verify
                 </Typography>
                 <Typography variant='title'>
                   {props.proposal.url}
@@ -42,19 +44,45 @@ const screen = (props) => {
                   Cost
                 </Typography>
                 <Typography variant='title'>
-                  1 SEM 
-                </Typography>
-                <Typography variant='subheading'>
-                  (1 SEM = $0.17 USD - Updated 5 minutes ago from Binance)
-                </Typography>
-                <br/>
-                <Typography variant='caption'>
-                  Your SEM Balance
-                </Typography>
-                <Typography variant='title'>
-                  {props.user ? props.user.sem : ''} SEM
+                  <TextValidator
+                  name="rep"
+                  label="REP to Stake"
+                  placeholder="REP to Stake"
+                  className={props.classes.inputFullWidth}
+                  margin="normal"
+                  autoFocus={true}
+                  value={props.proposal.stake}
+                  validators={['required']}
+                  errorMessages={['required']}
+                  onChange={(e) => {
+                   props.saveProposal({
+                     _id: props.proposal._id, 
+                     stake: e.target.value
+                   })
+                  }}
+                  InputProps={{
+                    endAdornment: 
+                    <InputAdornment position="end">REP</InputAdornment>
+                  }}
+                />
                 </Typography>
               </Grid>  
+            </Grid>
+            <Grid container spacing={16}>
+              <Grid item xs={10}>
+                No
+                <Switch
+                  checked={props.proposal.vote}
+                  onChange={(e1) => {
+                   props.saveProposal({
+                     _id: props.proposal._id, 
+                     vote: e1.target.value
+                   })
+                  }}
+                  value={props.proposal.vote}
+                />
+                Yes
+              </Grid>
             </Grid>
             <Grid container spacing={16}>
               <Grid item xs={12} className={props.classes.contentRight}>
@@ -64,7 +92,7 @@ const screen = (props) => {
                   color="secondary" 
                   className={props.classes.button}
                 >
-                  Pay 1 SEM
+                  Vote
                 </Button>
               </Grid>
             </Grid>

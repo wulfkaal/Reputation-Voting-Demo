@@ -47,13 +47,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       } catch (e) {
         alert(`Failed to submit new DAO proposal: ${e}`)  
       }
-           
-      //TODO: Show waiting animation while voting occurs
-      
-      //TODO: Call SemadaCore.checkProposal() to close validation pool
-      
-      //TODO: notify user whether they were voted in
-      
+                 
       ownProps.history.push(`/daos/${dao._id}/proposals`)
     },
   }

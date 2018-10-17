@@ -58,6 +58,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         dispatch(receiveRepBalance(rep.toNumber()))
       }
     },
+    vote: (id) => {
+      ownProps.history.push(`/proposals/${id}/vote`)
+    },
     startTimer: () => {
       return setInterval(() => {
         let proposalList = values(ownProps.proposals)

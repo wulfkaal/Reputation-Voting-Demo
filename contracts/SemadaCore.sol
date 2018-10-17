@@ -136,6 +136,8 @@ contract SemadaCore is SafeMath {
     ) public payable {
       
     proposalIndex = safeAdd(proposalIndex, 1);
+
+    emit NewProposalCreated(proposalIndex);
     
     REP rep = REP(erc20SymbolAddresses[_tokenNumberIndex]);
     rep.mintToken.value(msg.value)();

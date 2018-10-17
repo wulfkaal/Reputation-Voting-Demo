@@ -5,7 +5,6 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import { withStyles } from '@material-ui/core/styles'
-import AddIcon from '@material-ui/icons/Add'
 import ListIcon from '@material-ui/icons/List'
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -15,13 +14,11 @@ import {connect} from 'react-redux'
 import {getUser} from '../actions/users'
 import {
   handleProfileMenu,
-  handleDaoMenu
 } from '../actions/ui'
 import {
   logout
 } from '../actions/auth'
 import {resetNewProposal} from '../actions/proposals'
-import {resetNewDao} from '../actions/daos'
 import logoImage from './logo.png'
 
 
@@ -130,14 +127,6 @@ const LayoutHOC = Page => class Layout extends React.Component {
 
             { ( this.props.access_token ) && (
             <div>
-                <Button color='inherit'
-                  onClick={() => {
-                    this.props.handleNewProposalClick()
-                  }}
-                >
-                  <AddIcon />
-                  New Proposal
-                </Button>
                 <IconButton
                   aria-owns={ Boolean(this.props.profileMenuAnchorEl) ? 'menu-appbar' : null}
                   aria-haspopup="true"

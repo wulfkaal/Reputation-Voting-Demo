@@ -3,15 +3,11 @@ import { withStyles } from '@material-ui/core/styles'
 import baseComponentStyle from '../../jss/base-component'
 import Typography from '@material-ui/core/Typography'
 import ListItem from '@material-ui/core/ListItem'
-import Grid from '@material-ui/core/Grid'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemText from '@material-ui/core/ListItemText'
 import Button from '@material-ui/core/Button'
-import IconButton from '@material-ui/core/IconButton';
-import CommentIcon from '@material-ui/icons/Comment';
 
 const dao = (props) => {
-  // TODO: make button click take precedence over list click
   return (
     <div>
       <ListItem 

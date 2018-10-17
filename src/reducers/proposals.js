@@ -9,7 +9,8 @@ const initialState = {
   new: {
     _id: 'new', 
     url: '', 
-    stake: true, 
+    stake: 2, 
+    vote: 'yes',
     status: PROPOSAL_STATUSES.active,
     voteTimeRemaining: '',
     yesVotes: 0,
