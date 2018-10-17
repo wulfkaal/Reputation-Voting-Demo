@@ -14,7 +14,7 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.persistProposal({...props.proposal}, props.user._id)
+          props.persistProposal({...props.proposal}, props.user._id, props.dao, props.web3, props.semadaCore)
         }}
         onError={errors => console.log(errors)}
       >
@@ -47,13 +47,13 @@ const screen = (props) => {
                   className={props.classes.inputFullWidth}
                   margin="normal"
                   autoFocus={true}
-                  value={props.proposal.url}
+                  value={props.proposal.evidence}
                   validators={['required']}
                   errorMessages={['required']}
                   onChange={(e) => {
                    props.saveProposal({
                      _id: props.proposal._id, 
-                     url: e.target.value
+                     evidence: e.target.value
                    })
                   }}
                   InputProps={{

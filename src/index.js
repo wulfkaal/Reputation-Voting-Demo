@@ -22,19 +22,18 @@ ReactDOM.render(
   <Provider store={store}>
     <Router>
       <Switch>
-        <Route path="/proposals/new" component={NewProposalContainer} />
+        <Route path="/:id/proposals/new" component={NewProposalContainer} />
         <Route path="/proposals/:id/pay" component={PayProposalContainer} />
         <Route path="/proposals/:id/payconfirmed" 
           component={PayConfirmedProposalContainer} />
         <Route path="/proposals/:id" component={ProposalContainer} />
-        <Route path="/proposals" component={ProposalSwimLanesContainer} />
         <Route path="/daos/new" component={NewDaoContainer} />
         <Route path="/daos/:id/proposals" 
           component={ProposalSwimLanesContainer} />
         <Route path="/daos/:id" component={DaoContainer} />
         <Route path="/daos" component={DaosContainer} />
         <Route path="/users/:email" component={UserContainer} />
-        <Route path="/" component={ProposalSwimLanesContainer} />
+        <Route path="/" component={DaosContainer} />
       </Switch>
     </Router>
   </Provider>, 

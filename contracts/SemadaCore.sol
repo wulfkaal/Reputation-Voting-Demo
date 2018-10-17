@@ -132,6 +132,8 @@ contract SemadaCore is SafeMath {
     ) public payable {
       
     proposalIndex = safeAdd(proposalIndex, 1);
+
+    emit NewProposalCreated(proposalIndex);
     
     newProposalInternal(
       proposalIndex,

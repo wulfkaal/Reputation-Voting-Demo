@@ -8,6 +8,7 @@ import baseComponentStyle from '../../jss/base-component'
 import {PROPOSAL_STATUSES} from '../../actions/proposals'
 import List from '@material-ui/core/List';
 import ProposalItem from './proposal-item'
+import Button from '@material-ui/core/Button';
 
 const screen = (props) => {
   
@@ -54,6 +55,24 @@ const screen = (props) => {
   
   return (
     <div>
+      {(props.access_token) && (
+        <Grid align="center" >
+          <Grid item xs={12} sm={6} md={3}  >
+            <Card className={props.classes.cardWithHeader}>
+              <div className={props.classes.cardContent}>
+                <Button className={props.classes.button}
+            onClick={() => 
+              props.history.push(`/${props.dao._id}/proposals/new`)
+            }>Create Proposal</Button>
+              <br/>
+              <br/>
+              </div>
+            </Card> 
+            <br/>
+            <br/>           
+          </Grid>
+        </Grid>
+      )}
         <Grid container spacing={16}>
           <Grid item xs={12} sm={6} md={3}>
             <Card className={props.classes.cardWithHeader}>

@@ -11,7 +11,6 @@ import IconButton from '@material-ui/core/IconButton';
 import CommentIcon from '@material-ui/icons/Comment';
 
 const dao = (props) => {
-  // TODO: make button click take precedence over list click
   return (
     <div>
       <ListItem 
