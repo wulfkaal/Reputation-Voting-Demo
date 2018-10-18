@@ -12,7 +12,6 @@ import {
 
 const mapStateToProps = (state, ownProps) => {  
   let id = ownProps.match.params.id
-  
   return {
     proposal: state.proposals[id]
   }
@@ -22,6 +21,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     getProposal: id => {
       return dispatch(getProposal(id))
+    },
+    vote: (id) => {
+      ownProps.history.push(`/proposals/${id}/vote`)
     },
   }
 }

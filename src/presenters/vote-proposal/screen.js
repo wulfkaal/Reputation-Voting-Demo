@@ -37,34 +37,35 @@ const screen = (props) => {
                   Proposal to Verify
                 </Typography>
                 <Typography variant='title'>
-                  {props.proposal.url}
+                  {props.proposal.name}
                 </Typography>
                 <br/>
-                <Typography variant='caption'>
-                  Cost
-                </Typography>
                 <Typography variant='title'>
                   <TextValidator
-                  name="rep"
-                  label="REP to Stake"
-                  placeholder="REP to Stake"
-                  className={props.classes.inputFullWidth}
-                  margin="normal"
-                  autoFocus={true}
-                  value={props.proposal.stake}
-                  validators={['required']}
-                  errorMessages={['required']}
-                  onChange={(e) => {
-                   props.saveProposal({
-                     _id: props.proposal._id, 
-                     stake: e.target.value
-                   })
-                  }}
-                  InputProps={{
-                    endAdornment: 
-                    <InputAdornment position="end">REP</InputAdornment>
-                  }}
-                />
+                    name="rep"
+                    label="REP to Stake"
+                    placeholder="REP to Stake"
+                    className={props.classes.inputFullWidth}
+                    margin="normal"
+                    autoFocus={true}
+                    value={props.proposal.stake}
+                    validators={['required']}
+                    errorMessages={['required']}
+                    onChange={(e) => {
+                     if (e.target.value > props.repBalance){
+                      alert("Stake cannot be greater than rep balance")
+                     } else {
+                       props.saveProposal({
+                         _id: props.proposal._id, 
+                         stake: e.target.value
+                       })
+                     }
+                    }}
+                    InputProps={{
+                      endAdornment: 
+                      <InputAdornment position="end">REP</InputAdornment>
+                    }}
+                  />
                 </Typography>
               </Grid>  
             </Grid>
@@ -72,11 +73,16 @@ const screen = (props) => {
               <Grid item xs={10}>
                 No
                 <Switch
-                  checked={props.proposal.vote}
-                  onChange={(e1) => {
+                  onChange={(e) => {
+                   let vote
+                   if (e.target.value==='yes'){
+                     vote='no'
+                   } else {
+                     vote='yes'
+                   }
                    props.saveProposal({
                      _id: props.proposal._id, 
-                     vote: e1.target.value
+                     vote: vote
                    })
                   }}
                   value={props.proposal.vote}

@@ -34,17 +34,10 @@ const screen = (props) => {
           <Grid container spacing={16}>
             <Grid item xs={12} sm={6}>
               <Typography variant='caption'>
-                News Article
+                {props.proposal.name}
               </Typography>
               <Typography variant='title'>
-                {props.proposal.url}
-              </Typography>
-              <br/>
-              <Typography variant='caption'>
-                Minimum Quorum Required
-              </Typography>
-              <Typography variant='title'>
-                6 votes
+                {props.proposal.evidence}
               </Typography>
               <br/>
               <Typography variant='caption'>
@@ -71,8 +64,8 @@ const screen = (props) => {
             </Grid>  
             <Grid item xs={12} sm={6}>
               <VoteChart 
-                yes={props.proposal.yesVotes} 
-                no={props.proposal.noVotes}
+                yes={props.proposal.yesRepStaked} 
+                no={props.proposal.noRepStaked}
                 update={':'}
               />
             </Grid>

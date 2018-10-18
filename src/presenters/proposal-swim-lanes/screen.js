@@ -8,7 +8,6 @@ import baseComponentStyle from '../../jss/base-component'
 import {PROPOSAL_STATUSES} from '../../actions/proposals'
 import List from '@material-ui/core/List';
 import ProposalItem from './proposal-item'
-import ActiveProposalItem from './active-proposal-item'
 import Button from '@material-ui/core/Button';
 
 const screen = (props) => {
@@ -17,11 +16,10 @@ const screen = (props) => {
   .filter(p => p._id !== 'new' && p.status === PROPOSAL_STATUSES.active)
   .map((proposal, i) => {
     return (
-      <ActiveProposalItem 
+      <ProposalItem 
         key={proposal._id}
         proposal={proposal}
         history={props.history}
-        vote={() => props.vote(proposal._id)}
         />
     )
   })

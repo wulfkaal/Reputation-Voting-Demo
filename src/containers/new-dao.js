@@ -50,7 +50,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       
       try {
         let trx = await semadaCoreInstance.createDao(dao.name, 
-          {from: publicAddress, value:2})  
+          {from: publicAddress, value:20})  
         // get the proposalIndex to use for checking the vote outcome later
         let tokenNumberIndex = trx.logs[0].args.tokenNumberIndex.toNumber()
         let proposalIndex = trx.logs[1].args.proposalIndex.toNumber()
