@@ -27,7 +27,7 @@ contract SemadaCore is SafeMath {
 
   mapping(uint256 => Pool) validationPool;
   
-  event NewProposalCreated(uint256 proposalIndex);
+  event NewProposalCreated(uint256 proposalIndex, uint256 timeout);
   event NewDaoCreated(uint256 tokenNumberIndex);
   event SemadaInfo(string message);
   event SemDistributed(address to, uint256 value);
@@ -62,8 +62,8 @@ contract SemadaCore is SafeMath {
       
     REP rep = REP(erc20SymbolAddresses[_tokenNumberIndex]);
     rep.mintToken.value(msg.value)();
-    SemadaInfo(bytes32ToString(uintToBytes(msg.value)));
-    SemadaInfo(bytes32ToString(uintToBytes(rep.totalSupply())));
+    emit SemadaInfo(bytes32ToString(uintToBytes(msg.value)));
+    emit SemadaInfo(bytes32ToString(uintToBytes(rep.totalSupply())));
     
     newProposalInternal(
       proposalIndex,
@@ -72,9 +72,6 @@ contract SemadaCore is SafeMath {
       "Join DAO",
       msg.sender, 
       msg.value);
-      
-    emit NewProposalCreated(proposalIndex);
-
   }
   
   function bytes32ToString (bytes32 data) internal pure returns (string) {
@@ -118,7 +115,7 @@ contract SemadaCore is SafeMath {
     
     proposalIndex = safeAdd(proposalIndex, 1);
     
-    NewDaoCreated(tokenNumberIndex);
+    emit NewDaoCreated(tokenNumberIndex);
         
     newProposalInternal(
       proposalIndex,
@@ -137,8 +134,6 @@ contract SemadaCore is SafeMath {
       
     proposalIndex = safeAdd(proposalIndex, 1);
 
-    emit NewProposalCreated(proposalIndex);
-    
     REP rep = REP(erc20SymbolAddresses[_tokenNumberIndex]);
     rep.mintToken.value(msg.value)();
     
@@ -158,15 +153,16 @@ contract SemadaCore is SafeMath {
     string _proposalEvidence,
     address _from,
     uint256 _value) internal {
-      
-    NewProposalCreated(_proposalIndex);
+    
+    //setting timeout to 180 seconds from now
+    uint256 _timeout = now + 180;
+    emit NewProposalCreated(_proposalIndex, _timeout);
 
-    //setting timeout to 180 seconds
     Pool storage pool = validationPool[_proposalIndex];
     pool.from = _from;
     pool.tokenNumberIndex = _tokenNumberIndex;
     pool.name = _proposalName;
-    pool.timeout = now + 2;
+    pool.timeout = _timeout;
     pool.evidence = _proposalEvidence;
 
     voteInternal(_proposalIndex, _from, (_value / 2), true);
@@ -179,15 +175,13 @@ contract SemadaCore is SafeMath {
     bool _vote,
     uint256 _rep
     ) public {
-    
-    Pool storage pool = validationPool[_proposalIndex];
-    REP rep = REP(erc20SymbolAddresses[pool.tokenNumberIndex]);
+    REP rep = REP(erc20SymbolAddresses[validationPool[_proposalIndex].tokenNumberIndex]);
     rep.transferFrom(msg.sender, this, _rep);
     
     voteInternal(
       _proposalIndex,
       msg.sender,
-      msg.value,
+      _rep,
       _vote
     );
       

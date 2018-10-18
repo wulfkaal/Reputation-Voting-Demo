@@ -7,8 +7,12 @@ import {
   persistProposal,
   PROPOSAL_STATUSES
 } from '../actions/proposals'
-import { getDaos } from '../actions/daos'
+import { 
+  getDaos,
+  receiveRepBalance
+} from '../actions/daos'
 import getWeb3 from '../utils/get-web3'
+import getTokenBalance from '../utils/getTokenBalance'
 
 
 const mapStateToProps = (state, ownProps) => {  
@@ -29,28 +33,36 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     saveProposal: proposal => {
       dispatch(saveProposal(proposal))
     },
-    persistProposal: async (proposal, userId, dao, web3, semadaCore) => {
+    persistProposal: async (proposal, userId, dao, web3, semadaCoreContract) => {
       web3 = getWeb3(web3)
       let publicAddress = await web3.eth.getCoinbase()
-      semadaCore.setProvider(web3.currentProvider)
-      let semadaCoreInstance = await semadaCore.deployed()
-      
+      semadaCoreContract.setProvider(web3.currentProvider)
+      let semadaCoreInstance = await semadaCoreContract.deployed()
+     
       try {        
         let trx = await semadaCoreInstance.newProposal(
          dao.tokenNumberIndex,
+         proposal.name,
          proposal.evidence,
-         proposal.evidence,
-        {from: publicAddress, value:2})  
+        {from: publicAddress, value:proposal.stake})  
         let proposalIndex = trx.logs[0].args.proposalIndex
+        let timeout = trx.logs[0].args.timeout
         let result = await dispatch(persistProposal({
                         _id: proposal._id,
                         userId: userId,
                         daoId: dao._id,
-                        name: proposal.evidence,
+                        name: proposal.name,
                         evidence: proposal.evidence,
                         proposalIndex: proposalIndex,
-                        status: PROPOSAL_STATUSES.active
+                        tokenNumberIndex: dao.tokenNumberIndex,
+                        status: PROPOSAL_STATUSES.active,
+                        voteTimeEnd: timeout,
+                        voteTimeRemaining: timeout - (parseInt(new Date()/1000)),
+                        noRepStaked: proposal.stake/2,
+                        yesRepStaked: proposal.stake/2
                       }))
+        let tokenBal = await getTokenBalance(web3, semadaCoreContract, dao.tokenNumberIndex)
+        dispatch(receiveRepBalance(tokenBal))
         ownProps.history.push(`/proposals/${result.proposal._id}`)
       } catch (e) {
         alert(`Failed to submit new proposal: ${e}`)  

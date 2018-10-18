@@ -6,14 +6,12 @@ import {
   getProposals,
   saveProposal
 } from '../actions/proposals'
+import values from 'lodash/values'
+import getTokenBalance from '../utils/getTokenBalance'
+import { getDaos } from '../actions/daos'
 import {
   receiveRepBalance
 } from '../actions/daos'
-import values from 'lodash/values'
-import RepContract from '../contracts/REP.json'
-import getWeb3 from '../utils/get-web3'
-import truffleContract from "truffle-contract"
-import { getDaos } from '../actions/daos'
 
 const mapStateToProps = (state, ownProps) => {  
   let daoId = ownProps.match.params.id
@@ -33,33 +31,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     getProposals: daoId => {
       dispatch(getProposals(daoId))
     },
-    getRepBalance: async (web3, semadaCoreContract, tokenNumberIndex) => {
-      if(web3 && semadaCoreContract) {
-        web3 = getWeb3(web3)
-        
-        let publicAddress = await web3.eth.getCoinbase()
-        semadaCoreContract.setProvider(web3.currentProvider)
-        let semadaCoreInstance = await semadaCoreContract.deployed()
-        
-        const repContract = truffleContract(RepContract)
-        repContract.setProvider(web3.currentProvider)
-        let rep
-        
-        try {
-          let repAddress = await semadaCoreInstance
-            .getTokenAddress(tokenNumberIndex)
-          
-          let repInstance = await repContract.at(repAddress)
-          rep = await repInstance.balanceOf(publicAddress)
-        } catch (e) {
-          alert(`Failed to get REP balance: ${e}`)
-        }
-        
-        dispatch(receiveRepBalance(rep.toNumber()))
-      }
-    },
-    vote: (id) => {
-      ownProps.history.push(`/proposals/${id}/vote`)
+    getRepBalance: async(web3, semadaCoreContract, tokenNumberIndex) => {
+      let tokenBal = await getTokenBalance(web3, semadaCoreContract, tokenNumberIndex)
+      console.log(tokenBal)
+      dispatch(receiveRepBalance(tokenBal))
     },
     startTimer: () => {
       return setInterval(() => {
