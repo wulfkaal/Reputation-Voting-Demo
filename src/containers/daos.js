@@ -2,12 +2,17 @@ import React, { Component } from 'react'
 import ProposalsWideLayout from '../hocs/proposals-wide-layout'
 import {connect} from 'react-redux'
 import DaosScreen from '../presenters/daos/screen'
-import { getDaos } from '../actions/daos'
+import { 
+  getDaos,
+  receiveRepBalance
+ } from '../actions/daos'
 import {
   persistProposal
 } from '../actions/proposals'
 import {PROPOSAL_STATUSES} from '../actions/proposals'
 import getWeb3 from '../utils/get-web3'
+import getTokenBalance from '../utils/getTokenBalance'
+
 
 const mapStateToProps = (state, ownProps) => {  
   return {
@@ -23,16 +28,16 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleViewDaoClick: id => {
       ownProps.history.push(`/daos/${id}/proposals`)  
     },
-    joinDao: async (web3, semadaCore, dao) => {
+    joinDao: async (web3, semadaCoreContract, dao) => {
      
       web3 = getWeb3(web3)
       let publicAddress = await web3.eth.getCoinbase()
-      semadaCore.setProvider(web3.currentProvider)
-      let semadaCoreInstance = await semadaCore.deployed()
+      semadaCoreContract.setProvider(web3.currentProvider)
+      let semadaCoreInstance = await semadaCoreContract.deployed()
       
       try {        
         let trx = await semadaCoreInstance.joinDao(dao.tokenNumberIndex, 
-          {from: publicAddress, value:2000000})  
+          {from: publicAddress, value:20})  
           
         let proposalIndex = trx.logs[0].args.proposalIndex
         
@@ -44,6 +49,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           proposalIndex: proposalIndex,
           status: PROPOSAL_STATUSES.active
         }))
+        let tokenBal = await getTokenBalance(web3, semadaCoreContract, dao.tokenNumberIndex)
+        dispatch(receiveRepBalance(tokenBal))
       } catch (e) {
         alert(`Failed to submit new DAO proposal: ${e}`)  
       }

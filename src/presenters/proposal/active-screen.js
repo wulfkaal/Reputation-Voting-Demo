@@ -5,10 +5,11 @@ import { withStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import baseComponentStyle from '../../jss/base-component'
 import Typography from '@material-ui/core/Typography'
+import Button from '@material-ui/core/Button'
 import VoteChart from './vote-chart'
 
 const screen = (props) => {
-  let voteTimeEnd = new Date(props.proposal.voteTimeEnd)
+  let voteTimeEnd = new Date(props.proposal.voteTimeEnd * 1000)
   .toUTCString()
 
   let totalRepStaked = props.proposal.yesRepStaked + props.proposal.noRepStaked
@@ -34,17 +35,10 @@ const screen = (props) => {
           <Grid container spacing={16}>
             <Grid item xs={12} sm={6}>
               <Typography variant='caption'>
-                News Article
+                {props.proposal.name}
               </Typography>
               <Typography variant='title'>
-                {props.proposal.url}
-              </Typography>
-              <br/>
-              <Typography variant='caption'>
-                Minimum Quorum Required
-              </Typography>
-              <Typography variant='title'>
-                6 votes
+                {props.proposal.evidence}
               </Typography>
               <br/>
               <Typography variant='caption'>
@@ -78,11 +72,15 @@ const screen = (props) => {
             </Grid>  
             <Grid item xs={12} sm={6}>
               <VoteChart 
-                yes={props.proposal.yesVotes} 
-                no={props.proposal.noVotes} />
+                yes={props.proposal.yesRepStaked} 
+                no={props.proposal.noRepStaked} />
             </Grid>
           </Grid>
         </div>
+        <Button className={props.classes.button}
+          onClick={() => props.vote(props.proposal._id)} >
+          Vote
+        </Button>
       </Card>
     </div>
   )

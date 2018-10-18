@@ -34,6 +34,27 @@ const screen = (props) => {
             <Grid container spacing={16}>
               <Grid item xs={10}>
                 <TextValidator
+                  name="Name"
+                  label="Name"
+                  placeholder="Name"
+                  className={props.classes.inputFullWidth}
+                  margin="normal"
+                  autoFocus={true}
+                  value={props.proposal.name}
+                  validators={['required']}
+                  errorMessages={['required']}
+                  onChange={(e) => {
+                   props.saveProposal({
+                     _id: props.proposal._id, 
+                     name: e.target.value
+                   })
+                  }}
+                />
+              </Grid>  
+            </Grid>
+            <Grid container spacing={16}>
+              <Grid item xs={10}>
+                <TextValidator
                   name="url"
                   label="URL"
                   placeholder="URL"
@@ -88,22 +109,6 @@ const screen = (props) => {
               </Grid>  
             </Grid>
             <br/>
-            <Grid container spacing={16}>
-              <Grid item xs={10}>
-                No
-                <Switch
-                  checked={props.proposal.vote}
-                  onChange={(e1) => {
-                   props.saveProposal({
-                     _id: props.proposal._id, 
-                     vote: e1.target.value
-                   })
-                  }}
-                  value={props.proposal.vote}
-                />
-                Yes
-              </Grid>
-            </Grid>
             <Grid container spacing={16}>
               <Grid item xs={12} className={props.classes.contentRight}>
                 <Button 

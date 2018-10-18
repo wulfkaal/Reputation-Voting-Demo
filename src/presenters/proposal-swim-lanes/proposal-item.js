@@ -8,10 +8,7 @@ import {PROPOSAL_STATUSES} from '../../actions/proposals'
 
 
 const proposalItem = (props) => {
-  //Data to display:
-  // % of DAO REP tokens allocated (random)
-  // yes votes
-  // no votes
+
   let totalRepStaked = props.proposal.yesRepStaked + props.proposal.noRepStaked
   let yesRepPercent = Math.floor(100 * (props.proposal.yesRepStaked / totalRepStaked))
   let noRepPercent = Math.floor(100 * (props.proposal.noRepStaked / totalRepStaked))

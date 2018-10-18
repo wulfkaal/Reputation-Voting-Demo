@@ -211,13 +211,8 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
       // if no time remaining, update status based on votes
       // saveProposal,persistProposal every time anything is changed
       // (including voteTimeRemaining)
-      let now = new Date().getTime()
-      let remaining = proposal.voteTimeEnd - now
-            
-      remaining = remaining < 0 ? 0 : Math.floor(remaining / 1000)
-      proposal.voteTimeRemaining = remaining
-      
-      if(remaining > 0) {
+     
+      if(proposal.voteTimeRemaining > 0) {
         // random vote
         let vote = Math.floor(Math.random() * 5)
         let repStaked = Math.floor(Math.random() * 5)

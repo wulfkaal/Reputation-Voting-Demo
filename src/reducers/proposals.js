@@ -9,12 +9,10 @@ const initialState = {
   new: {
     _id: 'new', 
     url: '', 
+    vote: 'no',
     stake: 2, 
-    vote: 'yes',
     status: PROPOSAL_STATUSES.active,
     voteTimeRemaining: '',
-    yesVotes: 0,
-    noVotes: 0,
     noRepStaked: 0,
     yesRepStaked: 0
   }
