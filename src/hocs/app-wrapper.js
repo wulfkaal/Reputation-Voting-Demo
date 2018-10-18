@@ -26,8 +26,7 @@ const mapStateToProps = (state, ownProps) => {
     repBalance: state.daos.rep,
     baseProposals: values(state.proposals)
       .filter(p => p._id !== 'new' && 
-        p.status === PROPOSAL_STATUSES.active &&
-        p.voteTimeEnd)
+        p.status === PROPOSAL_STATUSES.active)
   }
 }
 
@@ -150,11 +149,58 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     }
     clearInterval(this.timer)
     this.timer = setInterval(() => {
-      this.manageProposals()
+      this.refreshData(this.props.web3)
     }, 1000)
   }
   
+  async refreshData(web3) {
+    // 1. call SemadaCore.checkVote on all proposals that are not complete
+    // update API with proposal status if it changes (pass/fail)
+        
+    let proposals = this.props.baseProposals
+        
+    for(let i = 0; i < proposals.length; i++){
+      let proposal = {...proposals[i]}
+      
+      // call SemadaCore.checkVote()
+      let publicAddress = await web3.eth.getCoinbase()
+      const semadaCore = truffleContract(SemadaCoreContract)
+      semadaCore.setProvider(web3.currentProvider)
+      let semadaCoreInstance = await semadaCore.deployed()
+      
+      let proposalStatus = await semadaCoreInstance
+        .checkVote(proposal.proposalIndex)
+      
+      // event is emitted with outcome (active, pass, fail)
+      // event is emitted with yes rep staked
+      // event is emitted with no rep stated
+      switch(trx.logs[0].args.status){
+      case 'pass':
+        proposal.status = PROPOSAL_STATUSES.pass
+        proposal.yesRepStaked = trx.logs[0].args.yesRepStaked
+        this.props.baseSaveProposal(proposal)
+        this.props.basePersistProposal(proposal)
+        break;
+      case 'fail':
+        proposal.status = PROPOSAL_STATUSES.fail
+        this.props.baseSaveProposal(proposal)
+        this.props.basePersistProposal(proposal)      
+        break;
+      case 'timeout':
+        proposal.status = PROPOSAL_STATUSES.timeout
+        this.props.baseSaveProposal(proposal)
+        this.props.basePersistProposal(proposal)
+        break;
+      }
+      
+      // save/persist proposal to API with new status
+    }
+    
+    // 2. refresh REP balance for DAO if a DAO is currently selected
+  }
+  
   //Voting simulation
+  //This isn't used right now, but could be in the future so I'm not deleting
   async manageProposals() {
     let proposals = this.props.baseProposals
         

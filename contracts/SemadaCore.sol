@@ -31,6 +31,7 @@ contract SemadaCore is SafeMath {
   event NewDaoCreated(uint256 tokenNumberIndex);
   event SemadaInfo(string message);
   event SemDistributed(address to, uint256 value);
+  event ProposalStatus(string status, uint256 yesRepStaked, uint256 noRepStaked);
 
   function getTokenAddress(uint256 _tokenNumberIndex) 
   public view returns (address tokenAddress){
@@ -210,6 +211,7 @@ contract SemadaCore is SafeMath {
   function checkVote(uint256 _proposalIndex) public {
       Pool memory pool = validationPool[_proposalIndex];
       address tokenAddress;
+      bool winningVote;
       
       if(now >= pool.timeout){
         tokenAddress = erc20SymbolAddresses[pool.tokenNumberIndex];
@@ -223,29 +225,39 @@ contract SemadaCore is SafeMath {
           }
         }
         
-        bool winningVote;
         if(totalYesRep >= safeDiv(totalRep, 2)){
           winningVote = true;
         }
         
         REP rep = REP(tokenAddress);
         
-        for(uint j = 0; j < votes.length; j++){
-          uint256 betAmtWon;
-          if(winningVote && votes[j].vote){
-          
-            betAmtWon = 
-              safePercentageOf(votes[j].rep, totalYesRep, totalRep, 2);
-              
-            rep.transferFrom(this, votes[j].from, betAmtWon);
-          } else if (!winningVote && !votes[j].vote){
+        if(now >= pool.timeout){
+          for(uint j = 0; j < votes.length; j++){
+            uint256 betAmtWon;
+            if(winningVote && votes[j].vote){
             
-            betAmtWon = 
-              safePercentageOf(votes[j].rep, 
-                totalRep-totalYesRep, totalRep, 2);
+              betAmtWon = 
+                safePercentageOf(votes[j].rep, totalYesRep, totalRep, 2);
+                
+              rep.transferFrom(this, votes[j].from, betAmtWon);
+            } else if (!winningVote && !votes[j].vote){
               
-            rep.transferFrom(this, votes[j].from, betAmtWon);
+              betAmtWon = 
+                safePercentageOf(votes[j].rep, 
+                  totalRep-totalYesRep, totalRep, 2);
+                
+              rep.transferFrom(this, votes[j].from, betAmtWon);
+            }
           }
+          
+          if(winningVote) {
+            emit ProposalStatus("pass", totalYesRep, totalRep - totalYesRep);  
+          } else {
+            emit ProposalStatus("fail", totalYesRep, totalRep - totalYesRep);  
+          }
+          
+        } else {
+          emit ProposalStatus("active", totalYesRep, totalRep - totalYesRep);
         }
       }
   }
