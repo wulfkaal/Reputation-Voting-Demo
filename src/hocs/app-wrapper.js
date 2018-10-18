@@ -17,6 +17,7 @@ import {
   login,
   logout
 } from '../actions/auth'
+import getWeb3 from '../utils/get-web3'
 
 const mapStateToProps = (state, ownProps) => {  
   return {
@@ -147,54 +148,67 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     if (jssStyles && jssStyles.parentNode) {
       jssStyles.parentNode.removeChild(jssStyles);
     }
+    
     clearInterval(this.timer)
-    this.timer = setInterval(() => {
-      this.refreshData(this.props.web3)
-    }, 1000)
+    let web3 = getWeb3(this.props.web3)
+
+    const contract = truffleContract(SemadaCoreContract);
+    if(contract){
+      contract.setProvider(web3.currentProvider)
+      contract.deployed()
+      .then((semadaCoreInstance) => {
+        // this.timer = setInterval(() => {
+        //   this.refreshData(web3, semadaCoreInstance)
+        // }, 1000)
+      })
+    }
+    
+    
   }
   
-  async refreshData(web3) {
+  async refreshData(web3, semadaCoreInstance) {
     // 1. call SemadaCore.checkVote on all proposals that are not complete
     // update API with proposal status if it changes (pass/fail)
-        
+
+    
+    
     let proposals = this.props.baseProposals
+    console.log("HERE 1")
+    if(semadaCoreInstance){
+      for(let i = 0; i < proposals.length; i++){
+        console.log("HERE 2")
+        let proposal = {...proposals[i]}
+        console.log("HERE 3")
+        // call SemadaCore.checkVote()
+        let publicAddress = await web3.eth.getCoinbase()
+        console.log("HERE 4")
+        let proposalStatus = await semadaCoreInstance
+          .checkVote(proposal.proposalIndex)
+        console.log("HERE 5")
+        // event is emitted with outcome (active, pass, fail)
+        // event is emitted with yes rep staked
+        // event is emitted with no rep stated
+        proposal.yesRepStaked = proposalStatus.logs[0].args.yesRepStaked
+        proposal.noRepStaked = proposalStatus.logs[0].args.noRepStaked
         
-    for(let i = 0; i < proposals.length; i++){
-      let proposal = {...proposals[i]}
-      
-      // call SemadaCore.checkVote()
-      let publicAddress = await web3.eth.getCoinbase()
-      const semadaCore = truffleContract(SemadaCoreContract)
-      semadaCore.setProvider(web3.currentProvider)
-      let semadaCoreInstance = await semadaCore.deployed()
-      
-      let proposalStatus = await semadaCoreInstance
-        .checkVote(proposal.proposalIndex)
-      
-      // event is emitted with outcome (active, pass, fail)
-      // event is emitted with yes rep staked
-      // event is emitted with no rep stated
-      switch(trx.logs[0].args.status){
-      case 'pass':
-        proposal.status = PROPOSAL_STATUSES.pass
-        proposal.yesRepStaked = trx.logs[0].args.yesRepStaked
+        switch(proposalStatus.logs[0].args.status){
+        case 'pass':
+          proposal.status = PROPOSAL_STATUSES.pass
+          break;
+        case 'fail':
+          proposal.status = PROPOSAL_STATUSES.fail   
+          break;
+        case 'timeout':
+          proposal.status = PROPOSAL_STATUSES.timeout
+          break;
+        }
+        
+        // save/persist proposal to API with new status
         this.props.baseSaveProposal(proposal)
         this.props.basePersistProposal(proposal)
-        break;
-      case 'fail':
-        proposal.status = PROPOSAL_STATUSES.fail
-        this.props.baseSaveProposal(proposal)
-        this.props.basePersistProposal(proposal)      
-        break;
-      case 'timeout':
-        proposal.status = PROPOSAL_STATUSES.timeout
-        this.props.baseSaveProposal(proposal)
-        this.props.basePersistProposal(proposal)
-        break;
       }
-      
-      // save/persist proposal to API with new status
     }
+    
     
     // 2. refresh REP balance for DAO if a DAO is currently selected
   }

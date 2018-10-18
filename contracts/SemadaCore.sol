@@ -202,57 +202,56 @@ contract SemadaCore is SafeMath {
     pool.votes.push(newVote);
   }
 
-  function checkVote(uint256 _proposalIndex) public {
-      Pool memory pool = validationPool[_proposalIndex];
-      address tokenAddress;
-      bool winningVote;
-      
-      if(now >= pool.timeout){
-        tokenAddress = erc20SymbolAddresses[pool.tokenNumberIndex];
-        uint totalRep;
-        uint totalYesRep;
-        Vote[] memory votes = pool.votes;
-        for(uint i = 0; i < votes.length; i++){
-          totalRep = safeAdd(totalRep, votes[i].rep);
-          if(votes[i].vote){
-            totalYesRep = safeAdd(totalYesRep, votes[i].rep);
-          }
-        }
+  function randomName(uint256 _proposalIndex) public {
+    Pool memory pool = validationPool[_proposalIndex];
+    address tokenAddress;
+    bool winningVote;
+    
+    tokenAddress = erc20SymbolAddresses[pool.tokenNumberIndex];
+    uint totalRep;
+    uint totalYesRep;
+    Vote[] memory votes = pool.votes;
+    for(uint i = 0; i < votes.length; i++){
+      totalRep = safeAdd(totalRep, votes[i].rep);
+      if(votes[i].vote){
+        totalYesRep = safeAdd(totalYesRep, votes[i].rep);
+      }
+    }
+    
+    if(totalYesRep >= safeDiv(totalRep, 2)){
+      winningVote = true;
+    }
+    
+    REP rep = REP(tokenAddress);
+    
+    if(now >= pool.timeout){
+      for(uint j = 0; j < votes.length; j++){
+        uint256 betAmtWon;
+        if(winningVote && votes[j].vote){
         
-        if(totalYesRep >= safeDiv(totalRep, 2)){
-          winningVote = true;
-        }
-        
-        REP rep = REP(tokenAddress);
-        
-        if(now >= pool.timeout){
-          for(uint j = 0; j < votes.length; j++){
-            uint256 betAmtWon;
-            if(winningVote && votes[j].vote){
+          betAmtWon = 
+            safePercentageOf(votes[j].rep, totalYesRep, totalRep, 2);
             
-              betAmtWon = 
-                safePercentageOf(votes[j].rep, totalYesRep, totalRep, 2);
-                
-              rep.transferFrom(this, votes[j].from, betAmtWon);
-            } else if (!winningVote && !votes[j].vote){
-              
-              betAmtWon = 
-                safePercentageOf(votes[j].rep, 
-                  totalRep-totalYesRep, totalRep, 2);
-                
-              rep.transferFrom(this, votes[j].from, betAmtWon);
-            }
-          }
+          rep.transferFrom(this, votes[j].from, betAmtWon);
+        } else if (!winningVote && !votes[j].vote){
           
-          if(winningVote) {
-            emit ProposalStatus("pass", totalYesRep, totalRep - totalYesRep);  
-          } else {
-            emit ProposalStatus("fail", totalYesRep, totalRep - totalYesRep);  
-          }
-          
-        } else {
-          emit ProposalStatus("active", totalYesRep, totalRep - totalYesRep);
+          betAmtWon = 
+            safePercentageOf(votes[j].rep, 
+              totalRep-totalYesRep, totalRep, 2);
+            
+          rep.transferFrom(this, votes[j].from, betAmtWon);
         }
       }
+      
+      if(winningVote) {
+        emit ProposalStatus("pass", totalYesRep, totalRep - totalYesRep);  
+      } else {
+        emit ProposalStatus("fail", totalYesRep, totalRep - totalYesRep);  
+      }
+      
+    } else {
+      emit ProposalStatus("active", totalYesRep, totalRep - totalYesRep);
+    }
+      
   }
 }

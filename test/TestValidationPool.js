@@ -5,9 +5,11 @@ contract('SemadaCore', function(accounts) {
   it("Create DAO and mint 10 REP", async () => {
     let semadaCoreInstance = await SemadaCore.deployed()
     
-    await semadaCoreInstance.createDao("test", {value: 10})
+    let daoTrx = await semadaCoreInstance.createDao("test", {value: 10})
+    let tokenNumberIndex = daoTrx.logs[0].args.tokenNumberIndex
     
-    let repContractAddress = await semadaCoreInstance.getTokenAddress(1)
+    let repContractAddress = await semadaCoreInstance
+      .getTokenAddress(tokenNumberIndex)
 
     let repContract = Rep.at(repContractAddress)
     
@@ -18,54 +20,60 @@ contract('SemadaCore', function(accounts) {
   
   it("Create DAO and check vote results", async () => {
     let semadaCoreInstance = await SemadaCore.deployed()
+  
+    let daoTrx = await semadaCoreInstance.createDao("test", {value: 10})
+    let tokenNumberIndex = daoTrx.logs[0].args.tokenNumberIndex
     
-    await semadaCoreInstance.createDao("test", {value: 10})
-    
-    let repContractAddress = await semadaCoreInstance.getTokenAddress(2)
-
+    let repContractAddress = await semadaCoreInstance
+      .getTokenAddress(tokenNumberIndex)
+  
     let repContract = Rep.at(repContractAddress)
-    
+  
     setTimeout(async () => {
-      let trx = await semadaCoreInstance.checkVote(2)
-      
+      let trx = await semadaCoreInstance.checkVote(tokenNumberIndex)
+  
       let balance = await repContract.balanceOf(accounts[0])
-
-      let vote1 = await semadaCoreInstance.getVote(2,0)
-      
+    
       assert.equal(balance, 10, "Balance is not 10")
     }, 2500)
-    
+  
     let totalSupply = await repContract.totalSupply()
     assert.equal(totalSupply, 10, "Total supply is not 10")
-    
+  
   });
   
   it("Join DAO and mint 8 REP", async () => {
     let semadaCoreInstance = await SemadaCore.deployed()
     
-    await semadaCoreInstance.createDao("test", {value: 10})
-    await semadaCoreInstance.joinDao(3, {value: 8})
+    let daoTrx = await semadaCoreInstance.createDao("test", {value: 10})
+    let tokenNumberIndex = daoTrx.logs[0].args.tokenNumberIndex
     
-    let repContractAddress = await semadaCoreInstance.getTokenAddress(3)
-
+    await semadaCoreInstance.joinDao(tokenNumberIndex, {value: 8})
+    
+    let repContractAddress = await semadaCoreInstance
+      .getTokenAddress(tokenNumberIndex)
+      
+    
     let repContract = Rep.at(repContractAddress)
     
     let totalSupply = await repContract.totalSupply()
-
-    assert.equal(totalSupply, 18, "Total supply is not 18")
+    
+    assert.equal(totalSupply, 18, `Total supply is not 18, was: ${totalSupply}`)
   });
   
   it("Submit proposal to DAO", async () => {
     let semadaCoreInstance = await SemadaCore.deployed()
     
-    await semadaCoreInstance.createDao("test", {value: 10})
+    let daoTrx = await semadaCoreInstance.createDao("test", {value: 10})
+    let tokenNumberIndex = daoTrx.logs[0].args.tokenNumberIndex
     
-    await semadaCoreInstance.newProposal(4, 
+    await semadaCoreInstance.newProposal(tokenNumberIndex, 
       "Test Proposal", 
       "Evidence", 
       {value: 10})
         
-    let repContractAddress = await semadaCoreInstance.getTokenAddress(4)
+    let repContractAddress = await semadaCoreInstance
+      .getTokenAddress(tokenNumberIndex)
     
     let repContract = Rep.at(repContractAddress)
     
@@ -109,49 +117,49 @@ contract('SemadaCore', function(accounts) {
   
   it("Closes validation pool with YES votes winning", async () => {
     let semadaCoreInstance = await SemadaCore.deployed()
-    
+  
     let daoTrx = await semadaCoreInstance.createDao("test", 
       {from: accounts[0], value: 10})
-    
+  
     let tokenNumberIndex = daoTrx.logs[0].args.tokenNumberIndex
-    
+  
     let repContractAddress = await semadaCoreInstance
       .getTokenAddress(tokenNumberIndex)
-    
+  
     let repContract = Rep.at(repContractAddress)
-    
+  
     let proposalTrx = await semadaCoreInstance
       .newProposal(tokenNumberIndex, 
       "Test Proposal", 
       "Evidence", 
       {from: accounts[1], value: 10})
-      
+  
     let proposalIndex = proposalTrx.logs[0].args.proposalIndex
-    
+  
     await repContract.mintToken({from: accounts[2], value: 5})
-    
+  
     await semadaCoreInstance
       .vote(proposalIndex, true, 5, {from: accounts[2]})
-      
+  
     let daoMemberRepBalance
     let proposerRepBalance
-      
+  
     setTimeout(async () => {
       let trx = await semadaCoreInstance.checkVote(proposalIndex)
-      
+  
       let proposerRepBalance = await repContract.balanceOf(accounts[1])
       let daoMemberRepBalance = await repContract.balanceOf(accounts[2])
-      
+  
       assert.equal(daoMemberRepBalance, 5, "Member REP was not 5")
       assert.equal(proposerRepBalance, 10, "Proposer REP was not 10")
-      
-      
+  
+  
     }, 2500)
-        
+  
     let totalSupply = await repContract.totalSupply()
-    
+  
     assert.equal(totalSupply, 25, "Total supply is not 25")
-    
+  
   });
   
 });

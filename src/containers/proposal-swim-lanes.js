@@ -65,9 +65,9 @@ class ProposalSwimLanes extends Component {
   }
 
   render() {
-    this.props.semadaCore && this.props.dao && this.props.getRepBalance(this.props.web3, 
-      this.props.semadaCore, 
-      this.props.dao.tokenNumberIndex)
+    // this.props.semadaCore && this.props.dao && this.props.getRepBalance(this.props.web3, 
+    //   this.props.semadaCore, 
+    //   this.props.dao.tokenNumberIndex)
       
     return (
       <div>
