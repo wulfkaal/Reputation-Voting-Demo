@@ -38,15 +38,42 @@ contract SemadaCore is SafeMath {
     
     return erc20SymbolAddresses[_tokenNumberIndex];
   }
-  
-  function getProposal(uint256 _proposalIndex) view 
-  public returns (address, uint256, string, uint256, string) {
+
+  //(address, uint256, string, uint256, string, uint, uint256, uint256)
+  function getProposalVotes(uint256 _proposalIndex) view 
+  public returns (uint, uint256, uint256) {
     
-    return (validationPool[_proposalIndex].from, 
-      validationPool[_proposalIndex].tokenNumberIndex, 
-      validationPool[_proposalIndex].name, 
-      validationPool[_proposalIndex].timeout, 
-      validationPool[_proposalIndex].evidence);
+    Pool memory pool = validationPool[_proposalIndex];
+    
+    uint status = 1;
+    uint256 totalRep = 0;
+    uint256 totalYesRep = 0;
+    Vote[] memory votes = pool.votes;
+    
+    for(uint i = 0; i < votes.length; i++){
+      totalRep = safeAdd(totalRep, votes[i].rep);
+      if(votes[i].vote){
+        totalYesRep = safeAdd(totalYesRep, votes[i].rep);
+      }
+    }
+    
+    // TODO: handle timeout case
+    
+    if(now >= pool.timeout){
+      if(totalYesRep >= safeDiv(totalRep, 2)){
+        status = 2;
+      } else {
+        status = 3;
+      }
+    } else {
+      status = 1;
+    } 
+    
+    return (
+      status,
+      totalYesRep,
+      totalRep - totalYesRep
+      );
   }
   
   function getVote(uint256 _proposalIndex, uint256 _voteIndex) view
@@ -156,7 +183,7 @@ contract SemadaCore is SafeMath {
     uint256 _value) internal {
     
     //setting timeout to 180 seconds from now
-    uint256 _timeout = now + 180;
+    uint256 _timeout = now + 15;
     emit NewProposalCreated(_proposalIndex, _timeout);
 
     Pool storage pool = validationPool[_proposalIndex];
@@ -201,56 +228,36 @@ contract SemadaCore is SafeMath {
     
     pool.votes.push(newVote);
   }
+  
 
-  function randomName(uint256 _proposalIndex) public {
+  function distributeRep(uint256 _proposalIndex,
+    uint256 _totalRepStaked, 
+    uint256 _yesRepStaked, 
+    uint256 _noRepStaked) public {
+      
     Pool memory pool = validationPool[_proposalIndex];
     address tokenAddress;
-    bool winningVote;
-    
     tokenAddress = erc20SymbolAddresses[pool.tokenNumberIndex];
-    uint totalRep;
-    uint totalYesRep;
     Vote[] memory votes = pool.votes;
-    for(uint i = 0; i < votes.length; i++){
-      totalRep = safeAdd(totalRep, votes[i].rep);
-      if(votes[i].vote){
-        totalYesRep = safeAdd(totalYesRep, votes[i].rep);
-      }
-    }
-    
-    if(totalYesRep >= safeDiv(totalRep, 2)){
-      winningVote = true;
-    }
     
     REP rep = REP(tokenAddress);
-    
-    if(now >= pool.timeout){
-      for(uint j = 0; j < votes.length; j++){
-        uint256 betAmtWon;
-        if(winningVote && votes[j].vote){
-        
-          betAmtWon = 
-            safePercentageOf(votes[j].rep, totalYesRep, totalRep, 2);
-            
-          rep.transferFrom(this, votes[j].from, betAmtWon);
-        } else if (!winningVote && !votes[j].vote){
+  
+    for(uint j = 0; j < votes.length; j++){
+      uint256 betAmtWon;
+      if(_yesRepStaked >= _noRepStaked && votes[j].vote){
+      
+        betAmtWon = 
+          safePercentageOf(votes[j].rep, _yesRepStaked, _totalRepStaked, 2);
           
-          betAmtWon = 
-            safePercentageOf(votes[j].rep, 
-              totalRep-totalYesRep, totalRep, 2);
-            
-          rep.transferFrom(this, votes[j].from, betAmtWon);
-        }
+        rep.transferFrom(this, votes[j].from, betAmtWon);
+      } else if (_noRepStaked < _yesRepStaked && !votes[j].vote){
+        
+        betAmtWon = 
+          safePercentageOf(votes[j].rep, 
+            _noRepStaked, _totalRepStaked, 2);
+          
+        rep.transferFrom(this, votes[j].from, betAmtWon);
       }
-      
-      if(winningVote) {
-        emit ProposalStatus("pass", totalYesRep, totalRep - totalYesRep);  
-      } else {
-        emit ProposalStatus("fail", totalYesRep, totalRep - totalYesRep);  
-      }
-      
-    } else {
-      emit ProposalStatus("active", totalYesRep, totalRep - totalYesRep);
     }
       
   }

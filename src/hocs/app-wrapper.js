@@ -33,10 +33,10 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    baseSaveProposal: proposal => {
+    baseSaveProposal: async (proposal) => {
       dispatch(saveProposal(proposal))
     },
-    basePersistProposal: (proposal) => {
+    basePersistProposal: async (proposal) => {
       dispatch(persistProposal(proposal))
     },
     saveContractDetails: (publicAddress, web3) => {
@@ -157,9 +157,9 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
       contract.setProvider(web3.currentProvider)
       contract.deployed()
       .then((semadaCoreInstance) => {
-        // this.timer = setInterval(() => {
-        //   this.refreshData(web3, semadaCoreInstance)
-        // }, 1000)
+        this.timer = setInterval(() => {
+          this.refreshData(web3, semadaCoreInstance)
+        }, 1000)
       })
     }
     
@@ -167,45 +167,45 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
   }
   
   async refreshData(web3, semadaCoreInstance) {
-    // 1. call SemadaCore.checkVote on all proposals that are not complete
-    // update API with proposal status if it changes (pass/fail)
-
-    
-    
+    /*
+    1. get staked rep by yes/no vote on active proposals
+    2. update proposal in API with staked rep and status
+    3. distribute REP when timeout
+    4. distribute SEM when timeout
+    */
+        
     let proposals = this.props.baseProposals
-    console.log("HERE 1")
+    
     if(semadaCoreInstance){
       for(let i = 0; i < proposals.length; i++){
-        console.log("HERE 2")
+    
         let proposal = {...proposals[i]}
-        console.log("HERE 3")
+    
         // call SemadaCore.checkVote()
         let publicAddress = await web3.eth.getCoinbase()
-        console.log("HERE 4")
+    
         let proposalStatus = await semadaCoreInstance
-          .checkVote(proposal.proposalIndex)
-        console.log("HERE 5")
+          .getProposalVotes(proposal.proposalIndex)
+        
         // event is emitted with outcome (active, pass, fail)
         // event is emitted with yes rep staked
         // event is emitted with no rep stated
-        proposal.yesRepStaked = proposalStatus.logs[0].args.yesRepStaked
-        proposal.noRepStaked = proposalStatus.logs[0].args.noRepStaked
-        
-        switch(proposalStatus.logs[0].args.status){
-        case 'pass':
-          proposal.status = PROPOSAL_STATUSES.pass
-          break;
-        case 'fail':
-          proposal.status = PROPOSAL_STATUSES.fail   
-          break;
-        case 'timeout':
-          proposal.status = PROPOSAL_STATUSES.timeout
-          break;
-        }
+        proposal.status = proposalStatus[0].toNumber()
+        proposal.yesRepStaked = proposalStatus[1].toNumber()
+        proposal.noRepStaked = proposalStatus[2].toNumber()
         
         // save/persist proposal to API with new status
-        this.props.baseSaveProposal(proposal)
-        this.props.basePersistProposal(proposal)
+        await this.props.baseSaveProposal(proposal)
+        await this.props.basePersistProposal(proposal)
+        
+        //if not active, then proposal has completed
+        if(proposal.status !== PROPOSAL_STATUSES.active) {
+          await semadaCoreInstance.distributeRep(proposal.proposalIndex,
+            proposal.yesRepStaked + proposal.noRepStaked,
+            proposal.yesRepStaked,
+            proposal.noRepStaked,
+            {from: publicAddress})
+        }
       }
     }
     

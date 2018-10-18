@@ -44,7 +44,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
          dao.tokenNumberIndex,
          proposal.name,
          proposal.evidence,
-        {from: publicAddress, value:proposal.stake})  
+        {from: publicAddress, value: proposal.stake})
         let proposalIndex = trx.logs[0].args.proposalIndex
         let timeout = trx.logs[0].args.timeout
         let result = await dispatch(persistProposal({
