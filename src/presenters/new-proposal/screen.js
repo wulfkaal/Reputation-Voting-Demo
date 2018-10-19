@@ -82,8 +82,8 @@ const screen = (props) => {
                 <Typography variant='title'>
                   <TextValidator
                   name="sem"
-                  label="SEM to Stake"
-                  placeholder="SEM to Stake"
+                  label="SEM Fee"
+                  placeholder="SEM Fee"
                   className={props.classes.inputFullWidth}
                   margin="normal"
                   autoFocus={true}
