@@ -7,7 +7,10 @@ import {
   saveProposal,
   persistProposal
 } from '../actions/proposals'
-import { receiveRepBalance } from '../actions/daos'
+import { 
+  receiveRepBalance,
+  showRepBalance
+} from '../actions/daos'
 import getWeb3 from '../utils/get-web3'
 import getTokenBalance from '../utils/getTokenBalance'
 
@@ -22,6 +25,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
+    showRepBalance: () => {
+      dispatch(showRepBalance())
+    },
     getProposal: id => {
       dispatch(getProposal(id))
     },
@@ -61,6 +67,9 @@ class VoteProposal extends Component {
   componentDidMount() {
     let id = this.props.match.params.id
     this.props.getProposal(id)
+    if(!this.props.showRepBalance){
+      this.props.showRepBalance()
+    }
   }
 
   render() {

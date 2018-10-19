@@ -10,7 +10,8 @@ import values from 'lodash/values'
 import getTokenBalance from '../utils/getTokenBalance'
 import { getDaos } from '../actions/daos'
 import {
-  receiveRepBalance
+  receiveRepBalance,
+  showRepBalance
 } from '../actions/daos'
 
 const mapStateToProps = (state, ownProps) => {  
@@ -18,7 +19,6 @@ const mapStateToProps = (state, ownProps) => {
   
   return {
     dao: state.daos[daoId],
-    repBalance: state.daos.rep,
     proposals: values(state.proposals)
       .filter(e => e.daoId === daoId)
   }
@@ -26,6 +26,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
+    showRepBalanceFunc: () => {
+      dispatch(showRepBalance())
+    },
     getDaos: () => {
       dispatch(getDaos())
     },
@@ -34,7 +37,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     getRepBalance: async(web3, semadaCoreContract, tokenNumberIndex) => {
       let tokenBal = await getTokenBalance(web3, semadaCoreContract, tokenNumberIndex)
-      console.log(tokenBal)
       dispatch(receiveRepBalance(tokenBal))
     },
     startTimer: () => {
@@ -61,14 +63,15 @@ class ProposalSwimLanes extends Component {
     let daoId = this.props.match.params.id
     this.props.getDaos()
     this.props.getProposals(daoId)
-    
+    if(!this.props.showRepBalance){
+      this.props.showRepBalanceFunc()
+    }
     // this.props.startTimer()
   }
 
   render() {
     this.props.semadaCore && 
     this.props.dao &&  
-    !this.props.repBalance &&
     this.props.getRepBalance(this.props.web3, 
       this.props.semadaCore, 
       this.props.dao.tokenNumberIndex)

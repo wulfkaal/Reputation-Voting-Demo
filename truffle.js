@@ -1,3 +1,5 @@
+var HDWalletProvider = require("truffle-hdwallet-provider");
+var mnemonic = "lunar beach clip bulk analyst magnet luxury project arm grab margin summer";
 /*
  * NB: since truffle-hdwallet-provider 0.0.5 you must wrap HDWallet providers in a 
  * function when declaring them. Failure to do so will cause commands to hang. ex:
@@ -19,11 +21,12 @@ module.exports = {
       port: 8545,
       network_id: "*" 
     },  
-    ropsten: {
-      host: "localhost",
-      port: 8546,
-      network_id: "3",
-      from: "0x266d87471ca6b42e345eb9b51dafd57f25033db0",
-    }
+    rinkeby: {
+      provider: function() {
+        return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/v3/3cc28b2c77844240877db11af5f376cd")
+      },
+      network_id: 3
+    }   
   }
 };
+

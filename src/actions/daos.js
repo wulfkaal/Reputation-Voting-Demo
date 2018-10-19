@@ -1,6 +1,7 @@
 export const RECEIVE_DAO = 'RECEIVE_DAO'
 export const RESET_NEW_DAO = 'RESET_NEW_DAO'
 export const RECEIVE_REP_BALANCE = 'RECEIVE_REP_BALANCE'
+export const DISPLAY_REP_BALANCE = 'DISPLAY_REP_BALANCE'
 
 export const saveDao = (dao) => {
   return {
@@ -19,6 +20,20 @@ export const receiveRepBalance = (rep) => {
   return {
     rep: rep,
     type: RECEIVE_REP_BALANCE
+  }
+}
+
+export const hideRepBalance = () => {
+  return {
+    showRepBalance: false,
+    type: DISPLAY_REP_BALANCE
+  }
+}
+
+export const showRepBalance = () => {
+  return {
+    showRepBalance: true,
+    type: DISPLAY_REP_BALANCE
   }
 }
 

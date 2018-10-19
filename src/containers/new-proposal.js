@@ -5,11 +5,13 @@ import NewProposalScreen from '../presenters/new-proposal/screen'
 import {
   saveProposal,
   persistProposal,
+  resetNewProposal,
   PROPOSAL_STATUSES
 } from '../actions/proposals'
 import { 
   getDaos,
-  receiveRepBalance
+  receiveRepBalance,
+  showRepBalance
 } from '../actions/daos'
 import getWeb3 from '../utils/get-web3'
 import getTokenBalance from '../utils/getTokenBalance'
@@ -27,6 +29,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
+    showRepBalance: () => {
+      dispatch(showRepBalance())
+    },
     getDaos: () => {
       dispatch(getDaos())
     },
@@ -63,6 +68,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                       }))
         let tokenBal = await getTokenBalance(web3, semadaCoreContract, dao.tokenNumberIndex)
         dispatch(receiveRepBalance(tokenBal))
+        dispatch(resetNewProposal())
         ownProps.history.push(`/proposals/${result.proposal._id}`)
       } catch (e) {
         alert(`Failed to submit new proposal: ${e}`)  
@@ -75,6 +81,9 @@ class NewProposal extends Component {
 
   componentDidMount() {
     this.props.getDaos()
+    if(!this.props.showRepBalance){
+      this.props.showRepBalance()
+    }
   }
 
   render() {

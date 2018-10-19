@@ -24,7 +24,7 @@ const proposals = (state = initialState, action) => {
     let proposal = merge({}, state[action.proposal._id], action.proposal)
     return merge({}, state, {[action.proposal._id]: proposal})
   case RESET_NEW_PROPOSAL:
-    return merge({}, state, initialState)
+    return merge({}, state, {proposal: initialState.new})
   default:
     return state
   }

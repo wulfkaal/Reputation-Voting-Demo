@@ -23,6 +23,7 @@ import RepContract from '../contracts/REP.json'
 
 const mapStateToProps = (state, ownProps) => {  
   return {
+    showRepBalance: state.daos.showRepBalance,
     web3: state.auth.web3,
     access_token: state.auth.access_token,
     semadaCore: state.auth.semadaCore,
@@ -40,9 +41,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     basePersistProposal: async (proposal) => {
       dispatch(persistProposal(proposal))
-    },
-    saveContractDetails: (publicAddress, web3) => {
-      
     },
     login: (web3) =>{
       if (!window.web3) {

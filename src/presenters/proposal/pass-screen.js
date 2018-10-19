@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography'
 import VoteChart from './vote-chart'
 
 const screen = (props) => {
-  let voteTimeEnd = new Date(props.proposal.voteTimeEnd)
+  let voteTimeEnd = new Date(props.proposal.voteTimeEnd * 1000)
   .toUTCString()
   
   let totalRepStaked = props.proposal.yesRepStaked + props.proposal.noRepStaked

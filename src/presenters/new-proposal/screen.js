@@ -8,7 +8,6 @@ import baseComponentStyle from '../../jss/base-component'
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import Typography from '@material-ui/core/Typography'
-import Switch from '@material-ui/core/Switch';
 
 const screen = (props) => {
   return (
@@ -80,14 +79,11 @@ const screen = (props) => {
             <br/>
             <Grid container spacing={16}>
               <Grid item xs={12}>
-                <Typography variant='caption'>
-                  Stake
-                </Typography>
                 <Typography variant='title'>
                   <TextValidator
-                  name="rep"
-                  label="REP to Stake"
-                  placeholder="REP to Stake"
+                  name="sem"
+                  label="SEM to Stake"
+                  placeholder="SEM to Stake"
                   className={props.classes.inputFullWidth}
                   margin="normal"
                   autoFocus={true}
@@ -102,7 +98,7 @@ const screen = (props) => {
                   }}
                   InputProps={{
                     endAdornment: 
-                    <InputAdornment position="end">REP</InputAdornment>
+                    <InputAdornment position="end">SEM</InputAdornment>
                   }}
                 />
                 </Typography>
