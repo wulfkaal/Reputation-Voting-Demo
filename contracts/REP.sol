@@ -12,6 +12,7 @@ contract ERC20Interface {
 
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
+    event RepMessage(address message);
 }
 
 contract REP is ERC20Interface, SafeMath {
@@ -35,7 +36,10 @@ contract REP is ERC20Interface, SafeMath {
 
     function addAccount(address _account) 
     internal {
-      if(balances[_account] == 0) {
+      uint balance; 
+      balance = balances[_account];
+      
+      if(balance == 0) {
         accounts.push(_account);
       }
     }
@@ -70,6 +74,7 @@ contract REP is ERC20Interface, SafeMath {
     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
         balances[from] = safeSub(balances[from], tokens);
         balances[to] = safeAdd(balances[to], tokens);
+        addAccount(to);
         emit Transfer(from, to, tokens);
         return true;
     }
@@ -81,14 +86,18 @@ contract REP is ERC20Interface, SafeMath {
 
     function distributeSem() public {
       uint256 salary;
-      uint256 sem = address(this).balance;
+      uint256 sem = this.balance;
+      uint balance; 
       
       for(uint i = 0; i < accounts.length; i++){
-        if(balances[accounts[i]] > 0) {
+        balance = balances[accounts[i]];
+        
+        if(balance > 0) {
           salary = 
-            safePercentageOf(balances[accounts[i]], _totalSupply, sem, 2);
-            
-          transferFrom(this, accounts[i], salary);
+            safePercentageOf(balance, _totalSupply, sem, 18);
+              
+          /* emit RepMessage(salary); */
+          accounts[i].transfer(salary);
         }
       }
     }

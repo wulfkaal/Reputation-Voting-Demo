@@ -39,7 +39,6 @@ contract SemadaCore is SafeMath {
     return erc20SymbolAddresses[_tokenNumberIndex];
   }
 
-  //(address, uint256, string, uint256, string, uint, uint256, uint256)
   function getProposalVotes(uint256 _proposalIndex) view 
   public returns (uint, uint256, uint256) {
     
@@ -201,7 +200,7 @@ contract SemadaCore is SafeMath {
   function vote(
     uint256 _proposalIndex,
     bool _vote,
-    uint256 _rep
+    uint _rep
     ) public {
     REP rep = REP(erc20SymbolAddresses[validationPool[_proposalIndex].tokenNumberIndex]);
     rep.transferFrom(msg.sender, this, _rep);
@@ -258,7 +257,13 @@ contract SemadaCore is SafeMath {
           
         rep.transferFrom(this, votes[j].from, betAmtWon);
       }
-    }
-      
+    }    
+  }
+  
+  function distributeSem(uint256 _tokenNumberIndex) public {
+    address tokenAddress = erc20SymbolAddresses[_tokenNumberIndex];
+    REP rep = REP(tokenAddress);
+    
+    rep.distributeSem();
   }
 }
