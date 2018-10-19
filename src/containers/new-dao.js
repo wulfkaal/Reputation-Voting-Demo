@@ -5,7 +5,8 @@ import NewDaoScreen from '../presenters/new-dao/screen'
 import {
   saveDao,
   persistDao,
-  resetNewDao
+  resetNewDao,
+  hideRepBalance
 } from '../actions/daos'
 import {
   persistProposal
@@ -19,7 +20,6 @@ import getWeb3 from '../utils/get-web3'
 const mapStateToProps = (state, ownProps) => {  
   return {
     access_token: state.auth.access_token,
-    daoFactoryContract: state.auth.daoFactoryContract,
     publicAddress: state.auth.publicAddress,
     proposal: state.proposal,
     dao: state.daos.new,
@@ -29,7 +29,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-  
+    hideRepBalance: () => {
+      dispatch(hideRepBalance())
+    },
     saveDao: (dao) => {
       dispatch(saveDao(dao))
     },
@@ -84,6 +86,9 @@ class NewDao extends Component {
   async componentDidMount() {
     // TODO : Remove hard coding
     this.props.getUser('wulf@semada.io')
+    if(this.props.showRepBalance){
+      this.props.hideRepBalance()
+    }
   }
 
   render() {

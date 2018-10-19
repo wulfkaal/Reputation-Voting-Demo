@@ -4,7 +4,8 @@ import {connect} from 'react-redux'
 import DaosScreen from '../presenters/daos/screen'
 import { 
   getDaos,
-  receiveRepBalance
+  receiveRepBalance,
+  hideRepBalance,
  } from '../actions/daos'
 import {
   persistProposal
@@ -27,6 +28,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     handleViewDaoClick: id => {
       ownProps.history.push(`/daos/${id}/proposals`)  
+    },
+    hideRepBalance: () => {
+      dispatch(hideRepBalance())
     },
     joinDao: async (web3, semadaCoreContract, dao) => {
      
@@ -64,9 +68,13 @@ class DaoList extends Component {
 
   componentDidMount() {
     this.props.getDaos()
+    if(this.props.showRepBalance){
+      this.props.hideRepBalance()
+    }
   }
 
   render() {
+
     
     return (
       <div>

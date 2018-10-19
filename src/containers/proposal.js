@@ -9,6 +9,7 @@ import {
   PROPOSAL_STATUSES,
   getProposal
 } from '../actions/proposals'
+import { showRepBalance } from '../actions/daos'
 
 const mapStateToProps = (state, ownProps) => {  
   let id = ownProps.match.params.id
@@ -19,6 +20,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
+    showRepBalance: () => {
+      dispatch(showRepBalance())
+    },
     getProposal: id => {
       return dispatch(getProposal(id))
     },
@@ -33,6 +37,9 @@ class Proposal extends Component {
   componentDidMount() {
     let id = this.props.match.params.id
     this.props.getProposal(id)
+    if(!this.props.showRepBalance){
+      this.props.showRepBalance()
+    }
   }
 
   render() {
