@@ -137,7 +137,7 @@ contract('SemadaCore', function(accounts) {
   it("YES votes win", async () => {
     let semadaCoreInstance = await SemadaCore.deployed()
     let startingSemBalance = web3.eth.getBalance(accounts[1])
-    let fees = 1000000000000000000
+    let fees = 10
     console.log(`HERE 1`)
     let daoTrx = await semadaCoreInstance
       .createDao("test", {from: accounts[1], value: fees})
