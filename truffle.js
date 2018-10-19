@@ -19,13 +19,13 @@ module.exports = {
     development: {
       host: "localhost", 
       port: 8545,
-      network_id: "*" 
+      network_id: "999" 
     },  
     rinkeby: {
       provider: function() {
         return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/v3/3cc28b2c77844240877db11af5f376cd")
       },
-      network_id: 3
+      network_id: 4
     }   
   }
 };
