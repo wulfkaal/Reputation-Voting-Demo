@@ -18,6 +18,7 @@ const mapStateToProps = (state, ownProps) => {
   
   return {
     dao: state.daos[daoId],
+    repBalance: state.daos.rep,
     proposals: values(state.proposals)
       .filter(e => e.daoId === daoId)
   }
@@ -65,9 +66,12 @@ class ProposalSwimLanes extends Component {
   }
 
   render() {
-    // this.props.semadaCore && this.props.dao && this.props.getRepBalance(this.props.web3, 
-    //   this.props.semadaCore, 
-    //   this.props.dao.tokenNumberIndex)
+    this.props.semadaCore && 
+    this.props.dao &&  
+    !this.props.repBalance &&
+    this.props.getRepBalance(this.props.web3, 
+      this.props.semadaCore, 
+      this.props.dao.tokenNumberIndex)
       
     return (
       <div>

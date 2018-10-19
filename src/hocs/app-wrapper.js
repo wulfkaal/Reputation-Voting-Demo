@@ -18,6 +18,8 @@ import {
   logout
 } from '../actions/auth'
 import getWeb3 from '../utils/get-web3'
+import RepContract from '../contracts/REP.json'
+
 
 const mapStateToProps = (state, ownProps) => {  
   return {
@@ -177,12 +179,11 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     let proposals = this.props.baseProposals
     
     if(semadaCoreInstance){
+      let publicAddress = await web3.eth.getCoinbase()
       for(let i = 0; i < proposals.length; i++){
     
         let proposal = {...proposals[i]}
     
-        // call SemadaCore.checkVote()
-        let publicAddress = await web3.eth.getCoinbase()
     
         let proposalStatus = await semadaCoreInstance
           .getProposalVotes(proposal.proposalIndex)
@@ -205,8 +206,19 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
             proposal.yesRepStaked,
             proposal.noRepStaked,
             {from: publicAddress})
+            
+          let repAddress = await semadaCoreInstance
+            .getTokenAddress(proposal.tokenNumberIndex)
+          
+          const repContract = truffleContract(RepContract)
+          repContract.setProvider(web3.currentProvider)
+          let repInstance = await repContract.at(repAddress)
+          await repInstance.distributeSem({from: publicAddress})
+          
         }
       }
+      
+      
     }
     
     
