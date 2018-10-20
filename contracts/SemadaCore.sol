@@ -182,7 +182,7 @@ contract SemadaCore is SafeMath {
     uint256 _value) internal {
     
     //setting timeout to 180 seconds from now
-    uint256 _timeout = now + 15;
+    uint256 _timeout = now + 180;
     emit NewProposalCreated(_proposalIndex, _timeout);
 
     Pool storage pool = validationPool[_proposalIndex];

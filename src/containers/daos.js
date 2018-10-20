@@ -13,11 +13,13 @@ import {
 import {PROPOSAL_STATUSES} from '../actions/proposals'
 import getWeb3 from '../utils/get-web3'
 import getTokenBalance from '../utils/getTokenBalance'
-
+import values from 'lodash/values'
 
 const mapStateToProps = (state, ownProps) => {  
   return {
-    daos: state.daos
+    daos: values(state.daos).filter(d => {
+      return d.hasOwnProperty('_id') && d._id !== 'new'
+    })
   }
 }
 
