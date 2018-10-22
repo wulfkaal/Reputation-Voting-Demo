@@ -12,7 +12,10 @@ contract ERC20Interface {
 
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
-    event RepMessage(address message);
+    event RepMessage(address message, uint a, uint b, uint c, uint d);
+    event BalanceMessage(address account, uint balance);
+    event Message(uint msg);
+    event AddedAccount(address account);
 }
 
 contract REP is ERC20Interface, SafeMath {
@@ -39,8 +42,17 @@ contract REP is ERC20Interface, SafeMath {
       uint balance; 
       balance = balances[_account];
       
-      if(balance == 0) {
+      bool exists = false;
+      
+      for(uint i = 0; i < accounts.length; i++) {
+        if(accounts[i] == _account) {
+          exists = true;
+        }
+      }
+      
+      if(exists == false) {
         accounts.push(_account);
+        emit AddedAccount(_account);
       }
     }
 
@@ -88,16 +100,24 @@ contract REP is ERC20Interface, SafeMath {
       uint256 salary;
       uint256 sem = this.balance;
       uint balance; 
-      
+      emit Message(accounts.length);
       for(uint i = 0; i < accounts.length; i++){
         balance = balances[accounts[i]];
         
+        emit BalanceMessage(accounts[i], balance);
         if(balance > 0) {
           salary = 
-            safePercentageOf(balance, _totalSupply, sem, 18);
-              
+            safePercentageOf(balance, _totalSupply, sem, 2);
+          if(salary > 0) {
+            salary = salary - 1;
+          }
+          
+          emit RepMessage(accounts[i], balance, _totalSupply, sem, salary);
           /* emit RepMessage(salary); */
-          accounts[i].transfer(salary);
+          if(salary > 0) {
+            accounts[i].transfer(salary);  
+          }
+          
         }
       }
     }

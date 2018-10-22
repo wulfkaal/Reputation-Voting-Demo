@@ -263,7 +263,7 @@ contract SemadaCore is SafeMath {
   function distributeSem(uint256 _tokenNumberIndex) public {
     address tokenAddress = erc20SymbolAddresses[_tokenNumberIndex];
     REP rep = REP(tokenAddress);
-    
+    emit SemadaInfo("DIST SEM");
     rep.distributeSem();
   }
 }

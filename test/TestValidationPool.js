@@ -163,9 +163,9 @@ contract('SemadaCore', function(accounts) {
         Number(proposalStatus[1]),
         Number(proposalStatus[2])
       )
-    
+    console.log('HERE 6')
     await semadaCoreInstance.distributeSem(tokenNumberIndex)
-    
+    console.log('HERE 7')
     let repBalance = await repContract.balanceOf(accounts[1])
     let semBalance = await web3.eth.getBalance(accounts[1])
   
@@ -187,6 +187,7 @@ contract('SemadaCore', function(accounts) {
 
     let startingSemBalance2 = web3.eth.getBalance(accounts[2])
     let startingSemBalance3 = web3.eth.getBalance(accounts[3])
+    console.log(`SEM: ${startingSemBalance2}, ${startingSemBalance3}`)
     let fees = 10
     
     let daoTrx = await semadaCoreInstance
@@ -218,12 +219,16 @@ contract('SemadaCore', function(accounts) {
         Number(proposalStatus[2])
       )
     
-    await semadaCoreInstance.distributeSem(tokenNumberIndex)
+    
+    let semTrx = await semadaCoreInstance.distributeSem(tokenNumberIndex)
+    console.log(semTrx.logs)
     
     let repBalance2 = await repContract.balanceOf(accounts[2])
     let repBalance3 = await repContract.balanceOf(accounts[3])
     let semBalance2 = await web3.eth.getBalance(accounts[2])
     let semBalance3 = await web3.eth.getBalance(accounts[3])
+  
+  
   
     assert.equal(repBalance2, 
       9, 
@@ -232,7 +237,7 @@ contract('SemadaCore', function(accounts) {
     assert.equal(repBalance3, 
       11, 
       `Account 3 REP Balance is not ${11}, was ${repBalance3}`)
-  
+    
     assert.isAbove(Number(semBalance2), 
       Number(startingSemBalance2 * 0.9), 
       `SEM Balance is not above ${startingSemBalance2 * 0.9}, was ${semBalance2}`)
