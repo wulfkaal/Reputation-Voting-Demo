@@ -19,7 +19,7 @@ const screen = (props) => {
           key={dao._id}
           dao={dao}
           handleViewDaoClick={() => props.handleViewDaoClick(dao._id)}
-          joinDao={() => props.joinDao(props.web3, props.semadaCore, dao)}
+          joinDao={() => props.joinDao(dao._id)}
         />
       )
     })

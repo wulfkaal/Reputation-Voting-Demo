@@ -11,6 +11,7 @@ import UserContainer from './containers/user-profile'
 import VoteProposalContainer from './containers/vote-proposal'
 import NewProposalContainer from './containers/new-proposal'
 import NewDaoContainer from './containers/new-dao'
+import JoinDaoContainer from './containers/join-dao'
 import ProposalSwimLanesContainer from './containers/proposal-swim-lanes'
 import DaosContainer from './containers/daos'
 import registerServiceWorker from './registerServiceWorker'
@@ -25,8 +26,8 @@ ReactDOM.render(
         <Route path="/proposals/:id/vote" component={VoteProposalContainer} />
         <Route path="/proposals/:id" component={ProposalContainer} />
         <Route path="/daos/new" component={NewDaoContainer} />
-        <Route path="/daos/:id/proposals" 
-          component={ProposalSwimLanesContainer} />
+        <Route path="/daos/:id/proposals" component={ProposalSwimLanesContainer} />
+        <Route path="/daos/:id/join" component={JoinDaoContainer} />
         <Route path="/daos/:id" component={DaoContainer} />
         <Route path="/daos" component={DaosContainer} />
         <Route path="/users/:email" component={UserContainer} />

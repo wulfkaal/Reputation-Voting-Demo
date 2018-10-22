@@ -90,8 +90,6 @@ contract SemadaCore is SafeMath {
       
     REP rep = REP(erc20SymbolAddresses[_tokenNumberIndex]);
     rep.mintToken.value(msg.value)();
-    emit SemadaInfo(bytes32ToString(uintToBytes(msg.value)));
-    emit SemadaInfo(bytes32ToString(uintToBytes(rep.totalSupply())));
     
     newProposalInternal(
       proposalIndex,
