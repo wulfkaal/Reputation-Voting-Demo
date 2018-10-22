@@ -185,6 +185,12 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     
         let proposalStatus = await semadaCoreInstance
           .getProposalVotes(proposal.proposalIndex)
+
+        let now = Math.floor(new Date().getTime()/1000)
+        let remaining = proposal.voteTimeEnd - now
+              
+        remaining = remaining < 0 ? 0 : remaining
+        proposal.voteTimeRemaining = remaining
         
         // event is emitted with outcome (active, pass, fail)
         // event is emitted with yes rep staked
