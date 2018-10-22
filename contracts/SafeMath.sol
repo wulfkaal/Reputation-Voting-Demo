@@ -1,6 +1,8 @@
 pragma solidity ^0.4.24;
 
 contract SafeMath {
+    
+  
     function safeAdd(uint a, uint b) public pure returns (uint c) {
         c = a + b;
         require(c >= a);
@@ -21,11 +23,18 @@ contract SafeMath {
     }
     
     function safePercentageOf(uint a, uint b, uint c, uint precision)
-    public pure returns (uint q) {
+    public returns (uint q) {
       require(c > 0);
       
       //example: (4*(10^2)/8)*(14*(10^2))/(10^4) = 7;
+
+      uint p1 = a*(10**precision)/b;
       
-      q = (a*(10**precision)/b) * (c*(10**precision)) / (10**(precision*2));
+      uint p2 = c*(10**precision);
+      
+      uint p3 = 10**(precision*2);
+      
+      q = p1 * p2 / p3;
+      
     }
 }

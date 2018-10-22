@@ -138,47 +138,111 @@ contract('SemadaCore', function(accounts) {
     let semadaCoreInstance = await SemadaCore.deployed()
     let startingSemBalance = web3.eth.getBalance(accounts[1])
     let fees = 10
-    console.log(`HERE 1`)
+    
     let daoTrx = await semadaCoreInstance
       .createDao("test", {from: accounts[1], value: fees})
-    console.log(`HERE 2`)
+    
     let tokenNumberIndex = daoTrx.logs[0].args.tokenNumberIndex
     let proposalIndex = daoTrx.logs[1].args.proposalIndex
   
     let repContractAddress = await semadaCoreInstance
       .getTokenAddress(tokenNumberIndex)
     let repContract = Rep.at(repContractAddress)
-    console.log(`HERE 3`)
+    
     await repContract.mintToken({from: accounts[1], value: fees})
-    console.log(`HERE 4`)
+    
     let voteTrx = await semadaCoreInstance
       .vote(proposalIndex, true, fees, {from: accounts[1]})
-    console.log(`HERE 5`)
+    
     let proposalStatus = await semadaCoreInstance
       .getProposalVotes(proposalIndex)
-    console.log(`HERE 6 ${proposalStatus}`)
+    
     await semadaCoreInstance.distributeRep(
         proposalIndex, 
         Number(proposalStatus[1]) + Number(proposalStatus[2]),
         Number(proposalStatus[1]),
         Number(proposalStatus[2])
       )
-    console.log(`HERE 7`)
+    
     await semadaCoreInstance.distributeSem(tokenNumberIndex)
-    console.log(`HERE 8`)
+    
     let repBalance = await repContract.balanceOf(accounts[1])
     let semBalance = await web3.eth.getBalance(accounts[1])
   
     assert.equal(repBalance, 
-      fees, 
-      `REP Balance is not ${fees}, was ${repBalance}`)
+      19, 
+      `REP Balance is not ${19}, was ${repBalance}`)
   
     assert.isAbove(Number(semBalance), 
       Number(startingSemBalance * 0.9), 
       `SEM Balance is not above ${startingSemBalance * 0.9}, was ${semBalance}`)
   
     let totalSupply = await repContract.totalSupply()
-    assert.equal(Number(totalSupply), fees, `Total supply is not ${fees}`)
+    assert.equal(Number(totalSupply), 20, `Total supply is not ${20}`)
+  
+  });
+  
+  it("NO votes win", async () => {
+    let semadaCoreInstance = await SemadaCore.deployed()
+
+    let startingSemBalance2 = web3.eth.getBalance(accounts[2])
+    let startingSemBalance3 = web3.eth.getBalance(accounts[3])
+    let fees = 10
+    
+    let daoTrx = await semadaCoreInstance
+      .createDao("test", {from: accounts[2], value: fees})
+    
+    let tokenNumberIndex = daoTrx.logs[0].args.tokenNumberIndex
+    let proposalIndex = daoTrx.logs[1].args.proposalIndex
+  
+    let repContractAddress = await semadaCoreInstance
+      .getTokenAddress(tokenNumberIndex)
+    let repContract = Rep.at(repContractAddress)
+    
+    await repContract.mintToken({from: accounts[2], value: 5})
+    await repContract.mintToken({from: accounts[3], value: 6})
+    
+    let voteTrx1 = await semadaCoreInstance
+      .vote(proposalIndex, true, 5, {from: accounts[2]})
+      
+    let voteTrx2 = await semadaCoreInstance
+      .vote(proposalIndex, false, 6, {from: accounts[3]})
+    
+    let proposalStatus = await semadaCoreInstance
+      .getProposalVotes(proposalIndex)
+    console.log("VOTES:", proposalStatus[1].toNumber(), proposalStatus[2].toNumber())
+    await semadaCoreInstance.distributeRep(
+        proposalIndex, 
+        Number(proposalStatus[1]) + Number(proposalStatus[2]),
+        Number(proposalStatus[1]),
+        Number(proposalStatus[2])
+      )
+    
+    await semadaCoreInstance.distributeSem(tokenNumberIndex)
+    
+    let repBalance2 = await repContract.balanceOf(accounts[2])
+    let repBalance3 = await repContract.balanceOf(accounts[3])
+    let semBalance2 = await web3.eth.getBalance(accounts[2])
+    let semBalance3 = await web3.eth.getBalance(accounts[3])
+  
+    assert.equal(repBalance2, 
+      9, 
+      `Account 2 REP Balance is not ${9}, was ${repBalance2}`)
+
+    assert.equal(repBalance3, 
+      11, 
+      `Account 3 REP Balance is not ${11}, was ${repBalance3}`)
+  
+    assert.isAbove(Number(semBalance2), 
+      Number(startingSemBalance2 * 0.9), 
+      `SEM Balance is not above ${startingSemBalance2 * 0.9}, was ${semBalance2}`)
+
+    assert.isAbove(Number(semBalance3), 
+      Number(startingSemBalance3 * 0.9), 
+      `SEM Balance is not above ${startingSemBalance3 * 0.9}, was ${semBalance3}`)
+  
+    let totalSupply = await repContract.totalSupply()
+    assert.equal(Number(totalSupply), 21, `Total supply is not ${21}`)
   
   });
   

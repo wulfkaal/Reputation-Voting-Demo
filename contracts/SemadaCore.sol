@@ -32,6 +32,7 @@ contract SemadaCore is SafeMath {
   event SemadaInfo(string message);
   event SemDistributed(address to, uint256 value);
   event ProposalStatus(string status, uint256 yesRepStaked, uint256 noRepStaked);
+  event SafeMessage(string msg, uint a, uint b, uint c, uint precision, uint balance);
 
   function getTokenAddress(uint256 _tokenNumberIndex) 
   public view returns (address tokenAddress){
@@ -244,16 +245,15 @@ contract SemadaCore is SafeMath {
     for(uint j = 0; j < votes.length; j++){
       uint256 betAmtWon;
       if(_yesRepStaked >= _noRepStaked && votes[j].vote){
-      
-        betAmtWon = 
-          safePercentageOf(votes[j].rep, _yesRepStaked, _totalRepStaked, 2);
+        
+        betAmtWon = safePercentageOf(votes[j].rep, 
+          _yesRepStaked, _totalRepStaked, 2);
           
         rep.transferFrom(this, votes[j].from, betAmtWon);
-      } else if (_noRepStaked < _yesRepStaked && !votes[j].vote){
+      } else if (_noRepStaked > _yesRepStaked && !votes[j].vote){
         
-        betAmtWon = 
-          safePercentageOf(votes[j].rep, 
-            _noRepStaked, _totalRepStaked, 2);
+        betAmtWon = safePercentageOf(votes[j].rep, 
+          _noRepStaked, _totalRepStaked, 2);
           
         rep.transferFrom(this, votes[j].from, betAmtWon);
       }
