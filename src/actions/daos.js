@@ -1,3 +1,5 @@
+import getWeb3 from '../utils/get-web3'
+
 export const RECEIVE_DAO = 'RECEIVE_DAO'
 export const RESET_NEW_DAO = 'RESET_NEW_DAO'
 export const RECEIVE_REP_BALANCE = 'RECEIVE_REP_BALANCE'
@@ -37,8 +39,20 @@ export const showRepBalance = () => {
   }
 }
 
-export const persistDao = (dao) => {
+export const persistDao = (web3, semadaCoreContract,dao) => {
   return async (dispatch) => {
+    if(dao.tokenNumberIndex && !dao.tokenAddress){
+      web3 = getWeb3(web3)
+      semadaCoreContract.setProvider(web3.currentProvider)
+      let semadaCoreInstance = await semadaCoreContract.deployed()
+      try {
+        let repAddress = await semadaCoreInstance
+          .getTokenAddress(dao.tokenNumberIndex)
+        dao.tokenAddress = repAddress      
+      } catch (e) {
+        alert(`Failed to get REP Address: ${e}`)
+      }
+    }
     let url = `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`
     
     // mongo requires _id to be a valid 24 char hex string, so remove new
@@ -86,7 +100,7 @@ export const getDao = (id) => {
   }
 }
 
-export const getDaos = (daoFactoryContract, daoContractAbi, web3, publicAddress) => {
+export const getDaos = () => {
   return async (dispatch) => {
     let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
       method: 'GET',
@@ -94,7 +108,7 @@ export const getDaos = (daoFactoryContract, daoContractAbi, web3, publicAddress)
     })
     
     let body = await response.json()
-    
+
     for(let i=0; i < body.daos.length; i++){
       dispatch({
         dao: body.daos[i],

@@ -19,6 +19,7 @@ const dao = (props) => {
         
         <Typography variant='body1'>
           <ListItemText primary={ props.dao.name } />
+          <ListItemText primary={ props.dao.tokenAddress } />
         </Typography>
       
         <ListItemSecondaryAction>
