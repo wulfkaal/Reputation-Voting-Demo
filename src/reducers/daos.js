@@ -9,7 +9,10 @@ import {
 const initialState = {
   new: {
     _id: 'new', 
-    name: ''
+    name: '',
+    tokenNumberIndex: null,
+    proposalIndex: null,
+    tokenAddress: null
   },
   showRepBalance: true
 }

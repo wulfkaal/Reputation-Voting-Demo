@@ -251,11 +251,16 @@ contract SemadaCore is SafeMath {
       } else if (_noRepStaked > _yesRepStaked && !votes[j].vote){
         
         betAmtWon = safePercentageOf(votes[j].rep, 
-          _noRepStaked, _totalRepStaked, 2);
+          _noRepStaked, _yesRepStaked, 2);
           
         rep.transferFrom(this, votes[j].from, betAmtWon);
       }
-    }    
+    }
+    
+    //slash the no REP if NO wins.
+    if(_noRepStaked > _yesRepStaked) {
+      rep.burn(this, _noRepStaked);
+    }
   }
   
   function distributeSem(uint256 _tokenNumberIndex) public {

@@ -231,12 +231,12 @@ contract('SemadaCore', function(accounts) {
   
   
     assert.equal(repBalance2, 
-      9, 
-      `Account 2 REP Balance is not ${9}, was ${repBalance2}`)
+      4, 
+      `Account 2 REP Balance is not ${4}, was ${repBalance2}`)
 
     assert.equal(repBalance3, 
-      11, 
-      `Account 3 REP Balance is not ${11}, was ${repBalance3}`)
+      5, 
+      `Account 3 REP Balance is not ${5}, was ${repBalance3}`)
     
     assert.isAbove(Number(semBalance2), 
       Number(startingSemBalance2 * 0.9), 
