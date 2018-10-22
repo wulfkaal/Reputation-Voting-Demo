@@ -54,14 +54,20 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         let trx = await semadaCoreInstance.createDao(dao.name, 
           {from: publicAddress, value:20})  
         // get the proposalIndex to use for checking the vote outcome later
-        let tokenNumberIndex = trx.logs[0].args.tokenNumberIndex.toNumber()
-        let proposalIndex = trx.logs[1].args.proposalIndex.toNumber()
-        
-        dao.tokenNumberIndex = tokenNumberIndex
-        dao.proposalIndex = proposalIndex
-        
+        if (trx.logs[0].args.tokenNumberIndex) {
+          let tokenNumberIndex = trx.logs[0].args.tokenNumberIndex.toNumber()
+          let proposalIndex = trx.logs[1].args.proposalIndex.toNumber()
+          dao.tokenNumberIndex = tokenNumberIndex
+          dao.proposalIndex = proposalIndex
+        } else if (trx.logs[1].args.tokenNumberIndex){
+          let tokenNumberIndex = trx.logs[1].args.tokenNumberIndex.toNumber()
+          let proposalIndex = trx.logs[0].args.proposalIndex.toNumber()
+          dao.tokenNumberIndex = tokenNumberIndex
+          dao.proposalIndex = proposalIndex
+        }
+
         // API Create DAO
-        let newDao = await dispatch(persistDao(dao))
+        let newDao = await dispatch(persistDao(web3, semadaCore, dao))
         await dispatch(resetNewDao())
         
         // redirect to Proposal view for new DAO
