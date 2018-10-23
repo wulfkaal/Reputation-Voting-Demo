@@ -2,6 +2,7 @@ import merge from 'lodash/merge'
 import {
   LOGIN,
   LOGOUT,
+  SAVE_SEM_BALANCE
 } from '../actions/auth'
 
 const initialState = {
@@ -13,6 +14,8 @@ const initialState = {
 
 const auth = (state = initialState, action) => {
   switch(action.type) {
+  case SAVE_SEM_BALANCE:
+    return merge({}, state, {semBalance: action.semBalance})
   case LOGIN:
     return merge({}, state, {
       "web3": action.web3, 

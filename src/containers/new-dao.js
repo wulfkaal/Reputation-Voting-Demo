@@ -8,6 +8,7 @@ import {
   resetNewDao,
   hideRepBalance
 } from '../actions/daos'
+import { saveSemBalance } from '../actions/auth'
 import {
   persistProposal
 } from '../actions/proposals'
@@ -15,6 +16,7 @@ import {
   getUser
 } from '../actions/users'
 import getWeb3 from '../utils/get-web3'
+import getSemBalance from '../utils/getSemBalance'
 
 
 const mapStateToProps = (state, ownProps) => {  
@@ -23,6 +25,7 @@ const mapStateToProps = (state, ownProps) => {
     publicAddress: state.auth.publicAddress,
     proposal: state.proposal,
     dao: state.daos.new,
+    semBalance: state.auth.semBalance,
     user: state.users['wulf@semada.io']
   }
 }
@@ -34,6 +37,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     saveDao: (dao) => {
       dispatch(saveDao(dao))
+    },
+    saveSemBalanceFunc: async(web3) => {
+      let semBalance = await getSemBalance(web3)
+      dispatch(saveSemBalance(semBalance))
     },
     persistDao: async (web3, semadaCore, dao) => {
       
@@ -52,7 +59,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       
       try {
         let trx = await semadaCoreInstance.createDao(dao.name, 
-          {from: publicAddress, value:20})  
+          {from: publicAddress, value:parseInt(dao.sem)})  
         // get the proposalIndex to use for checking the vote outcome later
         if (trx.logs[0].args.tokenNumberIndex) {
           let tokenNumberIndex = trx.logs[0].args.tokenNumberIndex.toNumber()
@@ -92,6 +99,7 @@ class NewDao extends Component {
   async componentDidMount() {
     // TODO : Remove hard coding
     this.props.getUser('wulf@semada.io')
+    this.props.saveSemBalanceFunc(this.props.web3)
     if(this.props.showRepBalance){
       this.props.hideRepBalance()
     }
