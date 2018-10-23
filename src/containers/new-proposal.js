@@ -69,7 +69,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         let tokenBal = await getTokenBalance(web3, semadaCoreContract, dao.tokenNumberIndex)
         dispatch(receiveRepBalance(tokenBal))
         dispatch(resetNewProposal())
-        ownProps.history.push(`/proposals/${result.proposal._id}`)
+        ownProps.history.push(`/${dao._id}/proposals/${result.proposal._id}`)
       } catch (e) {
         alert(`Failed to submit new proposal: ${e}`)  
       }

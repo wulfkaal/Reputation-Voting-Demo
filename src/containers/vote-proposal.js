@@ -7,6 +7,7 @@ import {
   saveProposal,
   persistProposal
 } from '../actions/proposals'
+import { getDao } from '../actions/daos'
 import { 
   receiveRepBalance,
   showRepBalance
@@ -19,6 +20,7 @@ const mapStateToProps = (state, ownProps) => {
   
   return {
     proposal: state.proposals[id],
+    dao: state.daos.dao,
     user: state.users['wulf@semada.io']
   }
 }
@@ -30,6 +32,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     getProposal: id => {
       dispatch(getProposal(id))
+    },
+    getDao: daoId => {
+      dispatch(getDao(daoId))
     },
     saveProposal: (proposal) => {
       dispatch(saveProposal(proposal))
@@ -67,6 +72,7 @@ class VoteProposal extends Component {
   componentDidMount() {
     let id = this.props.match.params.id
     this.props.getProposal(id)
+    this.props.getDao(this.props.match.params.daoId)
     if(!this.props.showRepBalance){
       this.props.showRepBalance()
     }

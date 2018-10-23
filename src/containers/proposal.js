@@ -9,12 +9,17 @@ import {
   PROPOSAL_STATUSES,
   getProposal
 } from '../actions/proposals'
-import { showRepBalance } from '../actions/daos'
+import { 
+  showRepBalance,
+  getDao
+} from '../actions/daos'
 
 const mapStateToProps = (state, ownProps) => {  
   let id = ownProps.match.params.id
+  let daoId = ownProps.match.params.daoId
   return {
-    proposal: state.proposals[id]
+    proposal: state.proposals[id],
+    dao: state.daos[daoId]
   }
 }
 
@@ -26,8 +31,11 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     getProposal: id => {
       return dispatch(getProposal(id))
     },
-    vote: (id) => {
-      ownProps.history.push(`/proposals/${id}/vote`)
+    getDao: daoId => {
+      dispatch(getDao(daoId))
+    },
+    vote: (id, daoId) => {
+      ownProps.history.push(`/${daoId}/proposals/${id}/vote`)
     },
   }
 }
@@ -37,6 +45,7 @@ class Proposal extends Component {
   componentDidMount() {
     let id = this.props.match.params.id
     this.props.getProposal(id)
+    this.props.getDao(this.props.match.params.daoId)
     if(!this.props.showRepBalance){
       this.props.showRepBalance()
     }

@@ -78,7 +78,7 @@ const screen = (props) => {
           </Grid>
         </div>
         <Button className={props.classes.button}
-          onClick={() => props.vote(props.proposal._id)} >
+          onClick={() => props.vote(props.proposal._id, props.dao._id)} >
           Vote
         </Button>
       </Card>

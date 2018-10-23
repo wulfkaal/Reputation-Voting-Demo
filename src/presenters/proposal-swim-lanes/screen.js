@@ -20,6 +20,7 @@ const screen = (props) => {
         key={proposal._id}
         proposal={proposal}
         history={props.history}
+        dao={props.dao}
         />
     )
   })
@@ -31,7 +32,9 @@ const screen = (props) => {
       <ProposalItem 
         key={proposal._id}
         proposal={proposal}
-        history={props.history} />
+        history={props.history}
+        dao={props.dao}
+        />
     )
   })
   
@@ -42,7 +45,9 @@ const screen = (props) => {
       <ProposalItem 
         key={proposal._id}
         proposal={proposal}
-        history={props.history} />
+        history={props.history}
+        dao={props.dao}
+        />
     )
   })
   
@@ -53,7 +58,9 @@ const screen = (props) => {
         <ProposalItem 
           key={proposal._id}
           proposal={proposal}
-          history={props.history} />
+          history={props.history}
+          dao={props.dao}
+          />
       )
     })
   
