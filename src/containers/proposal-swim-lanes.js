@@ -35,8 +35,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     getProposals: daoId => {
       dispatch(getProposals(daoId))
     },
-    getRepBalance: async(web3, semadaCoreContract, tokenNumberIndex) => {
-      let tokenBal = await getTokenBalance(web3, semadaCoreContract, tokenNumberIndex)
+    getRepBalance: async(tokenNumberIndex) => {
+      let tokenBal = await getTokenBalance(tokenNumberIndex)
       dispatch(receiveRepBalance(tokenBal))
     },
     startTimer: () => {
@@ -70,11 +70,8 @@ class ProposalSwimLanes extends Component {
   }
 
   render() {
-    this.props.semadaCore && 
     this.props.dao &&  
-    this.props.getRepBalance(this.props.web3, 
-      this.props.semadaCore, 
-      this.props.dao.tokenNumberIndex)
+    this.props.getRepBalance(this.props.dao.tokenNumberIndex)
       
     return (
       <div>
