@@ -15,14 +15,12 @@ import {
 import {
   getUser
 } from '../actions/users'
-import getWeb3 from '../utils/get-web3'
 import getSemBalance from '../utils/getSemBalance'
+import createDao from '../utils/createDao'
 
 
 const mapStateToProps = (state, ownProps) => {  
   return {
-    access_token: state.auth.access_token,
-    publicAddress: state.auth.publicAddress,
     proposal: state.proposal,
     dao: state.daos.new,
     semBalance: state.auth.semBalance,
@@ -42,7 +40,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       let semBalance = await getSemBalance(web3)
       dispatch(saveSemBalance(semBalance))
     },
-    persistDao: async (web3, semadaCore, dao) => {
+    persistDao: async(dao) => {
       
       // This proposal belongs to the Anchor DAO
       await dispatch(persistProposal({
@@ -50,41 +48,11 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         name: 'New DAO',
         evidence: ''
       }))
+      dao = await createDao(dao, 20, false)
+      let newDao = await dispatch(persistDao(dao))
+      await dispatch(resetNewDao())
       
-      web3 = getWeb3(web3)
-      
-      let publicAddress = await web3.eth.getCoinbase()
-      semadaCore.setProvider(web3.currentProvider)
-      let semadaCoreInstance = await semadaCore.deployed()
-      
-      try {
-        let trx = await semadaCoreInstance.createDao(dao.name, 
-          {from: publicAddress, value:parseInt(dao.sem)})  
-        // get the proposalIndex to use for checking the vote outcome later
-        if (trx.logs[0].args.tokenNumberIndex) {
-          let tokenNumberIndex = trx.logs[0].args.tokenNumberIndex.toNumber()
-          let proposalIndex = trx.logs[1].args.proposalIndex.toNumber()
-          dao.tokenNumberIndex = tokenNumberIndex
-          dao.proposalIndex = proposalIndex
-        } else if (trx.logs[1].args.tokenNumberIndex){
-          let tokenNumberIndex = trx.logs[1].args.tokenNumberIndex.toNumber()
-          let proposalIndex = trx.logs[0].args.proposalIndex.toNumber()
-          dao.tokenNumberIndex = tokenNumberIndex
-          dao.proposalIndex = proposalIndex
-        }
-
-        // API Create DAO
-        let newDao = await dispatch(persistDao(web3, semadaCore, dao))
-        await dispatch(resetNewDao())
-        
-        // redirect to Proposal view for new DAO
-        ownProps.history.push(`/daos/${newDao.dao._id}/proposals`)
-      } catch (e) {
-        alert(`Failed to submit new DAO proposal: ${e}`)  
-      }
-      
-      //TODO: Show waiting animation while voting occurs
-      
+      ownProps.history.push(`/daos/${newDao.dao._id}/proposals`)
       //TODO: Call SemadaCore.checkProposal() to close validation pool
       
     },

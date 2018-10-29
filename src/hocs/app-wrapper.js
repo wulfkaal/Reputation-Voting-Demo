@@ -140,9 +140,9 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
 
   componentDidMount() {
 
-    if (!(this.props.web3 && this.props.access_token)){
-      this.props.login(this.props.web3) 
-    }
+    // if (!(this.props.web3 && this.props.access_token)){
+    //   this.props.login(this.props.web3) 
+    // }
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side');
     if (jssStyles && jssStyles.parentNode) {
@@ -150,19 +150,22 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     }
     
     clearInterval(this.timer)
-    let web3 = getWeb3(this.props.web3)
+    // let web3 = getWeb3(this.props.web3)
 
-    const contract = truffleContract(SemadaCoreContract);
-    if(contract){
-      contract.setProvider(web3.currentProvider)
-      contract.deployed()
-      .then((semadaCoreInstance) => {
-        this.timer = setInterval(() => {
-          this.refreshData(web3, semadaCoreInstance)
-        }, 1000)
-      })
-    }
+    // const contract = truffleContract(SemadaCoreContract);
+    // if(contract){
+    //   contract.setProvider(web3.currentProvider)
+    //   contract.deployed()
+    //   .then((semadaCoreInstance) => {
+    //     this.timer = setInterval(() => {
+    //       this.refreshData(web3, semadaCoreInstance)
+    //     }, 1000)
+    //   })
+    // }
     
+    // this.timer = setInterval(() => {
+    //   this.refreshData(web3, semadaCoreInstance)
+    // }, 1000)
     
   }
   
