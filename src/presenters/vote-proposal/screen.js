@@ -16,7 +16,7 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.voteProposal(props.proposal, props.web3, props.semadaCore)
+          props.voteProposal(props.proposal)
         }}
         onError={errors => console.log(errors)}
       >

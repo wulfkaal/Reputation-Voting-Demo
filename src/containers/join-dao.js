@@ -13,7 +13,7 @@ import {
   receiveRepBalance,
   showRepBalance
 } from '../actions/daos'
-import getWeb3 from '../utils/get-web3'
+import joinDao from '../utils/joinDao'
 import getTokenBalance from '../utils/getTokenBalance'
 
 
@@ -38,39 +38,29 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     saveProposal: proposal => {
       dispatch(saveProposal(proposal))
     },
-    joinDao: async (proposal, userId, dao, web3, semadaCoreContract) => {
-      web3 = getWeb3(web3)
-      let publicAddress = await web3.eth.getCoinbase()
-      semadaCoreContract.setProvider(web3.currentProvider)
-      let semadaCoreInstance = await semadaCoreContract.deployed()
-     
-      try {        
-        let trx = await semadaCoreInstance.joinDao(
+    joinDao: async (proposal, userId, dao) => {
+      proposal = await joinDao(
+        proposal,
         dao.tokenNumberIndex,
-        {from: publicAddress, value: proposal.stake})
-        let proposalIndex = trx.logs[0].args.proposalIndex
-        let timeout = trx.logs[0].args.timeout
-        await dispatch(persistProposal({
-            _id: proposal._id,
-            userId: userId,
-            daoId: dao._id,
-            name: 'Join DAO',
-            evidence: '',
-            proposalIndex: proposalIndex,
-            tokenNumberIndex: dao.tokenNumberIndex,
-            status: PROPOSAL_STATUSES.active,
-            voteTimeEnd: timeout,
-            voteTimeRemaining: timeout - (parseInt(new Date()/1000)),
-            noRepStaked: proposal.stake/2,
-            yesRepStaked: proposal.stake/2
-          }))
-        let tokenBal = await getTokenBalance(web3, semadaCoreContract, dao.tokenNumberIndex)
-        dispatch(receiveRepBalance(tokenBal))
-        dispatch(resetNewProposal())
-        ownProps.history.push(`/daos/${dao._id}/proposals`)
-      } catch (e) {
-        alert(`Failed to submit join dao: ${e}`)  
-      }
+        false)
+      await dispatch(persistProposal({
+          _id: proposal._id,
+          userId: userId,
+          daoId: dao._id,
+          name: 'Join DAO',
+          evidence: '',
+          proposalIndex: proposal.proposalIndex,
+          tokenNumberIndex: dao.tokenNumberIndex,
+          status: PROPOSAL_STATUSES.active,
+          voteTimeEnd: proposal.timeout,
+          voteTimeRemaining: proposal.timeout - (parseInt(new Date()/1000)),
+          noRepStaked: proposal.stake/2,
+          yesRepStaked: proposal.stake/2
+        }))
+      let tokenBal = await getTokenBalance(dao.tokenNumberIndex)
+      dispatch(receiveRepBalance(tokenBal))
+      dispatch(resetNewProposal())
+      ownProps.history.push(`/daos/${dao._id}/proposals`)
     }
   }
 }

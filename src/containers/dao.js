@@ -13,9 +13,7 @@ const mapStateToProps = (state, ownProps) => {
   let id = ownProps.match.params.id
   
   return {
-    dao: state.daos[id],
-    web3: state.auth.web3,
-    access_token: state.auth.access_token,
+    dao: state.daos[id]
   }
 }
 
@@ -24,8 +22,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     getDao: id => {
       return dispatch(getDao(id))
     },
-    getRepBalance: async(web3, semadaCoreContract, dao) =>{
-      let tokenBal = await getTokenBalance(web3, semadaCoreContract, dao.tokenNumberIndex)
+    getRepBalance: async(dao) =>{
+      let tokenBal = await getTokenBalance(dao.tokenNumberIndex)
       dispatch(receiveRepBalance(tokenBal))
     },
     showRepBalance: () => {
@@ -39,7 +37,7 @@ class Dao extends Component {
   componentDidMount() {
     let id = this.props.match.params.id
     this.props.getDao(id)
-    this.props.getRepBalance(this.props.web3, this.props.semadaCoreContract, this.props.dao)
+    this.props.getRepBalance(this.props.dao)
     if(!this.props.showRepBalance){
       this.props.showRepBalance()
     }

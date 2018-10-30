@@ -23,8 +23,8 @@ ReactDOM.render(
     <Router>
       <Switch>
         <Route path="/:id/proposals/new" component={NewProposalContainer} />
-        <Route path="/proposals/:id/vote" component={VoteProposalContainer} />
-        <Route path="/proposals/:id" component={ProposalContainer} />
+        <Route path="/:daoId/proposals/:id/vote" component={VoteProposalContainer} />
+        <Route path="/:daoId/proposals/:id" component={ProposalContainer} />
         <Route path="/daos/new" component={NewDaoContainer} />
         <Route path="/daos/:id/proposals" component={ProposalSwimLanesContainer} />
         <Route path="/daos/:id/join" component={JoinDaoContainer} />

@@ -15,7 +15,7 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.persistProposal({...props.proposal}, props.user._id, props.dao, props.web3, props.semadaCore)
+          props.persistProposal({...props.proposal}, props.user._id, props.dao)
         }}
         onError={errors => console.log(errors)}
       >

@@ -29,6 +29,10 @@ const styles = theme => ({
   logoContainer: {
     flexGrow: 1
   },
+  title: {
+    marginRight: '20px',
+    marginLeft: 'auto'
+  },
   contentBase: {
     zIndex: 1,
     overflow: 'hidden',
@@ -106,13 +110,18 @@ const LayoutHOC = Page => class Layout extends React.Component {
             <div className={this.props.classes.logoContainer}>
               <img src={logoImage} className={this.props.classes.logo} alt='Semada' />  
             </div>
+            { (this.props.dao && this.props.dao.name) && (
+              <Typography className={this.props.classes.title} >
+                DAO Name: <b> {this.props.dao.name}</b>
+              </Typography>
+            )}
             { (this.props.showRepBalance) && (
               <Typography>
                 REP Balance: <b> {
                   isNaN(this.props.repBalance) ? '' : this.props.repBalance
                 }</b>
               </Typography>
-              )}
+            )}
 
             <Button color='inherit'
               onClick={() => {

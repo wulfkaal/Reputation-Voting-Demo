@@ -43,8 +43,6 @@ class DaoList extends Component {
   }
 
   render() {
-
-    
     return (
       <div>
         <DaosScreen 

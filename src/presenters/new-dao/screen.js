@@ -13,7 +13,7 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.persistDao(props.web3, props.semadaCore, props.dao)
+          props.persistDao(props.dao)
         }} 
         onError={errors => console.log(errors)}
       >
@@ -28,10 +28,7 @@ const screen = (props) => {
             subheader="Enter name"
           />
           <div className={props.classes.cardContent}>
-            <Grid container spacing={16}>
-
-            </Grid>
-            <Grid container spacing={16}>
+             <Grid container spacing={16}>
               <Grid item xs={10}>
                 <TextValidator
                   name="name"
@@ -48,6 +45,33 @@ const screen = (props) => {
                      _id: props.dao._id, 
                      name: e.target.value
                    })
+                  }}
+                />
+              </Grid>  
+            </Grid>
+            <Grid container spacing={16}>
+              <Grid item xs={10}>
+                <TextValidator
+                  name="sem"
+                  label="WEI"
+                  placeholder="WEI"
+                  className={props.classes.inputFullWidth}
+                  margin="normal"
+                  autoFocus={true}
+                  value={props.dao.sem}
+                  validators={['required']}
+                  errorMessages={['required']}
+                  onChange={(e) => {
+                    if (isNaN(e.target.value)){
+                      alert("Stake has to be a number")
+                    } else if (e.target.value > props.semBalance){
+                      alert("Stake cannot be greater than wei balance")
+                    } else {
+                      props.saveDao({
+                        _id: props.dao._id, 
+                        sem: e.target.value
+                      })
+                    }
                   }}
                 />
               </Grid>  

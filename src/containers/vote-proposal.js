@@ -7,11 +7,12 @@ import {
   saveProposal,
   persistProposal
 } from '../actions/proposals'
+import { getDao } from '../actions/daos'
 import { 
   receiveRepBalance,
   showRepBalance
 } from '../actions/daos'
-import getWeb3 from '../utils/get-web3'
+import voteProposal from '../utils/voteProposal'
 import getTokenBalance from '../utils/getTokenBalance'
 
 const mapStateToProps = (state, ownProps) => {  
@@ -19,6 +20,7 @@ const mapStateToProps = (state, ownProps) => {
   
   return {
     proposal: state.proposals[id],
+    dao: state.daos.dao,
     user: state.users['wulf@semada.io']
   }
 }
@@ -31,33 +33,18 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     getProposal: id => {
       dispatch(getProposal(id))
     },
+    getDao: daoId => {
+      dispatch(getDao(daoId))
+    },
     saveProposal: (proposal) => {
       dispatch(saveProposal(proposal))
     },
-    voteProposal: async (proposal, web3, semadaCoreContract) => {
-      web3 = getWeb3(web3)
-      let publicAddress = await web3.eth.getCoinbase()
-      semadaCoreContract.setProvider(web3.currentProvider)
-      let semadaCoreInstance = await semadaCoreContract.deployed()
-      try {        
-        await semadaCoreInstance.vote(
-         proposal.proposalIndex,
-         proposal.vote==='yes' ? true : false,
-         proposal.stake,
-         {from: publicAddress})
-        if (proposal.vote==='yes') {
-          proposal.yesRepStaked = parseInt(proposal.yesRepStaked) + parseInt(proposal.stake)
-        } else {
-          proposal.noRepStaked = parseInt(proposal.noRepStaked) + parseInt(proposal.stake)
-        }
-        proposal.vote='no'
-        await dispatch(persistProposal(proposal))
-        let tokenBal = await getTokenBalance(web3, semadaCoreContract, proposal.tokenNumberIndex)
-        dispatch(receiveRepBalance(tokenBal))
-        ownProps.history.push(`/proposals/${proposal._id}`)
-      } catch (e) {
-        alert(`Failed to vote for proposal: ${e}`)  
-      }
+    voteProposal: async (proposal) => {
+      proposal = await voteProposal(proposal, false)
+      await dispatch(persistProposal(proposal))
+      let tokenBal = await getTokenBalance(proposal.tokenNumberIndex)
+      dispatch(receiveRepBalance(tokenBal))
+      ownProps.history.push(`/proposals/${proposal._id}`)
     }
   }
 }
@@ -67,6 +54,7 @@ class VoteProposal extends Component {
   componentDidMount() {
     let id = this.props.match.params.id
     this.props.getProposal(id)
+    this.props.getDao(this.props.match.params.daoId)
     if(!this.props.showRepBalance){
       this.props.showRepBalance()
     }

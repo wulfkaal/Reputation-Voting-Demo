@@ -1,7 +1,4 @@
 import React from 'react'
-import Web3 from 'web3';
-import truffleContract from "truffle-contract";
-import SemadaCoreContract from '../contracts/SemadaCore.json';
 import getPageContext from '../config/get-page-context';
 import JssProvider from 'react-jss/lib/JssProvider';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -17,8 +14,10 @@ import {
   login,
   logout
 } from '../actions/auth'
+import { receiveRepBalance } from '../actions/daos'
 import getWeb3 from '../utils/get-web3'
-import RepContract from '../contracts/REP.json'
+import getProposalVotes from '../utils/getProposalVotes'
+import distributeRepAndSem from '../utils/distributeRepAndSem'
 
 
 const mapStateToProps = (state, ownProps) => {  
@@ -42,90 +41,48 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     basePersistProposal: async (proposal) => {
       dispatch(persistProposal(proposal))
     },
-    login: (web3) =>{
-      if (!window.web3) {
-        window.alert('Please install MetaMask first.')
-        return;
-      }
-      if (!web3) {
-        web3 = new Web3(window.web3.currentProvider)
-      }
-      let promise = new Promise((resolve, reject) => {
-        window.web3.eth.getCoinbase(function(err, account) {
-          if(err === null) {
-            return resolve({publicAddress: account})
-          } else {
-            return reject("error!")
-          }
-        })
-      })
-
-      // TODO: do something with this so not getting prompted to sign everytime
-      if(true){
-        promise.then(
-          (result) => {
-            let publicAddress = result['publicAddress']
-            let nonce = Math.floor(Math.random() * 10000)
-            let email = "test20@test.com"
-            let signature = null
-            console.log("Public Address : " + publicAddress)
-            fetch(
-              `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/publicaddress/${publicAddress}`
-            ).then(response => response.json())
-            // If yes, retrieve it. If no, create it.
-            .then(
-              (usersRes) => {
-                return usersRes['users'].length ? usersRes['users'][0] : fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users`, {
-                                                    body: JSON.stringify({ publicAddress, nonce, email }),
-                                                    headers: {
-                                                      'Content-Type': 'application/json'
-                                                    },
-                                                    method: 'POST'
-                                                  }).then(response => response.json())
-            })
-            // Popup MetaMask confirmation modal to sign message
-            .then((res) => {
-              nonce = res['nonce']
-              return new Promise((resolve, reject) =>
-                web3.eth.personal.sign(
-                  web3.utils.utf8ToHex(`I am signing my one-time nonce: ${nonce}`),
-                  publicAddress,
-                  (err, signature) => {
-                    if (err) return reject(err);
-                    return resolve({ publicAddress, signature });
-                  }
-                )
-              );
-            })
-            // Send signature to backend on the /auth route
-            .then( (signRes) => {
-              signature = signRes['signature']
-              console.log("Signature : " +signature)
-              fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/auth`, {
-                body: JSON.stringify({ publicAddress, signature }),
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                method: 'POST'
-              })
-              .then(response => response.json()) 
-              .then((tokenRes) => {
-                const contract = truffleContract(SemadaCoreContract);
-                dispatch(login(web3, tokenRes['accessToken'], contract))
-              })
-            })
-            // Pass accessToken back to parent component (to save it in localStorage)
-            .catch(err => {
-              window.alert('Please ensure sign with MetaMask first.');
-            });
-          }
-        ).catch(err => {
-          alert('Please activate MetaMask first.') 
-          return; 
-        })
-      }
-      
+    saveRepBalance: async (tokenBal) => {
+      dispatch(receiveRepBalance(tokenBal))
     },
+    login: async () =>{
+      let web3 = await getWeb3()
+      let publicAddress = await web3.eth.getCoinbase()
+      let nonce = Math.floor(Math.random() * 10000)
+      let email = "test20@test.com"
+      let signature = null
+      let response = await fetch(
+              `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/publicaddress/${publicAddress}`
+              )
+      const usersRes = await response.json()
+      let userRes
+      if(usersRes['users'].length){
+        userRes = usersRes['users'][0]
+      } else {
+        let user = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users`, {
+                            body: JSON.stringify({ publicAddress, nonce, email }),
+                            headers: {
+                              'Content-Type': 'application/json'
+                            },
+                            method: 'POST'
+                                                  })
+        userRes = await user.json()
+      }
+      nonce = userRes['nonce']
+      signature = await web3.eth.personal.sign(
+                                web3.utils.utf8ToHex(`I am signing my one-time nonce: ${nonce}`),
+                                publicAddress
+                              )
+    // Send signature to backend on the /auth route
+      let authRes = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/auth`, {
+        body: JSON.stringify({ publicAddress, signature }),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        method: 'POST'
+      })
+      let tokenRes = await authRes.json()
+      dispatch(login(tokenRes['accessToken']))
+    }
   }
 }
 
@@ -140,8 +97,8 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
 
   componentDidMount() {
 
-    if (!(this.props.web3 && this.props.access_token)){
-      this.props.login(this.props.web3) 
+    if (!(this.props.access_token)){
+      this.props.login() 
     }
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side');
@@ -150,23 +107,13 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     }
     
     clearInterval(this.timer)
-    let web3 = getWeb3(this.props.web3)
-
-    const contract = truffleContract(SemadaCoreContract);
-    if(contract){
-      contract.setProvider(web3.currentProvider)
-      contract.deployed()
-      .then((semadaCoreInstance) => {
-        this.timer = setInterval(() => {
-          this.refreshData(web3, semadaCoreInstance)
-        }, 1000)
-      })
-    }
-    
+    this.timer = setInterval(() => {
+      this.refreshData()
+    }, 1000)
     
   }
   
-  async refreshData(web3, semadaCoreInstance) {
+  async refreshData() {
     /*
     1. get staked rep by yes/no vote on active proposals
     2. update proposal in API with staked rep and status
@@ -175,57 +122,37 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     */
         
     let proposals = this.props.baseProposals
-    
-    if(semadaCoreInstance){
-      let publicAddress = await web3.eth.getCoinbase()
-      for(let i = 0; i < proposals.length; i++){
-    
-        let proposal = {...proposals[i]}
-    
-    
-        let proposalStatus = await semadaCoreInstance
-          .getProposalVotes(proposal.proposalIndex)
+    for(let i = 0; i < proposals.length; i++){
+      let proposal = {...proposals[i]}
+      let proposalStatus = await getProposalVotes(proposal.proposalIndex, false)
 
-        let now = Math.floor(new Date().getTime()/1000)
-        let remaining = proposal.voteTimeEnd - now
-              
-        remaining = remaining < 0 ? 0 : remaining
-        proposal.voteTimeRemaining = remaining
-        
-        // event is emitted with outcome (active, pass, fail)
-        // event is emitted with yes rep staked
-        // event is emitted with no rep stated
-        proposal.status = proposalStatus[0].toNumber()
-        proposal.yesRepStaked = proposalStatus[1].toNumber()
-        proposal.noRepStaked = proposalStatus[2].toNumber()
-        
-        // save/persist proposal to API with new status
-        await this.props.baseSaveProposal(proposal)
-        await this.props.basePersistProposal(proposal)
-        
-        //if not active, then proposal has completed
-        if(proposal.status !== PROPOSAL_STATUSES.active) {
-          await semadaCoreInstance.distributeRep(proposal.proposalIndex,
-            proposal.yesRepStaked + proposal.noRepStaked,
-            proposal.yesRepStaked,
-            proposal.noRepStaked,
-            {from: publicAddress})
+      let now = Math.floor(new Date().getTime()/1000)
+      let remaining = proposal.voteTimeEnd - now
             
-          let repAddress = await semadaCoreInstance
-            .getTokenAddress(proposal.tokenNumberIndex)
-          
-          const repContract = truffleContract(RepContract)
-          repContract.setProvider(web3.currentProvider)
-          let repInstance = await repContract.at(repAddress)
-          await repInstance.distributeSem({from: publicAddress})
-          
-        }
+      remaining = remaining < 0 ? 0 : remaining
+      proposal.voteTimeRemaining = remaining
+      
+      // event is emitted with outcome (active, pass, fail)
+      // event is emitted with yes rep staked
+      // event is emitted with no rep stated
+      proposal.status = proposalStatus[0].toNumber()
+      proposal.yesRepStaked = proposalStatus[1].toNumber()
+      proposal.noRepStaked = proposalStatus[2].toNumber()
+      
+      // save/persist proposal to API with new status
+      await this.props.baseSaveProposal(proposal)
+      await this.props.basePersistProposal(proposal)
+      
+      //if not active, then proposal has completed
+      if(proposal.status !== PROPOSAL_STATUSES.active) {
+        let rep = await distributeRepAndSem(proposal.proposalIndex,
+          proposal.yesRepStaked + proposal.noRepStaked,
+          proposal.yesRepStaked,
+          proposal.noRepStaked,
+          proposal.tokenNumberIndex)
+        await this.props.saveRepBalance(rep)
       }
-      
-      
     }
-    
-    
     // 2. refresh REP balance for DAO if a DAO is currently selected
   }
   

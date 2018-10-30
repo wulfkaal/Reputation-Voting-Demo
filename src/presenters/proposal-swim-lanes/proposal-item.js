@@ -19,7 +19,7 @@ const proposalItem = (props) => {
     <div>
       <ListItem 
         button
-        onClick={() => props.history.push(`/proposals/${props.proposal._id}`)}>
+        onClick={() => props.history.push(`/${props.dao._id}/proposals/${props.proposal._id}`)}>
         
         <div className={props.classes.root}>
           <Grid container spacing={8}>
