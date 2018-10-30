@@ -42,13 +42,13 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     persistDao: async(dao) => {
       
-      // This proposal belongs to the Anchor DAO
+      dao = await createDao(dao, 20, false)
       await dispatch(persistProposal({
         _id: 'new',
         name: 'New DAO',
         evidence: ''
       }))
-      dao = await createDao(dao, 20, false)
+      // This proposal belongs to the Anchor DAO
       let newDao = await dispatch(persistDao(dao))
       await dispatch(resetNewDao())
       
