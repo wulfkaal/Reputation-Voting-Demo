@@ -26,20 +26,22 @@ const screen = (props) => {
   
   return (
     <div align="center">
-      <Grid item xs={12} sm={6} md={3}>
-        <Card className={props.classes.cardWithHeader}>
-          <div className={props.classes.cardContent}>
-            <Button className={props.classes.button}
-        onClick={() => 
-          props.history.push(`/daos/new`)
-        }>Create DAO</Button>
+     {(props.access_token) && (
+        <Grid item xs={12} sm={6} md={3}>
+          <Card className={props.classes.cardWithHeader}>
+            <div className={props.classes.cardContent}>
+              <Button className={props.classes.button}
+          onClick={() => 
+            props.history.push(`/daos/new`)
+          }>Create DAO</Button>
+            <br/>
+            <br/>
+            </div>
+          </Card> 
           <br/>
-          <br/>
-          </div>
-        </Card> 
-        <br/>
-        <br/>           
-      </Grid>
+          <br/>           
+        </Grid>
+      )}
       <Grid item xs={24} sm={12} md={6}>
         <Card className={props.classes.cardWithHeader}>
           <CardHeader

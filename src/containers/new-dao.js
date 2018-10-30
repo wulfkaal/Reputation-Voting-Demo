@@ -36,8 +36,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     saveDao: (dao) => {
       dispatch(saveDao(dao))
     },
-    saveSemBalanceFunc: async(web3) => {
-      let semBalance = await getSemBalance(web3)
+    saveSem: async() => {
+      let semBalance = await getSemBalance()
       dispatch(saveSemBalance(semBalance))
     },
     persistDao: async(dao) => {
@@ -67,7 +67,7 @@ class NewDao extends Component {
   async componentDidMount() {
     // TODO : Remove hard coding
     this.props.getUser('wulf@semada.io')
-    this.props.saveSemBalanceFunc(this.props.web3)
+    this.props.saveSem()
     if(this.props.showRepBalance){
       this.props.hideRepBalance()
     }

@@ -66,6 +66,7 @@ const screen = (props) => {
   
   return (
     <div>
+     {(props.access_token) && (
         <Grid align="center" >
           <Grid item xs={12} sm={6} md={3}  >
             <Card className={props.classes.cardWithHeader}>
@@ -82,6 +83,7 @@ const screen = (props) => {
             <br/>           
           </Grid>
         </Grid>
+      )}
         <Grid container spacing={16}>
           <Grid item xs={12} sm={6} md={3}>
             <Card className={props.classes.cardWithHeader}>
