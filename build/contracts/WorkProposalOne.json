@@ -1,0 +1,557 @@
+{
+  "contractName": "WorkProposalOne",
+  "abi": [],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603580601d6000396000f3006080604052600080fd00a165627a7a7230582038d8886d937270634b47672c885a44addce01bddf01dde8ff568410f4b55d3720029",
+  "deployedBytecode": "0x6080604052600080fd00a165627a7a7230582038d8886d937270634b47672c885a44addce01bddf01dde8ff568410f4b55d3720029",
+  "sourceMap": "229:31:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;229:31:1;;;;;;;",
+  "deployedSourceMap": "229:31:1:-;;;;;",
+  "source": "pragma solidity ^0.4.24;\n\nimport \"./Interface.sol\";\n\ncontract Factory is FactoryInterface {\n  \n  function createProposal() public returns (address proposalAddress){\n    proposalAddress = address(new WorkProposalOne());\n  }\n  \n}\n\ncontract WorkProposalOne {\n  \n}",
+  "sourcePath": "/Users/josh/Projects/Node/semada-demo/contracts/Factory.sol",
+  "ast": {
+    "absolutePath": "/Users/josh/Projects/Node/semada-demo/contracts/Factory.sol",
+    "exportedSymbols": {
+      "Factory": [
+        51
+      ],
+      "WorkProposalOne": [
+        52
+      ]
+    },
+    "id": 53,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 33,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:1"
+      },
+      {
+        "absolutePath": "/Users/josh/Projects/Node/semada-demo/contracts/Interface.sol",
+        "file": "./Interface.sol",
+        "id": 34,
+        "nodeType": "ImportDirective",
+        "scope": 53,
+        "sourceUnit": 61,
+        "src": "26:25:1",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 35,
+              "name": "FactoryInterface",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 60,
+              "src": "73:16:1",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_FactoryInterface_$60",
+                "typeString": "contract FactoryInterface"
+              }
+            },
+            "id": 36,
+            "nodeType": "InheritanceSpecifier",
+            "src": "73:16:1"
+          }
+        ],
+        "contractDependencies": [
+          52,
+          60
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 51,
+        "linearizedBaseContracts": [
+          51,
+          60
+        ],
+        "name": "Factory",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 49,
+              "nodeType": "Block",
+              "src": "163:59:1",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 47,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 41,
+                      "name": "proposalAddress",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 39,
+                      "src": "169:15:1",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "arguments": [],
+                          "expression": {
+                            "argumentTypes": [],
+                            "id": 44,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "nodeType": "NewExpression",
+                            "src": "195:19:1",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_creation_nonpayable$__$returns$_t_contract$_WorkProposalOne_$52_$",
+                              "typeString": "function () returns (contract WorkProposalOne)"
+                            },
+                            "typeName": {
+                              "contractScope": null,
+                              "id": 43,
+                              "name": "WorkProposalOne",
+                              "nodeType": "UserDefinedTypeName",
+                              "referencedDeclaration": 52,
+                              "src": "199:15:1",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_WorkProposalOne_$52",
+                                "typeString": "contract WorkProposalOne"
+                              }
+                            }
+                          },
+                          "id": 45,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "195:21:1",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_WorkProposalOne_$52",
+                            "typeString": "contract WorkProposalOne"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_contract$_WorkProposalOne_$52",
+                            "typeString": "contract WorkProposalOne"
+                          }
+                        ],
+                        "id": 42,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "nodeType": "ElementaryTypeNameExpression",
+                        "src": "187:7:1",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_address_$",
+                          "typeString": "type(address)"
+                        },
+                        "typeName": "address"
+                      },
+                      "id": 46,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "187:30:1",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "169:48:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 48,
+                  "nodeType": "ExpressionStatement",
+                  "src": "169:48:1"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 50,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "createProposal",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 37,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "120:2:1"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 40,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 39,
+                  "name": "proposalAddress",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 50,
+                  "src": "139:23:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 38,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "139:7:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "138:25:1"
+            },
+            "scope": 51,
+            "src": "97:125:1",
+            "stateMutability": "nonpayable",
+            "superFunction": 59,
+            "visibility": "public"
+          }
+        ],
+        "scope": 53,
+        "src": "53:174:1"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 52,
+        "linearizedBaseContracts": [
+          52
+        ],
+        "name": "WorkProposalOne",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 53,
+        "src": "229:31:1"
+      }
+    ],
+    "src": "0:260:1"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/josh/Projects/Node/semada-demo/contracts/Factory.sol",
+    "exportedSymbols": {
+      "Factory": [
+        51
+      ],
+      "WorkProposalOne": [
+        52
+      ]
+    },
+    "id": 53,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 33,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:1"
+      },
+      {
+        "absolutePath": "/Users/josh/Projects/Node/semada-demo/contracts/Interface.sol",
+        "file": "./Interface.sol",
+        "id": 34,
+        "nodeType": "ImportDirective",
+        "scope": 53,
+        "sourceUnit": 61,
+        "src": "26:25:1",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 35,
+              "name": "FactoryInterface",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 60,
+              "src": "73:16:1",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_FactoryInterface_$60",
+                "typeString": "contract FactoryInterface"
+              }
+            },
+            "id": 36,
+            "nodeType": "InheritanceSpecifier",
+            "src": "73:16:1"
+          }
+        ],
+        "contractDependencies": [
+          52,
+          60
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 51,
+        "linearizedBaseContracts": [
+          51,
+          60
+        ],
+        "name": "Factory",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 49,
+              "nodeType": "Block",
+              "src": "163:59:1",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 47,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 41,
+                      "name": "proposalAddress",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 39,
+                      "src": "169:15:1",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "arguments": [],
+                          "expression": {
+                            "argumentTypes": [],
+                            "id": 44,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "nodeType": "NewExpression",
+                            "src": "195:19:1",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_creation_nonpayable$__$returns$_t_contract$_WorkProposalOne_$52_$",
+                              "typeString": "function () returns (contract WorkProposalOne)"
+                            },
+                            "typeName": {
+                              "contractScope": null,
+                              "id": 43,
+                              "name": "WorkProposalOne",
+                              "nodeType": "UserDefinedTypeName",
+                              "referencedDeclaration": 52,
+                              "src": "199:15:1",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_WorkProposalOne_$52",
+                                "typeString": "contract WorkProposalOne"
+                              }
+                            }
+                          },
+                          "id": 45,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "195:21:1",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_WorkProposalOne_$52",
+                            "typeString": "contract WorkProposalOne"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_contract$_WorkProposalOne_$52",
+                            "typeString": "contract WorkProposalOne"
+                          }
+                        ],
+                        "id": 42,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "nodeType": "ElementaryTypeNameExpression",
+                        "src": "187:7:1",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_address_$",
+                          "typeString": "type(address)"
+                        },
+                        "typeName": "address"
+                      },
+                      "id": 46,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "187:30:1",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "169:48:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 48,
+                  "nodeType": "ExpressionStatement",
+                  "src": "169:48:1"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 50,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "createProposal",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 37,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "120:2:1"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 40,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 39,
+                  "name": "proposalAddress",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 50,
+                  "src": "139:23:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 38,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "139:7:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "138:25:1"
+            },
+            "scope": 51,
+            "src": "97:125:1",
+            "stateMutability": "nonpayable",
+            "superFunction": 59,
+            "visibility": "public"
+          }
+        ],
+        "scope": 53,
+        "src": "53:174:1"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 52,
+        "linearizedBaseContracts": [
+          52
+        ],
+        "name": "WorkProposalOne",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 53,
+        "src": "229:31:1"
+      }
+    ],
+    "src": "0:260:1"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.24+commit.e67f0147.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.1",
+  "updatedAt": "2018-10-31T04:52:07.314Z"
+}

@@ -30,6 +30,7 @@ contract SemadaCore is SafeMath {
   event NewProposalCreated(uint256 proposalIndex, uint256 timeout);
   event NewDaoCreated(uint256 tokenNumberIndex);
   event SemadaInfo(string message);
+  event SemadaInfoUint(uint message);
   event SemDistributed(address to, uint256 value);
   event ProposalStatus(string status, uint256 yesRepStaked, uint256 noRepStaked);
   event SafeMessage(string msg, uint a, uint b, uint c, uint precision, uint balance);
@@ -41,19 +42,22 @@ contract SemadaCore is SafeMath {
   }
 
   function getProposalVotes(uint256 _proposalIndex) view 
-  public returns (uint, uint256, uint256) {
+  public returns (uint, uint256, uint256, uint256) {
     
     Pool memory pool = validationPool[_proposalIndex];
     
     uint status = 1;
     uint256 totalRep = 0;
     uint256 totalYesRep = 0;
+    uint256 noSlashRep = 0;
     Vote[] memory votes = pool.votes;
     
     for(uint i = 0; i < votes.length; i++){
       totalRep = safeAdd(totalRep, votes[i].rep);
       if(votes[i].vote){
         totalYesRep = safeAdd(totalYesRep, votes[i].rep);
+      } else if(!votes[i].vote && votes[i].from == 0) {
+        noSlashRep = votes[i].rep;
       }
     }
     
@@ -62,17 +66,29 @@ contract SemadaCore is SafeMath {
     if(now >= pool.timeout){
       if(totalYesRep >= safeDiv(totalRep, 2)){
         status = 2;
+        
+        //reset as we aren't going to slash rep if YES wins
+        noSlashRep = 0;
       } else {
         status = 3;
+        totalRep = totalRep - noSlashRep;
       }
     } else {
+      if(totalYesRep >= safeDiv(totalRep, 2)){
+        //reset as we aren't going to slash rep if YES wins
+        noSlashRep = 0;
+      } else {
+        totalRep = totalRep - noSlashRep;
+      }
+      
       status = 1;
     } 
-    
+        
     return (
       status,
       totalYesRep,
-      totalRep - totalYesRep
+      totalRep - totalYesRep,
+      noSlashRep
       );
   }
   
@@ -192,8 +208,8 @@ contract SemadaCore is SafeMath {
     pool.evidence = _proposalEvidence;
 
     voteInternal(_proposalIndex, _from, (_value / 2), true);
-    //TODO: should false vote be 0 account?
-    voteInternal(_proposalIndex, _from, (_value / 2), false);
+    
+    voteInternal(_proposalIndex, 0, (_value / 2), false);
   }
   
   function vote(
@@ -231,7 +247,8 @@ contract SemadaCore is SafeMath {
   function distributeRep(uint256 _proposalIndex,
     uint256 _totalRepStaked, 
     uint256 _yesRepStaked, 
-    uint256 _noRepStaked) public {
+    uint256 _noRepStaked,
+    uint256 _noSlashRep) public {
       
     Pool memory pool = validationPool[_proposalIndex];
     address tokenAddress;
@@ -239,28 +256,34 @@ contract SemadaCore is SafeMath {
     Vote[] memory votes = pool.votes;
     
     REP rep = REP(tokenAddress);
+    uint256 noRepToBurn;
+    
+    //slash the no REP if NO wins.
+    if(_noSlashRep > 0) {
+      emit SemadaInfo("burning rep");
+      uint bal = rep.burn(this, _noSlashRep);
+      emit SemadaInfoUint(bal);
+    }
   
     for(uint j = 0; j < votes.length; j++){
       uint256 betAmtWon;
-      if(_yesRepStaked >= _noRepStaked && votes[j].vote){
+      if(_noSlashRep == 0 && votes[j].vote){
         
         betAmtWon = safePercentageOf(votes[j].rep, 
           _yesRepStaked, _totalRepStaked, 2);
           
         rep.transferFrom(this, votes[j].from, betAmtWon);
-      } else if (_noRepStaked > _yesRepStaked && !votes[j].vote){
+      } else if (_noSlashRep > 0
+          && !votes[j].vote 
+          && votes[j].from != 0){
         
         betAmtWon = safePercentageOf(votes[j].rep, 
-          _noRepStaked, _yesRepStaked, 2);
+          _noRepStaked, _totalRepStaked, 2);
           
         rep.transferFrom(this, votes[j].from, betAmtWon);
       }
     }
-    
-    //slash the no REP if NO wins.
-    if(_noRepStaked > _yesRepStaked) {
-      rep.burn(this, _noRepStaked);
-    }
+
   }
   
   function distributeSem(uint256 _tokenNumberIndex) public {

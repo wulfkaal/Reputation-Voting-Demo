@@ -1,7 +1,18 @@
 var SemadaCore = artifacts.require("SemadaCore");
 var Rep = artifacts.require("REP");
+var Factory = artifacts.require("Factory")
+var Dao = artifacts.require("Dao")
 
 contract('SemadaCore', function(accounts) {
+  it("Factory creates instance", async () => {
+    let factoryInstance = await Factory.deployed()
+    let daoInstance = await Dao.deployed()
+    
+    let trx = await daoInstance.createProposal(factoryInstance.address)
+    
+    assert.equal(trx.logs[0].args._address.length, 42, "Not a valid address")
+  })
+  
   it("Create DAO and mint 10 REP", async () => {
     let semadaCoreInstance = await SemadaCore.deployed()
     
@@ -22,29 +33,30 @@ contract('SemadaCore', function(accounts) {
     let semadaCoreInstance = await SemadaCore.deployed()
     let startingSemBalance = web3.eth.getBalance(accounts[0])
     let fees = 1000000000000000000
-    console.log("HERE 1")
+    
     let daoTrx = await semadaCoreInstance
       .createDao("test", {from: accounts[0], value: fees})
     
     let tokenNumberIndex = daoTrx.logs[0].args.tokenNumberIndex
     let proposalIndex = daoTrx.logs[1].args.proposalIndex
-    console.log("HERE 2")
+    
     let repContractAddress = await semadaCoreInstance
       .getTokenAddress(tokenNumberIndex)
     let repContract = Rep.at(repContractAddress)
     
     let proposalStatus = await semadaCoreInstance
       .getProposalVotes(proposalIndex)
-    console.log(`HERE 3 ${proposalStatus}`)
+    
     await semadaCoreInstance.distributeRep(
         proposalIndex, 
         Number(proposalStatus[1]) + Number(proposalStatus[2]),
         Number(proposalStatus[1]),
-        Number(proposalStatus[2])
+        Number(proposalStatus[2]),
+        Number(proposalStatus[3])
       )
-    console.log("HERE 4")
+    
     await semadaCoreInstance.distributeSem(tokenNumberIndex)
-    console.log("HERE 5")
+    
     let repBalance = await repContract.balanceOf(accounts[0])
     let semBalance = await web3.eth.getBalance(accounts[0])
     
@@ -161,11 +173,12 @@ contract('SemadaCore', function(accounts) {
         proposalIndex, 
         Number(proposalStatus[1]) + Number(proposalStatus[2]),
         Number(proposalStatus[1]),
-        Number(proposalStatus[2])
+        Number(proposalStatus[2]),
+        Number(proposalStatus[3])
       )
-    console.log('HERE 6')
+    
     await semadaCoreInstance.distributeSem(tokenNumberIndex)
-    console.log('HERE 7')
+    
     let repBalance = await repContract.balanceOf(accounts[1])
     let semBalance = await web3.eth.getBalance(accounts[1])
   
@@ -187,7 +200,7 @@ contract('SemadaCore', function(accounts) {
 
     let startingSemBalance2 = web3.eth.getBalance(accounts[2])
     let startingSemBalance3 = web3.eth.getBalance(accounts[3])
-    console.log(`SEM: ${startingSemBalance2}, ${startingSemBalance3}`)
+    
     let fees = 10
     
     let daoTrx = await semadaCoreInstance
@@ -202,41 +215,47 @@ contract('SemadaCore', function(accounts) {
     
     await repContract.mintToken({from: accounts[2], value: 5})
     await repContract.mintToken({from: accounts[3], value: 6})
+    await repContract.mintToken({from: accounts[4], value: 4})
     
     let voteTrx1 = await semadaCoreInstance
       .vote(proposalIndex, true, 5, {from: accounts[2]})
-      
+    
     let voteTrx2 = await semadaCoreInstance
       .vote(proposalIndex, false, 6, {from: accounts[3]})
+      
+    let voteTrx3 = await semadaCoreInstance
+      .vote(proposalIndex, false, 2, {from: accounts[4]})
     
     let proposalStatus = await semadaCoreInstance
       .getProposalVotes(proposalIndex)
-    console.log("VOTES:", proposalStatus[1].toNumber(), proposalStatus[2].toNumber())
+    
     await semadaCoreInstance.distributeRep(
         proposalIndex, 
         Number(proposalStatus[1]) + Number(proposalStatus[2]),
         Number(proposalStatus[1]),
-        Number(proposalStatus[2])
+        Number(proposalStatus[2]),
+        Number(proposalStatus[3])
       )
-    
-    
-    let semTrx = await semadaCoreInstance.distributeSem(tokenNumberIndex)
-    console.log(semTrx.logs)
     
     let repBalance2 = await repContract.balanceOf(accounts[2])
     let repBalance3 = await repContract.balanceOf(accounts[3])
+    let repBalance4 = await repContract.balanceOf(accounts[4])
     let semBalance2 = await web3.eth.getBalance(accounts[2])
     let semBalance3 = await web3.eth.getBalance(accounts[3])
-  
+    let semBalance4 = await web3.eth.getBalance(accounts[4])
   
   
     assert.equal(repBalance2, 
-      4, 
-      `Account 2 REP Balance is not ${4}, was ${repBalance2}`)
+      0, 
+      `Account 2 REP Balance is not ${0}, was ${repBalance2}`)
 
     assert.equal(repBalance3, 
-      5, 
-      `Account 3 REP Balance is not ${5}, was ${repBalance3}`)
+      13, 
+      `Account 3 REP Balance is not ${13}, was ${repBalance3}`)
+      
+    assert.equal(repBalance4, 
+      6, 
+      `Account 4 REP Balance is not ${6}, was ${repBalance4}`)
     
     assert.isAbove(Number(semBalance2), 
       Number(startingSemBalance2 * 0.9), 
@@ -247,7 +266,7 @@ contract('SemadaCore', function(accounts) {
       `SEM Balance is not above ${startingSemBalance3 * 0.9}, was ${semBalance3}`)
   
     let totalSupply = await repContract.totalSupply()
-    assert.equal(Number(totalSupply), 21, `Total supply is not ${21}`)
+    assert.equal(Number(totalSupply), 20, `Total supply is not ${20}, was ${totalSupply}`)
   
   });
   

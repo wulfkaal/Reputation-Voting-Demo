@@ -70,9 +70,10 @@ contract REP is ERC20Interface, SafeMath {
         emit Transfer(address(0), msg.sender, msg.value);
     }
     
-    function burn(address _from, uint tokens) public returns (bool success) {
+    function burn(address _from, uint tokens) public returns (uint newBalance) {
       balances[_from] = safeSub(balances[_from], tokens);
-      return true;
+      _totalSupply = safeSub(_totalSupply, tokens);
+      return balances[_from];
     }
 
     function transfer(address to, uint tokens) public returns (bool success) {
