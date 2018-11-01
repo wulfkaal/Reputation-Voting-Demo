@@ -41,12 +41,13 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(saveSemBalance(semBalance))
     },
     persistDao: async(dao) => {
-      
-      dao = await createDao(dao, 20, false)
+      dao = await createDao(dao, 20, true)
       await dispatch(persistProposal({
         _id: 'new',
         name: 'New DAO',
-        evidence: ''
+        evidence: '',
+        tokenNumberIndex: dao.tokenNumberIndex,
+        proposalIndex: dao.proposalIndex
       }))
       // This proposal belongs to the Anchor DAO
       let newDao = await dispatch(persistDao(dao))

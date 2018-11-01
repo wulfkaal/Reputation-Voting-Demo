@@ -5,7 +5,25 @@ import SemadaCoreContract from '../contracts/SemadaCore.json';
 var createDao = async(dao, sem, mock) => {
 
 	if(mock){
-
+		let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
+	      method: 'GET',
+	      mode: 'cors'
+	    })
+	    let body = await response.json()
+	    const greatestTokenNumber = body.daos
+	    						.filter(dao => dao.tokenNumberIndex)
+	    						.reduce((greatest, dao) => { 
+	    							return (greatest || 0) > parseInt(dao.tokenNumberIndex) ? greatest : parseInt(dao.tokenNumberIndex) 
+	    						}, {})
+		dao.tokenNumberIndex = greatestTokenNumber + 1
+		   // Get latest proposal Index and add one 
+		let proposalsResponse = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals`, {
+	      method: 'GET',
+	      mode: 'cors'
+	    })
+	    let proposalsBody = await proposalsResponse.json()
+	    const greatestProposalIndex = proposalsBody['greatestProposalIndex']
+	    dao.proposalIndex = greatestProposalIndex + 1
 	} else {
 		let web3 = getWeb3()
 		let publicAddress = await web3.eth.getCoinbase()
