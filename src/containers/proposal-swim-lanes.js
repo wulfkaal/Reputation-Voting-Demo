@@ -7,7 +7,7 @@ import {
   saveProposal
 } from '../actions/proposals'
 import values from 'lodash/values'
-import getTokenBalance from '../utils/getTokenBalance'
+import ChainFactory from '../utils/chainFactory'
 import { getDaos } from '../actions/daos'
 import {
   receiveRepBalance,
@@ -36,7 +36,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(getProposals(daoId))
     },
     getRepBalance: async(tokenNumberIndex) => {
-      let tokenBal = await getTokenBalance(tokenNumberIndex)
+      let chain = await ChainFactory.getChain()
+      let tokenBal = await chain.getTokenBalance(tokenNumberIndex)
       dispatch(receiveRepBalance(tokenBal))
     },
     startTimer: () => {

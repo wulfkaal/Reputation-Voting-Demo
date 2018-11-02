@@ -13,8 +13,7 @@ import {
   receiveRepBalance,
   showRepBalance
 } from '../actions/daos'
-import newProposal from '../utils/newProposal'
-import getTokenBalance from '../utils/getTokenBalance'
+import ChainFactory from '../utils/chainFactory'
 
 
 const mapStateToProps = (state, ownProps) => {  
@@ -39,9 +38,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(saveProposal(proposal))
     },
     persistProposal: async (proposal, userId, dao) => {
-        
-
-      proposal = await newProposal(proposal, dao.tokenNumberIndex, false)
+      let chain = await ChainFactory.getChain()
+      proposal = await chain.newProposal(proposal, dao.tokenNumberIndex)
       let result = await dispatch(persistProposal({
                       _id: proposal._id,
                       userId: userId,
@@ -56,7 +54,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                       noRepStaked: proposal.stake/2,
                       yesRepStaked: proposal.stake/2
                     }))
-      let tokenBal = await getTokenBalance(dao.tokenNumberIndex)
+      let tokenBal = await chain.getTokenBalance(dao.tokenNumberIndex)
       dispatch(receiveRepBalance(tokenBal))
       dispatch(resetNewProposal())
       ownProps.history.push(`/${dao._id}/proposals/${result.proposal._id}`)

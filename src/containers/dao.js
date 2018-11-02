@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import ProposalsLayout from '../hocs/proposals-layout'
 import {connect} from 'react-redux'
 import DaoScreen from '../presenters/dao/screen'
-import getTokenBalance from '../utils/getTokenBalance'
+import ChainFactory from '../utils/chainFactory'
 import { 
   getDao,
   receiveRepBalance,
@@ -23,7 +23,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       return dispatch(getDao(id))
     },
     getRepBalance: async(dao) =>{
-      let tokenBal = await getTokenBalance(dao.tokenNumberIndex)
+      let chain = await ChainFactory.getChain()
+      let tokenBal = await chain.getTokenBalance(dao.tokenNumberIndex)
       dispatch(receiveRepBalance(tokenBal))
     },
     showRepBalance: () => {

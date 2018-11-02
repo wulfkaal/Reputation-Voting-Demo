@@ -16,9 +16,7 @@ import {
 } from '../actions/auth'
 import { receiveRepBalance } from '../actions/daos'
 import getWeb3 from '../utils/get-web3'
-import getProposalVotes from '../utils/getProposalVotes'
-import distributeRepAndSem from '../utils/distributeRepAndSem'
-
+import ChainFactory from '../utils/chainFactory'
 
 const mapStateToProps = (state, ownProps) => {  
   return {
@@ -124,7 +122,8 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     let proposals = this.props.baseProposals
     for(let i = 0; i < proposals.length; i++){
       let proposal = {...proposals[i]}
-      let proposalStatus = await getProposalVotes(proposal.proposalIndex, false)
+      let chain = await ChainFactory.getChain()
+      let proposalStatus = await chain.getProposalVotes(proposal.proposalIndex)
 
       let now = Math.floor(new Date().getTime()/1000)
       let remaining = proposal.voteTimeEnd - now
@@ -145,7 +144,8 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
       
       //if not active, then proposal has completed
       if(proposal.status !== PROPOSAL_STATUSES.active) {
-        let rep = await distributeRepAndSem(proposal.proposalIndex,
+        let chain = await ChainFactory.getChain()
+        let rep = await chain.distributeRepAndSem(proposal.proposalIndex,
           proposal.yesRepStaked + proposal.noRepStaked,
           proposal.yesRepStaked,
           proposal.noRepStaked,
