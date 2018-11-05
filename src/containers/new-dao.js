@@ -15,8 +15,7 @@ import {
 import {
   getUser
 } from '../actions/users'
-import getSemBalance from '../utils/getSemBalance'
-import createDao from '../utils/createDao'
+import ChainFactory from '../utils/chainFactory'
 
 
 const mapStateToProps = (state, ownProps) => {  
@@ -37,18 +36,27 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(saveDao(dao))
     },
     saveSem: async() => {
-      let semBalance = await getSemBalance()
+      let chain = await ChainFactory.getChain()
+      let semBalance = await chain.getSemBalance()
       dispatch(saveSemBalance(semBalance))
     },
     persistDao: async(dao) => {
-      
-      dao = await createDao(dao, 20, false)
+
+      let chain = await ChainFactory.getChain()
+      let totalSupply = 20
+      dao = await chain.createDao(dao, totalSupply)
       await dispatch(persistProposal({
         _id: 'new',
         name: 'New DAO',
-        evidence: ''
+        evidence: '',
+        chain: process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK,
+        tokenNumberIndex: dao.tokenNumberIndex,
+        tokenAddress: dao.tokenAddress,
+        proposalIndex: dao.proposalIndex,
+        totalSupply: totalSupply
       }))
       // This proposal belongs to the Anchor DAO
+      dao.chain = process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK
       let newDao = await dispatch(persistDao(dao))
       await dispatch(resetNewDao())
       

@@ -1,4 +1,4 @@
-import getTokenAddress from '../utils/getTokenAddress'
+import ChainFactory from '../utils/chainFactory'
 
 export const RECEIVE_DAO = 'RECEIVE_DAO'
 export const RESET_NEW_DAO = 'RESET_NEW_DAO'
@@ -100,7 +100,8 @@ export const getDaos = () => {
     for(let i=0; i < body.daos.length; i++){
       let dao = body.daos[i]
       if(dao.tokenNumberIndex && !dao.tokenAddress){
-        dao.tokenAddress = await getTokenAddress(dao.tokenNumberIndex, false)
+        let chain = await ChainFactory.getChain()
+        dao.tokenAddress = await chain.getTokenAddress(dao.tokenNumberIndex)
       }
       dispatch({
         dao: dao,
