@@ -47,6 +47,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           userId: userId,
           daoId: dao._id,
           name: 'Join DAO',
+          chain: process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK,
           evidence: '',
           proposalIndex: proposal.proposalIndex,
           tokenNumberIndex: dao.tokenNumberIndex,
@@ -54,7 +55,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           voteTimeEnd: proposal.timeout,
           voteTimeRemaining: proposal.timeout - (parseInt(new Date()/1000)),
           noRepStaked: proposal.stake/2,
-          yesRepStaked: proposal.stake/2
+          yesRepStaked: proposal.stake/2,
+          votes: proposal.votes
         }))
       let tokenBal = await chain.getTokenBalance(dao.tokenNumberIndex)
       dispatch(receiveRepBalance(tokenBal))

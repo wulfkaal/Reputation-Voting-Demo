@@ -1,4 +1,4 @@
-import truffleContract from "truffle-contract";
+import truffleContract from 'truffle-contract'
 import getWeb3 from './get-web3'
 import SemadaCoreContract from '../contracts/SemadaCore.json';
 import RepContract from '../contracts/REP.json'
@@ -140,7 +140,7 @@ class Ethereum {
 		return proposal
 	}
 
-	async getProposalVotes(proposalIndex) {
+	async getProposalVotes(proposalIndex, proposalId) {
 		let proposalStatus 
 		let web3 = getWeb3()
 		const semadaCore = truffleContract(SemadaCoreContract);
@@ -155,7 +155,8 @@ class Ethereum {
 		return proposalStatus
 	}
 
-	async distributeRepAndSem(proposalIndex, totalRepStaked, yesRepStaked, noRepStaked, tokenNumberIndex) {
+	async distributeRepAndSem(proposalId, proposalIndex, 
+		totalRepStaked, yesRepStaked, noRepStaked, tokenNumberIndex) {
 	    let web3 = getWeb3()
 	    let publicAddress = await web3.eth.getCoinbase()
 	    const semadaCore = truffleContract(SemadaCoreContract);

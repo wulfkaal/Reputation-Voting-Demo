@@ -49,13 +49,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         _id: 'new',
         name: 'New DAO',
         evidence: '',
-        chain: process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK ? process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK : "mock",
+        chain: process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK,
         tokenNumberIndex: dao.tokenNumberIndex,
         tokenAddress: dao.tokenAddress,
         proposalIndex: dao.proposalIndex,
         totalSupply: totalSupply
       }))
       // This proposal belongs to the Anchor DAO
+      dao.chain = process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK
       let newDao = await dispatch(persistDao(dao))
       await dispatch(resetNewDao())
       

@@ -14,7 +14,8 @@ const initialState = {
     proposalIndex: null,
     tokenAddress: null
   },
-  showRepBalance: true
+  showRepBalance: true,
+  rep: 0
 }
 
 const daos = (state = initialState, action) => {

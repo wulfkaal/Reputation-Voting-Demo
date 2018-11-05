@@ -123,20 +123,22 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     for(let i = 0; i < proposals.length; i++){
       let proposal = {...proposals[i]}
       let chain = await ChainFactory.getChain()
-      let proposalStatus = await chain.getProposalVotes(proposal.proposalIndex)
-
+      let proposalStatus = await chain.getProposalVotes(proposal.proposalIndex, proposal._id)
+      try{
+        proposal.status = proposalStatus[0].toNumber()
+        proposal.yesRepStaked = proposalStatus[1].toNumber()
+        proposal.noRepStaked = proposalStatus[2].toNumber()
+        proposal.noSlashRep = proposalStatus[3].toNumber()
+      } catch (e){
+        proposal.status = proposalStatus[0]
+        proposal.yesRepStaked = proposalStatus[1]
+        proposal.noRepStaked = proposalStatus[2]
+        proposal.noSlashRep = proposalStatus[3]
+      }
       let now = Math.floor(new Date().getTime()/1000)
       let remaining = proposal.voteTimeEnd - now
-            
       remaining = remaining < 0 ? 0 : remaining
       proposal.voteTimeRemaining = remaining
-      
-      // event is emitted with outcome (active, pass, fail)
-      // event is emitted with yes rep staked
-      // event is emitted with no rep stated
-      proposal.status = proposalStatus[0].toNumber()
-      proposal.yesRepStaked = proposalStatus[1].toNumber()
-      proposal.noRepStaked = proposalStatus[2].toNumber()
       
       // save/persist proposal to API with new status
       await this.props.baseSaveProposal(proposal)
@@ -145,7 +147,7 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
       //if not active, then proposal has completed
       if(proposal.status !== PROPOSAL_STATUSES.active) {
         let chain = await ChainFactory.getChain()
-        let rep = await chain.distributeRepAndSem(proposal.proposalIndex,
+        let rep = await chain.distributeRepAndSem(proposal._id, proposal.proposalIndex,
           proposal.yesRepStaked + proposal.noRepStaked,
           proposal.yesRepStaked,
           proposal.noRepStaked,

@@ -1,4 +1,5 @@
 import getWeb3 from './get-web3'
+import {BigNumber} from 'bignumber.js';
 
 class Mock {
 
@@ -38,9 +39,7 @@ class Mock {
 	    const greatestProposalIndex = proposalsBody['greatestProposalIndex']
 	    dao.proposalIndex = greatestProposalIndex + 1
 	    let balances = {}
-	    let web3 = getWeb3()
-		let publicAddress = await web3.eth.getCoinbase()
-		balances[publicAddress] = sem
+		balances["semcore"] = sem
 		dao.balances = balances
 	    return dao
 	}
@@ -75,113 +74,325 @@ class Mock {
 	      if(dao.tokenNumberIndex 
 	      	&& dao.tokenNumberIndex===tokenNumberIndex 
 	      	&& dao.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK){
-	        return dao.balances[publicAddress]
+	        return parseInt(dao.balances[publicAddress])
 	      }
 	    }	
 	}
 
 	async joinDao(proposal, tokenNumberIndex) {
-		// let web3 = getWeb3()
-		// let publicAddress = await web3.eth.getCoinbase()
-		// const semadaCore = truffleContract(SemadaCoreContract);
-		// semadaCore.setProvider(web3.currentProvider)
-		// let semadaCoreInstance = await semadaCore.deployed()
-		// try {
-	 //        let trx = await semadaCoreInstance.joinDao(
-	 //        tokenNumberIndex,
-	 //        {from: publicAddress, value: proposal.stake})
-	 //        proposal.proposalIndex = trx.logs[0].args.proposalIndex
-	 //        proposal.timeout = trx.logs[0].args.timeout
-		// } catch (e) {
-		// 	alert(`Failed to join DAO: ${e}`)  
-		// }
-		// return proposal
+		let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
+	      method: 'GET',
+	      mode: 'cors'
+	    })
+	    let body = await response.json()
+	    let dao
+	    for(let i=0; i < body.daos.length; i++){
+	      dao = body.daos[i]
+	      if(dao.tokenNumberIndex 
+	      	&& dao.tokenNumberIndex===tokenNumberIndex 
+	      	&& dao.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK){
+	        dao.balances["semcore"] += proposal.stake
+	        dao.totalSupply += proposal.stake 
+	        break
+	      }
+	    }
+	    // persist dao
+	    let url = `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos/${dao._id}`
+	    await fetch(url, {
+	      method: 'PUT',
+	      mode: 'cors',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify(dao)
+	    })
+
+	    // get latest proposalIndex for this dao in this chain
+	    let proposalsResponse = await fetch(
+	      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/dao/${dao._id}`, {
+	      method: 'GET',
+	      mode: 'cors'
+	    })
+	    let proposalsbody = await proposalsResponse.json()
+	    let proposals = proposalsbody.proposals.filter((p) => p.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK) 
+	    let greatestProposalIndex = 0
+	    if(proposals.length){
+			for(let i = 0; i < proposals.length; i++){
+				let temp = proposals[i]
+				if ( temp.proposalIndex > greatestProposalIndex ){
+					greatestProposalIndex = temp.proposalIndex
+				}
+			}
+	    }
+	    proposal.proposalIndex = greatestProposalIndex + 1
+	    proposal.timeout = parseInt(new Date()/1000) + 180
+
+	    let web3 = getWeb3()
+		let publicAddress = await web3.eth.getCoinbase()
+
+	    let yesVote = {}
+		yesVote["from"] = publicAddress
+		yesVote["rep"] = parseInt(proposal.stake/2)
+		yesVote["vote"] = true
+
+		let noVote = {}
+		noVote["from"] = 0
+		noVote["rep"] = parseInt(proposal.stake/2)
+		noVote["vote"] = true
+
+		let votes = []
+		votes.push(yesVote)
+		votes.push(noVote)
+
+		proposal.votes = votes
+	    return proposal
 	}
 
 	async newProposal(proposal, tokenNumberIndex) {
-		// let web3 = getWeb3()
-		// let publicAddress = await web3.eth.getCoinbase()
-		// const semadaCore = truffleContract(SemadaCoreContract);
-		// semadaCore.setProvider(web3.currentProvider)
-		// let semadaCoreInstance = await semadaCore.deployed()
-		// try {
-		// 	let trx = await semadaCoreInstance.newProposal(
-	 //         tokenNumberIndex,
-	 //         proposal.name,
-	 //         proposal.evidence,
-	 //        {from: publicAddress, value: proposal.stake})
-	 //        proposal.proposalIndex = trx.logs[0].args.proposalIndex
-	 //        proposal.timeout = trx.logs[0].args.timeout
-		// } catch (e) {
-		// 	alert(`Failed to submit new proposal: ${e}`) 
-		// }
-		// return proposal
+		let web3 = getWeb3()
+		let publicAddress = await web3.eth.getCoinbase()
+		let yesVote = {}
+		yesVote["from"] = publicAddress
+		yesVote["rep"] = parseInt(proposal.stake/2)
+		yesVote["vote"] = true
+
+		let noVote = {}
+		noVote["from"] = 0
+		noVote["rep"] = parseInt(proposal.stake/2)
+		noVote["vote"] = false
+
+		let votes = []
+		votes.push(yesVote)
+		votes.push(noVote)
+
+		proposal.votes = votes
+
+		let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
+	      method: 'GET',
+	      mode: 'cors'
+	    })
+	    let body = await response.json()
+	    let dao
+	    for(let i=0; i < body.daos.length; i++){
+	      dao = body.daos[i]
+	      if(dao.tokenNumberIndex 
+	      	&& dao.tokenNumberIndex===tokenNumberIndex 
+	      	&& dao.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK){
+	        dao.balances["semcore"] += proposal.stake
+	        dao.totalSupply += proposal.stake 
+	        break
+	      }
+	    }
+		// persist dao
+	    let url = `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos/${dao._id}`
+	    await fetch(url, {
+	      method: 'PUT',
+	      mode: 'cors',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify(dao)
+	    })
+
+	    // get latest proposalIndex for this dao in this chain
+	    let proposalsResponse = await fetch(
+	      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/dao/${dao._id}`, {
+	      method: 'GET',
+	      mode: 'cors'
+	    })
+	    let proposalsbody = await proposalsResponse.json()
+	    let proposals = proposalsbody.proposals.filter((p) => p.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK) 
+	    let greatestProposalIndex = 0
+	    if(proposals.length){
+			for(let i = 0; i < proposals.length; i++){
+				let temp = proposals[i]
+				if ( temp.proposalIndex > greatestProposalIndex ){
+					greatestProposalIndex = temp.proposalIndex
+				}
+			}
+	    }
+	    proposal.proposalIndex = greatestProposalIndex + 1
+	    proposal.timeout = parseInt(new Date()/1000) + 180
+		return proposal
 	}
 
 	async voteProposal(proposal) {
-		// let web3 = getWeb3()
-		// let publicAddress = await web3.eth.getCoinbase()
-		// const semadaCore = truffleContract(SemadaCoreContract);
-		// semadaCore.setProvider(web3.currentProvider)
-		// let semadaCoreInstance = await semadaCore.deployed()
-		// try {        
-	 //        await semadaCoreInstance.vote(
-	 //         proposal.proposalIndex,
-	 //         proposal.vote==='yes' ? true : false,
-	 //         proposal.stake,
-	 //         {from: publicAddress})
-	 //        if (proposal.vote==='yes') {
-	 //          proposal.yesRepStaked = parseInt(proposal.yesRepStaked) + parseInt(proposal.stake)
-	 //        } else {
-	 //          proposal.noRepStaked = parseInt(proposal.noRepStaked) + parseInt(proposal.stake)
-	 //        }
-	 //        proposal.vote='no'
-		// } catch (e) {
-		// 	alert(`Failed to vote for proposal: ${e}`)  
-		// }
-		// return proposal
+		let web3 = getWeb3()
+		let publicAddress = await web3.eth.getCoinbase()
+		let tokenNumberIndex = proposal.tokenNumberIndex
+
+		let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
+	      method: 'GET',
+	      mode: 'cors'
+	    })
+	    let body = await response.json()
+	    let dao
+	    for(let i=0; i < body.daos.length; i++){
+	      dao = body.daos[i]
+	      if(dao.tokenNumberIndex 
+	      	&& dao.tokenNumberIndex===tokenNumberIndex 
+	      	&& dao.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK){
+	        dao.balances[publicAddress] -= proposal.stake
+	    	dao.balances["semcore"] += proposal.stake
+	    	break
+	      }
+	    }
+	    let vote = {}
+	    vote["from"] = publicAddress
+	    vote["rep"] = parseInt(proposal.stake)
+	    vote["vote"] = proposal.vote==='yes' ? true : false
+	    proposal.votes.push(vote)
+		// persist dao
+	    let url = `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos/${dao._id}`
+	    await fetch(url, {
+	      method: 'PUT',
+	      mode: 'cors',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify(dao)
+	    })
+        if (proposal.vote==='yes') {
+          proposal.yesRepStaked = parseInt(proposal.yesRepStaked) + parseInt(proposal.stake)
+        } else {
+          proposal.noRepStaked = parseInt(proposal.noRepStaked) + parseInt(proposal.stake)
+        }
+        proposal.vote='no'
+		return proposal
 	}
 
-	async getProposalVotes(proposalIndex) {
-		// let proposalStatus 
-		// let web3 = getWeb3()
-		// const semadaCore = truffleContract(SemadaCoreContract);
-		// semadaCore.setProvider(web3.currentProvider)
-		// let semadaCoreInstance = await semadaCore.deployed()
-		// try {
-		// 	proposalStatus = await semadaCoreInstance.getProposalVotes(
-		// 		proposalIndex)
-		// } catch (e) {
-		// 	alert(`Failed to get proposal votes: ${e}`) 
-		// }
-		// return proposalStatus
+	async getProposalVotes(proposalIndex, proposalId) {
+		let response = await fetch(
+	      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/${proposalId}`, {
+	      method: 'GET',
+	      mode: 'cors'
+	    })
+	    let proposal = await response.json()
+	    let votes = proposal.votes
+	    let status = 1;
+	    let totalRep = 0;
+	    let totalYesRep = 0;
+	    let noSlashRep = 0;
+
+	    for(let i = 0; i < votes.length; i++){
+	      totalRep += votes[i].rep
+	      if(votes[i].vote){
+	        totalYesRep += votes[i].rep
+	      } else if(!votes[i].vote && votes[i].from === 0) {
+	        noSlashRep = votes[i].rep
+	      }
+	    }
+	    let now = Math.floor(new Date().getTime()/1000)
+	    if(now >= proposal.voteTimeEnd){
+	      if(totalYesRep >= Math.floor(totalRep/2)){
+	        status = 2
+	        //reset as we aren't going to slash rep if YES wins
+	        noSlashRep = 0
+	      } else {
+	        status = 3
+	        totalRep = totalRep - noSlashRep
+	      }
+	    } else {
+	      if(totalYesRep >= Math.floor(totalRep/2)){
+	        //reset as we aren't going to slash rep if YES wins
+	        noSlashRep = 0
+	      } else {
+	        totalRep = totalRep - noSlashRep
+	      }
+	      status = 1
+	    }
+
+		let proposalStatus = []
+		proposalStatus.push(parseInt(status))
+		proposalStatus.push(parseInt(totalYesRep))
+		proposalStatus.push(parseInt(totalRep - totalYesRep))
+		proposalStatus.push(parseInt(noSlashRep))
+		return proposalStatus
 	}
 
-	async distributeRepAndSem(proposalIndex, totalRepStaked, yesRepStaked, noRepStaked, tokenNumberIndex) {
-	  //   let web3 = getWeb3()
-	  //   let publicAddress = await web3.eth.getCoinbase()
-	  //   const semadaCore = truffleContract(SemadaCoreContract);
-	  //   semadaCore.setProvider(web3.currentProvider)
-	  //   let semadaCoreInstance = await semadaCore.deployed()
-	  //   const repContract = truffleContract(RepContract)
-	  //   repContract.setProvider(web3.currentProvider)
-	  //   let rep
-	  //   try {
-	  //     await semadaCoreInstance.distributeRep(proposalIndex,
-	  //           totalRepStaked,
-	  //           yesRepStaked,
-	  //           noRepStaked,
-	  //           {from: publicAddress})
-	  //     let repAddress = await semadaCoreInstance
-	  //       .getTokenAddress(tokenNumberIndex)
-	      
-	  //     let repInstance = await repContract.at(repAddress)
-	  //     await repInstance.distributeSem({from: publicAddress})
-	  //     rep = await repInstance.balanceOf(publicAddress)
-	  //   } catch (e) {
-	  //     alert(`Failed to distribute Rep And Sem: ${e}`)
-	  //   }
-	 	// return rep.toNumber()
+	async distributeRepAndSem(proposalId, proposalIndex, 
+		totalRepStaked, yesRepStaked, noRepStaked, tokenNumberIndex) {
+	    let response = await fetch(
+	      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/${proposalId}`, {
+	      method: 'GET',
+	      mode: 'cors'
+	    })
+	    let proposal = await response.json()
+	    let votes = proposal.votes
+	    let noSlashRep = proposal.noSlashRep ? proposal.noSlashRep : 0
+
+	    let dao
+		let daosResponse = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
+	      method: 'GET',
+	      mode: 'cors'
+	    })
+	    let body = await daosResponse.json()
+	    for(let i=0; i < body.daos.length; i++){
+	      let temp = body.daos[i]
+	      if(temp.tokenNumberIndex 
+	      	&& temp.tokenNumberIndex===tokenNumberIndex 
+	      	&& temp.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK){
+	        dao = temp
+	    	break
+	      }
+	    }
+	    let balances = dao.balances 
+	    let totalSupply = dao.totalSupply   
+	    //slash the no REP if NO wins.
+	    if(noSlashRep > 0) {
+	      if (balances["semcore"]){
+	      	let rem = balances["semcore"] - noSlashRep
+	      	if (rem > 0){
+	      		balances["semcore"] = rem
+	      	} else {
+	      		balances["semcore"] = 0
+	      	}
+	      	totalSupply -= noSlashRep
+	      }
+	    }
+	  
+	    for(let j = 0; j < votes.length; j++){
+	      let betAmtWon;
+	      if(noSlashRep === 0 && votes[j].vote){
+	        betAmtWon = parseFloat(votes[j].rep * totalRepStaked / yesRepStaked).toFixed(2)
+	        if (balances[votes[j].from]) {
+		        balances[votes[j].from] += betAmtWon
+		    } else {
+		    	balances[votes[j].from] = betAmtWon
+		    }
+	        balances["semcore"] -= betAmtWon
+	      } else if (noSlashRep > 0
+	          && !votes[j].vote 
+	          && votes[j].from !== 0){
+	        betAmtWon = parseFloat(votes[j].rep * totalRepStaked / noRepStaked).toFixed(2)        
+	        if (balances[votes[j].from]) {
+		        balances[votes[j].from] += betAmtWon
+		    } else {
+		    	balances[votes[j].from] = betAmtWon
+		    }
+	        balances["semcore"] -= betAmtWon
+	      }
+	    }
+	    dao.balances = balances
+	    dao.totalSupply = totalSupply
+	    let url = `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos/${dao._id}`
+	    await fetch(url, {
+	      method: 'PUT',
+	      mode: 'cors',
+	      headers: {
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify(dao)
+	    })
+
+	    let web3 = getWeb3()
+		let publicAddress = await web3.eth.getCoinbase()
+	    let rep = dao.balances[publicAddress]
+	 	return rep
 	}
 }
 
