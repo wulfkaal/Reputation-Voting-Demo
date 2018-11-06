@@ -15,7 +15,7 @@ import {
 import {
   getUser
 } from '../actions/users'
-import ChainFactory from '../utils/chainFactory'
+import SemadaCore from '../utils/semada-core'
 
 
 const mapStateToProps = (state, ownProps) => {  

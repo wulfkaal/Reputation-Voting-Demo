@@ -1,10 +1,25 @@
 {
-  "contractName": "WorkProposalOne",
-  "abi": [],
-  "bytecode": "0x608060405260c86000556003600155348015601957600080fd5b5060358060276000396000f3006080604052600080fd00a165627a7a723058202f8d6b9cfdc22bbff685e6636fa04f06213a516e0eb0829f3f1eeaac104e21470029",
-  "deployedBytecode": "0x6080604052600080fd00a165627a7a723058202f8d6b9cfdc22bbff685e6636fa04f06213a516e0eb0829f3f1eeaac104e21470029",
-  "sourceMap": "260:111:1:-;;;307:3;289:21;;342:1;314:29;;260:111;8:9:-1;5:2;;;30:1;27;20:12;5:2;260:111:1;;;;;;;",
-  "deployedSourceMap": "260:111:1:-;;;;;",
+  "contractName": "JoinNewsVerificationDaoProposal",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "createProposal",
+      "outputs": [
+        {
+          "name": "proposalAddress",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b50610160806100206000396000f300608060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063180fd87f14610046575b600080fd5b34801561005257600080fd5b5061005b61009d565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b60006100a76100c9565b604051809103906000f0801580156100c3573d6000803e3d6000fd5b50905090565b604051605c806100d9833901905600608060405260c86000556003600155348015601957600080fd5b5060358060276000396000f3006080604052600080fd00a165627a7a723058202f8d6b9cfdc22bbff685e6636fa04f06213a516e0eb0829f3f1eeaac104e21470029a165627a7a723058202b36cffbc3ff18a3bdf599b6323b50f0c03e56c1ef80fb59f0fbe4fd14cdfb640029",
+  "deployedBytecode": "0x608060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063180fd87f14610046575b600080fd5b34801561005257600080fd5b5061005b61009d565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b60006100a76100c9565b604051809103906000f0801580156100c3573d6000803e3d6000fd5b50905090565b604051605c806100d9833901905600608060405260c86000556003600155348015601957600080fd5b5060358060276000396000f3006080604052600080fd00a165627a7a723058202f8d6b9cfdc22bbff685e6636fa04f06213a516e0eb0829f3f1eeaac104e21470029a165627a7a723058202b36cffbc3ff18a3bdf599b6323b50f0c03e56c1ef80fb59f0fbe4fd14cdfb640029",
+  "sourceMap": "60:198:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;60:198:1;;;;;;;",
+  "deployedSourceMap": "60:198:1:-;;;;;;;;;;;;;;;;;;;;;;;;128:125;;8:9:-1;5:2;;;30:1;27;20:12;5:2;128:125:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;170:23;226:21;;:::i;:::-;;;;;;;;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;226:21:1;200:48;;128:125;:::o;60:198::-;;;;;;;;;;:::o",
   "source": "pragma solidity ^0.4.24;\n\nimport \"./IProposalFactory.sol\";\n\ncontract JoinNewsVerificationDaoProposal is IProposalFactory {\n  \n  function createProposal() public returns (address proposalAddress){\n    proposalAddress = address(new WorkProposalOne());\n  }\n  \n}\n\ncontract WorkProposalOne {\n  uint minSemFees = 200;\n  uint mintedRepToSemRation = 3;\n  string description;\n  \n}",
   "sourcePath": "/Users/josh/Projects/Node/semada-demo/contracts/JoinNewsVerificationDaoProposal.sol",
   "ast": {
@@ -779,5 +794,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-11-05T17:49:44.039Z"
+  "updatedAt": "2018-11-05T17:49:44.030Z"
 }

@@ -1,16 +1,18 @@
-import getWeb3 from './get-web3'
+// import getWeb3 from './get-web3'
 import {BigNumber} from 'bignumber.js';
 
-class Mock {
+const SemadaApi = {
 
-	async getSemBalance() {
-	    let web3 = getWeb3()
-	    let publicAddress = await web3.eth.getCoinbase()
-	    let balance = await web3.eth.getBalance(publicAddress)
+	getSemBalance: async () => {
+    let web3 = getWeb3()
+    let publicAddress = await web3.eth.getCoinbase()
+    let balance = await web3.eth.getBalance(publicAddress)
+    
 		return balance
-	}
+	},
 
-	async createDao(dao, sem) {
+	createDao: async (dao, sem) => {
+    
 		let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
 	      method: 'GET',
 	      mode: 'cors'
@@ -22,10 +24,10 @@ class Mock {
 	    							return (greatest || 0) > parseInt(dao.tokenNumberIndex) ? greatest : parseInt(dao.tokenNumberIndex) 
 	    						}, {})
 		dao.tokenNumberIndex = greatestTokenNumber + 1
-
+    
 		let text = ""
 		let possible = "abcdefghijklmnopqrstuvwxyz0123456789"
-
+    
 		for (let i = 0; i < 43; i++){
 			text += possible.charAt(Math.floor(Math.random() * possible.length))
 		}
@@ -42,9 +44,9 @@ class Mock {
 		balances["semcore"] = sem
 		dao.balances = balances
 	    return dao
-	}
+	},
 
-	async getTokenAddress(tokenNumberIndex) {
+	getTokenAddress: async (tokenNumberIndex) => {
 		let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
 	      method: 'GET',
 	      mode: 'cors'
@@ -59,9 +61,9 @@ class Mock {
 	        return dao.tokenAddress
 	      }
 	    }
-	}
+	},
 
-	async getTokenBalance(tokenNumberIndex) {
+	getTokenBalance: async (tokenNumberIndex) => {
 		let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
 	      method: 'GET',
 	      mode: 'cors'
@@ -77,9 +79,13 @@ class Mock {
 	        return parseInt(dao.balances[publicAddress])
 	      }
 	    }	
-	}
+	},
 
-	async joinDao(proposal, tokenNumberIndex) {
+  getRepTotalSupply: async (tokenNumberIndex) => {
+    return 10
+  },
+
+	joinDao: async (proposal, tokenNumberIndex) => {
 		let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
 	      method: 'GET',
 	      mode: 'cors'
@@ -147,9 +153,9 @@ class Mock {
 
 		proposal.votes = votes
 	    return proposal
-	}
+	},
 
-	async newProposal(proposal, tokenNumberIndex) {
+	newProposal: async (proposal, tokenNumberIndex) => {
 		let web3 = getWeb3()
 		let publicAddress = await web3.eth.getCoinbase()
 		let yesVote = {}
@@ -216,9 +222,9 @@ class Mock {
 	    proposal.proposalIndex = greatestProposalIndex + 1
 	    proposal.timeout = parseInt(new Date()/1000) + 180
 		return proposal
-	}
+	},
 
-	async voteProposal(proposal) {
+	voteProposal: async (proposal) => {
 		let web3 = getWeb3()
 		let publicAddress = await web3.eth.getCoinbase()
 		let tokenNumberIndex = proposal.tokenNumberIndex
@@ -262,9 +268,9 @@ class Mock {
         }
         proposal.vote='no'
 		return proposal
-	}
+	},
 
-	async getProposalVotes(proposalIndex, proposalId) {
+	getProposalVotes: async (proposalIndex, proposalId) => {
 		let response = await fetch(
 	      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/${proposalId}`, {
 	      method: 'GET',
@@ -311,10 +317,10 @@ class Mock {
 		proposalStatus.push(parseInt(totalRep - totalYesRep))
 		proposalStatus.push(parseInt(noSlashRep))
 		return proposalStatus
-	}
+	},
 
-	async distributeRepAndSem(proposalId, proposalIndex, 
-		totalRepStaked, yesRepStaked, noRepStaked, tokenNumberIndex) {
+	distributeRepAndSem: async (proposalId, proposalIndex, 
+    		totalRepStaked, yesRepStaked, noRepStaked, tokenNumberIndex) => {
 	    let response = await fetch(
 	      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/${proposalId}`, {
 	      method: 'GET',
@@ -396,4 +402,4 @@ class Mock {
 	}
 }
 
-export default Mock
+export default SemadaApi

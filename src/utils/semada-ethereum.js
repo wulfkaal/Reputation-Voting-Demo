@@ -3,7 +3,7 @@ import getWeb3 from './get-web3'
 import SemadaCoreContract from '../contracts/SemadaCore.json';
 import RepContract from '../contracts/REP.json'
 
-class Ethereum {
+class SemadaEthereum {
 
 	async getSemBalance() {
 	    let web3 = getWeb3()
@@ -184,4 +184,4 @@ class Ethereum {
 	}
 }
 
-export default Ethereum
+export default SemadaEthereum

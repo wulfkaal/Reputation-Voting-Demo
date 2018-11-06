@@ -1,8 +1,8 @@
 pragma solidity ^0.4.24;
 
-import "./Interface.sol";
+import "./IProposalFactory.sol";
 
-contract Factory is FactoryInterface {
+contract JoinNewsVerificationDaoProposal is IProposalFactory {
   
   function createProposal() public returns (address proposalAddress){
     proposalAddress = address(new WorkProposalOne());
@@ -11,5 +11,8 @@ contract Factory is FactoryInterface {
 }
 
 contract WorkProposalOne {
+  uint minSemFees = 200;
+  uint mintedRepToSemRation = 3;
+  string description;
   
 }
