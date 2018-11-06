@@ -3,7 +3,7 @@ import semadaCoreFactory from './semada-core-factory'
 const SemadaCore = {
   createDao: async (fromAccount, dao, sem) => {
     let persistence = await semadaCoreFactory.getPersistenceLayer()
-    let newDao = await persistence.createDao(fromAccount, dao.name, sem)
+    let newDao = await persistence.createDao(fromAccount, dao, sem)
     
     dao.tokenNumberIndex = newDao.tokenNumberIndex
     dao.proposalIndex = newDao.proposalIndex
@@ -67,16 +67,22 @@ const SemadaCore = {
     await persistence.distributeSem(tokenNumberIndex)
   },
 
-  joinDao: async (tokenNumberIndex, sem) => {
+  joinDao: async (tokenNumberIndex, account, sem) => {
     let persistence = await semadaCoreFactory.getPersistenceLayer()
     
-    await persistence.joinDao(tokenNumberIndex, sem)
+    await persistence.joinDao(tokenNumberIndex, account, sem)
   },
   
-  newProposal: async (tokenNumberIndex, name, description, sem) => {
+  newProposal: async (
+    tokenNumberIndex, name, description, account, sem) => {
     let persistence = await semadaCoreFactory.getPersistenceLayer()
     
-    await persistence.newProposal(tokenNumberIndex, name, description, sem)
+    await persistence.newProposal(
+      tokenNumberIndex, 
+      name, 
+      description, 
+      account, 
+      sem)
   },
   
   mintRep: async (tokenNumberIndex, account, sem) => {
@@ -85,10 +91,10 @@ const SemadaCore = {
     await persistence.mintRep(tokenNumberIndex, account, sem)
   },
   
-  vote: async (proposalIndex, fromAccount, vote, rep) => {
+  vote: async (tokenNumberIndex, proposalIndex, fromAccount, vote, rep) => {
     let persistence = await semadaCoreFactory.getPersistenceLayer()
     
-    await persistence.vote(proposalIndex, fromAccount, vote, rep)
+    await persistence.vote(tokenNumberIndex, proposalIndex, fromAccount, vote, rep)
   },
   
   getVote: async (proposalIndex, voteIndex) => {
