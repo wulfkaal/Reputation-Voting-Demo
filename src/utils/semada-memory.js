@@ -1,4 +1,3 @@
-// import getWeb3 from './get-web3'
 import {BigNumber} from 'bignumber.js';
 import {values} from 'lodash'
 
@@ -14,14 +13,15 @@ const SemadaMemory = {
     tokenNumberIndex += 1
     proposalIndex += 1
     
-    let timeout = 180
+    let now = Math.floor(new Date().getTime()/1000)
+    let timeout = now + 180
     
     //insert dao
     repContracts[tokenNumberIndex] = {
       totalSupply: sem,
       balances: {
-        0: {
-          account: 0,
+        'semcore' : {
+          account: 'semcore',
           rep: sem
         }
       },
@@ -48,14 +48,11 @@ const SemadaMemory = {
     )
     validationPool[proposalIndex].votes.push(
       {
-        from: 0,
+        from: 'semcore',
         rep: sem / 2,
         vote: false
       }
     )
-      
-    
-    
     return {
       tokenNumberIndex: tokenNumberIndex,
       proposalIndex: proposalIndex
@@ -101,42 +98,35 @@ const SemadaMemory = {
     let totalRep = 0
     let totalYesRep = 0
     let noSlashRep = 0
-    
+
     let pool = validationPool[proposalIndex]
-    
-    for(let i = 0; i++; i<pool.votes.length) {
+    for(let i = 0; i<pool.votes.length; i++) {
       totalRep += pool.votes[i].rep
       
       if(pool.votes[i].vote){
         totalYesRep += pool.votes[i].rep
-      } else if (!pool.votes[i].vote && pool.votes[i].from === 0) {
+      } else if (!pool.votes[i].vote && pool.votes[i].from === 'semcore') {
         noSlashRep += pool.votes[i].rep
       }
-      
-      if(now >= pool.timeout){
-        if(totalYesRep >= totalRep / 2){
-          status = 2;
-          
-          //reset as we aren't going to slash rep if YES wins
-          noSlashRep = 0;
-        } else {
-          status = 3;
-          totalRep = totalRep - noSlashRep;
-        }
-      } else {
-        if(totalYesRep >= totalRep / 2){
-          //reset as we aren't going to slash rep if YES wins
-          noSlashRep = 0;
-        } else {
-          totalRep = totalRep - noSlashRep;
-        }
-        
-        status = 1;
-      } 
-      
     }
-    
-    return [status,totalYesRep,totalRep - totalYesRep, noSlashRep]
+    if(now >= pool.timeout){
+      if(totalYesRep >= totalRep / 2){
+        status = 2;
+        noSlashRep = 0;
+      } else {
+        status = 3;
+        totalRep = totalRep - noSlashRep;
+      }
+    } else {
+      if(totalYesRep >= totalRep / 2){
+        //reset as we aren't going to slash rep if YES wins
+        noSlashRep = 0;
+      } else {
+        totalRep = totalRep - noSlashRep;
+      }
+      status = 1;
+    } 
+    return [status , totalYesRep, totalRep - totalYesRep, noSlashRep]
   },
   
   distributeRep: async (
@@ -145,34 +135,44 @@ const SemadaMemory = {
     yesRepStaked,
     noRepStaked,
     noSlashRep) => {
-  
+ 
     let pool = validationPool[proposalIndex]
     let rep = repContracts[pool.tokenNumberIndex]
     
     if(noSlashRep > 0) {
       rep.totalSupply -= noSlashRep
-      rep.balances[0] -= noSlashRep
+      rep.balances['semcore']['rep'] -= noSlashRep
     }
-  
     for(let j = 0; j < pool.votes.length; j++){
       let betAmtWon = 0
       if(noSlashRep == 0 && pool.votes[j].vote){
-        
-        betAmtWon = (pool.votes[j].rep / yesRepStaked) * totalRepStaked
-        rep.balances[0] -= betAmtWon
-        rep.balances[pool.votes[j].from] += betAmtWon
-                
+        betAmtWon = parseFloat(((pool.votes[j].rep / yesRepStaked) * totalRepStaked).toFixed(2))
+        rep.balances['semcore']['rep'] -= betAmtWon
+        if (rep.balances[pool.votes[j].from]){
+          rep.balances[pool.votes[j].from]['rep'] += betAmtWon
+        } else {
+          let act = {}
+          act['account'] = pool.votes[j].from
+          act['rep'] = betAmtWon
+          rep.balances[pool.votes[j].from] = act
+        }
       } else if (noSlashRep > 0
           && !pool.votes[j].vote 
-          && pool.votes[j].from != 0){
+          && pool.votes[j].from !== 'semcore'){
         
-        betAmtWon = (pool.votes[j].rep / noRepStaked) * totalRepStaked
-        rep.balances[0] -= betAmtWon
-        rep.balances[pool.votes[j].from] += betAmtWon
+        betAmtWon = parseFloat(((pool.votes[j].rep / noRepStaked) * totalRepStaked).toFixed(2))
+        rep.balances['semcore']['rep'] -= betAmtWon
+        if (rep.balances[pool.votes[j].from]){
+          rep.balances[pool.votes[j].from]['rep'] += betAmtWon
+        } else {
+          let act = {}
+          act['account'] = pool.votes[j].from
+          act['rep'] = betAmtWon
+          rep.balances[pool.votes[j].from] = act
+        }
 
       }
     }
-    
   },
   
   distributeSem: async (tokenNumberIndex) => {
@@ -188,28 +188,155 @@ const SemadaMemory = {
         semBalances[balances[i].account].sem += salary
       }
     }
-    
     rep.sem = 0
   },
 
-  joinDao: async (tokenNumberIndex, sem) => {
+  joinDao: async (tokenNumberIndex, fromAccount , sem) => {
+
+    proposalIndex += 1
     
+    let timeout = 180
+    
+    repContracts[tokenNumberIndex].totalSupply += parseInt(sem)
+    if(repContracts[tokenNumberIndex].balances[fromAccount]){
+      repContracts[tokenNumberIndex].balances[fromAccount]['rep'] += sem
+    } else {
+      let act = {}
+      act['account'] = fromAccount
+      act['rep'] = sem
+      repContracts[tokenNumberIndex].balances[fromAccount] = act
+    }
+    repContracts[tokenNumberIndex].sem += sem
+
+    if(!semBalances[`${fromAccount}`]){
+      semBalances[`${fromAccount}`] = {account: fromAccount, sem: sem}
+    } else {
+      semBalances[`${fromAccount}`].sem += sem  
+    }
+
+    //insert proposal
+    validationPool[proposalIndex] = {
+      from: fromAccount,
+      tokenNumberIndex: tokenNumberIndex,
+      name: "Join DAO",
+      timeout: timeout,
+      evidence: "Join DAO"
+    }
+    
+    //insert 2 votes
+    validationPool[proposalIndex].votes = []
+    validationPool[proposalIndex].votes.push(
+      {
+        from: fromAccount,
+        rep: sem / 2,
+        vote: true         
+      }
+    )
+    validationPool[proposalIndex].votes.push(
+      {
+        from: 0,
+        rep: sem / 2,
+        vote: false
+      }
+    )
+    return {
+      tokenNumberIndex: tokenNumberIndex,
+      proposalIndex: proposalIndex
+    }
   },
 
-  newProposal: async (tokenNumberIndex, name, description, sem) => {
+  newProposal: async (tokenNumberIndex, name, description, fromAccount, sem) => {
+    proposalIndex += 1
+
+    let timeout = 180
     
+    repContracts[tokenNumberIndex].totalSupply += sem
+
+    if(repContracts[tokenNumberIndex].balances[fromAccount]){
+      repContracts[tokenNumberIndex].balances[fromAccount]['rep'] += sem
+    } else {
+      let act = {}
+      act['account'] = fromAccount
+      act['rep'] = sem
+      repContracts[tokenNumberIndex].balances[fromAccount] = act
+    }
+    repContracts[tokenNumberIndex].sem += sem
+
+    if(!semBalances[`${fromAccount}`]){
+      semBalances[`${fromAccount}`] = {account: fromAccount, sem: sem}
+    } else {
+      semBalances[`${fromAccount}`].sem += sem  
+    }
+
+    //insert proposal
+    validationPool[proposalIndex] = {
+      from: fromAccount,
+      tokenNumberIndex: tokenNumberIndex,
+      name: name,
+      timeout: timeout,
+      evidence: description
+    }
+    //insert 2 votes
+    validationPool[proposalIndex].votes = []
+    validationPool[proposalIndex].votes.push(
+      {
+        from: fromAccount,
+        rep: sem / 2,
+        vote: true         
+      }
+    )
+    validationPool[proposalIndex].votes.push(
+      {
+        from: 0,
+        rep: sem / 2,
+        vote: false
+      }
+    )
+    return {
+      tokenNumberIndex: tokenNumberIndex,
+      proposalIndex: proposalIndex
+    }
   },
   
   mintRep: async (tokenNumberIndex, account, sem) => {
-    
+    repContracts[tokenNumberIndex].totalSupply += parseInt(sem)
+    if(repContracts[tokenNumberIndex].balances[account]){
+      repContracts[tokenNumberIndex].balances[account]['rep'] += sem
+    } else {
+      let act = {}
+      act['account'] = account
+      act['rep'] = sem
+      repContracts[tokenNumberIndex].balances[account] = act
+    }
+    repContracts[tokenNumberIndex].sem += sem
+
+    if(!semBalances[`${account}`]){
+      semBalances[`${account}`] = {account: account, sem: sem}
+    } else {
+      semBalances[`${account}`].sem += sem  
+    }
   },
   
-  vote: async (proposalIndex, fromAccount, vote, rep) => {
-    
+  vote: async (tokenNumberIndex, proposalIndex, fromAccount, vote, rep) => {
+    let pool = validationPool[proposalIndex]
+    let now = Math.floor(new Date().getTime()/1000)
+    if (now > pool.timeout && repContracts[tokenNumberIndex].balances[fromAccount]['rep'] < rep){
+      return
+    }
+    validationPool[proposalIndex].votes.push(
+      {
+        from: fromAccount,
+        rep: rep,
+        vote: vote         
+      }
+    )
+    repContracts[tokenNumberIndex].balances[fromAccount]['rep'] -= rep
+    repContracts[tokenNumberIndex].balances['semcore']['rep'] += rep
   },
   
   getVote: async (proposalIndex, voteIndex) => {
-    return [true, 0] // vote, amount of rep staked for vote
+    let vote = validationPool[proposalIndex].votes[voteIndex]
+    return [vote.vote, vote.rep]
   },
 
 
