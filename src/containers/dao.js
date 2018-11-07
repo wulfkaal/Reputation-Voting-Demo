@@ -41,7 +41,9 @@ class Dao extends Component {
   componentDidMount() {
     let id = this.props.match.params.id
     this.props.getDao(id)
-    this.props.getRepBalance(this.props.dao)
+    .then(response => {
+      this.props.getRepBalance(response.dao)
+    })
     if(!this.props.showRepBalance){
       this.props.showRepBalance()
     }
