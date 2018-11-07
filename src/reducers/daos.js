@@ -15,7 +15,8 @@ const initialState = {
     tokenAddress: null
   },
   showRepBalance: true,
-  rep: 0
+  rep: 0,
+  sem: 0
 }
 
 const daos = (state = initialState, action) => {

@@ -11,6 +11,13 @@ const SemadaCore = {
     return dao
   },
   
+  getRepContract: async (tokenNumberIndex) => {
+    let persistence = await semadaCoreFactory.getPersistenceLayer()
+    let repContract = await persistence.getRepContract(tokenNumberIndex)
+    
+    return repContract    
+  },
+  
   getRepTotalSupply: async (tokenNumberIndex) => {
     let persistence = await semadaCoreFactory.getPersistenceLayer()
     let totalSupply = await persistence.getRepTotalSupply(tokenNumberIndex)

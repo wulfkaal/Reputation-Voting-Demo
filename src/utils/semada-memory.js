@@ -60,6 +60,10 @@ const SemadaMemory = {
     
 	},
   
+  getRepContract: async (tokenNumberIndex) => {
+    return repContracts[tokenNumberIndex]
+  },
+  
   getRepTotalSupply: async (tokenNumberIndex) => {
     return repContracts[tokenNumberIndex].totalSupply
   },
@@ -250,22 +254,24 @@ const SemadaMemory = {
 
     let timeout = 180
     
+    //subtract SEM from fromAccount
+    //add SEM to repContract
+    //mint REP in repContract for 0 address and increase totalSupply
+    
     repContracts[tokenNumberIndex].totalSupply += sem
 
-    if(repContracts[tokenNumberIndex].balances[fromAccount]){
-      repContracts[tokenNumberIndex].balances[fromAccount]['rep'] += sem
+    if(repContracts[tokenNumberIndex].balances['semcore']){
+      repContracts[tokenNumberIndex].balances['semcore']['rep'] += sem
     } else {
       let act = {}
-      act['account'] = fromAccount
+      act['account'] = 'semcore'
       act['rep'] = sem
-      repContracts[tokenNumberIndex].balances[fromAccount] = act
+      repContracts[tokenNumberIndex].balances['semcore'] = act
     }
     repContracts[tokenNumberIndex].sem += sem
 
-    if(!semBalances[`${fromAccount}`]){
-      semBalances[`${fromAccount}`] = {account: fromAccount, sem: sem}
-    } else {
-      semBalances[`${fromAccount}`].sem += sem  
+    if(semBalances[`${fromAccount}`]){
+      semBalances[`${fromAccount}`].sem -= sem
     }
 
     //insert proposal

@@ -3,403 +3,322 @@ import {BigNumber} from 'bignumber.js';
 
 const SemadaApi = {
 
-	getSemBalance: async () => {
-    let web3 = getWeb3()
-    let publicAddress = await web3.eth.getCoinbase()
-    let balance = await web3.eth.getBalance(publicAddress)
+  createDao: async (fromAccount, dao, sem) => {
+    let url = 
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/semada-core/create-dao`
     
-		return balance
-	},
-
-	createDao: async (dao, sem) => {
+    let response = await fetch(url, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fromAccount: fromAccount,
+        dao: dao,
+        sem: sem
+      })
+    })
     
-		let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
-	      method: 'GET',
-	      mode: 'cors'
-	    })
-	    let body = await response.json()
-	    const greatestTokenNumber = body.daos
-	    						.filter(dao => dao.tokenNumberIndex)
-	    						.reduce((greatest, dao) => { 
-	    							return (greatest || 0) > parseInt(dao.tokenNumberIndex) ? greatest : parseInt(dao.tokenNumberIndex) 
-	    						}, {})
-		dao.tokenNumberIndex = greatestTokenNumber + 1
+    let body = await response.json()
     
-		let text = ""
-		let possible = "abcdefghijklmnopqrstuvwxyz0123456789"
+    return body    
+	},
+  
+  // getRepContract: async (tokenNumberIndex) => {
+  //   return repContracts[tokenNumberIndex]
+  // },
+  // 
+  // getRepTotalSupply: async (tokenNumberIndex) => {
+  //   return repContracts[tokenNumberIndex].totalSupply
+  // },
+  // 
+  getRepBalance: async (tokenNumberIndex, account) => {
+    let url = 
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/semada-core/daos/${tokenNumberIndex}/rep-balance/${account}`
     
-		for (let i = 0; i < 43; i++){
-			text += possible.charAt(Math.floor(Math.random() * possible.length))
-		}
-		dao.tokenAddress = text
-		   // Get latest proposal Index and add one 
-		let proposalsResponse = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals`, {
-	      method: 'GET',
-	      mode: 'cors'
-	    })
-	    let proposalsBody = await proposalsResponse.json()
-	    const greatestProposalIndex = proposalsBody['greatestProposalIndex']
-	    dao.proposalIndex = greatestProposalIndex + 1
-	    let balances = {}
-		balances["semcore"] = sem
-		dao.balances = balances
-	    return dao
-	},
-
-	getTokenAddress: async (tokenNumberIndex) => {
-		let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
-	      method: 'GET',
-	      mode: 'cors'
-	    })
-	    
-	    let body = await response.json()
-	    for(let i=0; i < body.daos.length; i++){
-	      let dao = body.daos[i]
-	      if(dao.tokenNumberIndex 
-	      	&& dao.tokenNumberIndex===tokenNumberIndex 
-	      	&& dao.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK){
-	        return dao.tokenAddress
-	      }
-	    }
-	},
-
-	getTokenBalance: async (tokenNumberIndex) => {
-		let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
-	      method: 'GET',
-	      mode: 'cors'
-	    })
-	    let body = await response.json()
-	    let web3 = getWeb3()
-		let publicAddress = await web3.eth.getCoinbase()
-	    for(let i=0; i < body.daos.length; i++){
-	      let dao = body.daos[i]
-	      if(dao.tokenNumberIndex 
-	      	&& dao.tokenNumberIndex===tokenNumberIndex 
-	      	&& dao.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK){
-	        return parseInt(dao.balances[publicAddress])
-	      }
-	    }	
-	},
-
-  getRepTotalSupply: async (tokenNumberIndex) => {
-    return 10
+    let response = await fetch(url, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+    
+    let body = await response.json()
+    
+    return body.balance
   },
-
-	joinDao: async (proposal, tokenNumberIndex) => {
-		let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
-	      method: 'GET',
-	      mode: 'cors'
-	    })
-	    let body = await response.json()
-	    let dao
-	    for(let i=0; i < body.daos.length; i++){
-	      dao = body.daos[i]
-	      if(dao.tokenNumberIndex 
-	      	&& dao.tokenNumberIndex===tokenNumberIndex 
-	      	&& dao.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK){
-	        dao.balances["semcore"] += proposal.stake
-	        dao.totalSupply += proposal.stake 
-	        break
-	      }
-	    }
-	    // persist dao
-	    let url = `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos/${dao._id}`
-	    await fetch(url, {
-	      method: 'PUT',
-	      mode: 'cors',
-	      headers: {
-	        'Accept': 'application/json',
-	        'Content-Type': 'application/json'
-	      },
-	      body: JSON.stringify(dao)
-	    })
-
-	    // get latest proposalIndex for this dao in this chain
-	    let proposalsResponse = await fetch(
-	      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/dao/${dao._id}`, {
-	      method: 'GET',
-	      mode: 'cors'
-	    })
-	    let proposalsbody = await proposalsResponse.json()
-	    let proposals = proposalsbody.proposals.filter((p) => p.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK) 
-	    let greatestProposalIndex = 0
-	    if(proposals.length){
-			for(let i = 0; i < proposals.length; i++){
-				let temp = proposals[i]
-				if ( temp.proposalIndex > greatestProposalIndex ){
-					greatestProposalIndex = temp.proposalIndex
-				}
-			}
-	    }
-	    proposal.proposalIndex = greatestProposalIndex + 1
-	    proposal.timeout = parseInt(new Date()/1000) + 180
-
-	    let web3 = getWeb3()
-		let publicAddress = await web3.eth.getCoinbase()
-
-	    let yesVote = {}
-		yesVote["from"] = publicAddress
-		yesVote["rep"] = parseInt(proposal.stake/2)
-		yesVote["vote"] = true
-
-		let noVote = {}
-		noVote["from"] = 0
-		noVote["rep"] = parseInt(proposal.stake/2)
-		noVote["vote"] = true
-
-		let votes = []
-		votes.push(yesVote)
-		votes.push(noVote)
-
-		proposal.votes = votes
-	    return proposal
-	},
-
-	newProposal: async (proposal, tokenNumberIndex) => {
-		let web3 = getWeb3()
-		let publicAddress = await web3.eth.getCoinbase()
-		let yesVote = {}
-		yesVote["from"] = publicAddress
-		yesVote["rep"] = parseInt(proposal.stake/2)
-		yesVote["vote"] = true
-
-		let noVote = {}
-		noVote["from"] = 0
-		noVote["rep"] = parseInt(proposal.stake/2)
-		noVote["vote"] = false
-
-		let votes = []
-		votes.push(yesVote)
-		votes.push(noVote)
-
-		proposal.votes = votes
-
-		let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
-	      method: 'GET',
-	      mode: 'cors'
-	    })
-	    let body = await response.json()
-	    let dao
-	    for(let i=0; i < body.daos.length; i++){
-	      dao = body.daos[i]
-	      if(dao.tokenNumberIndex 
-	      	&& dao.tokenNumberIndex===tokenNumberIndex 
-	      	&& dao.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK){
-	        dao.balances["semcore"] += proposal.stake
-	        dao.totalSupply += proposal.stake 
-	        break
-	      }
-	    }
-		// persist dao
-	    let url = `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos/${dao._id}`
-	    await fetch(url, {
-	      method: 'PUT',
-	      mode: 'cors',
-	      headers: {
-	        'Accept': 'application/json',
-	        'Content-Type': 'application/json'
-	      },
-	      body: JSON.stringify(dao)
-	    })
-
-	    // get latest proposalIndex for this dao in this chain
-	    let proposalsResponse = await fetch(
-	      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/dao/${dao._id}`, {
-	      method: 'GET',
-	      mode: 'cors'
-	    })
-	    let proposalsbody = await proposalsResponse.json()
-	    let proposals = proposalsbody.proposals.filter((p) => p.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK) 
-	    let greatestProposalIndex = 0
-	    if(proposals.length){
-			for(let i = 0; i < proposals.length; i++){
-				let temp = proposals[i]
-				if ( temp.proposalIndex > greatestProposalIndex ){
-					greatestProposalIndex = temp.proposalIndex
-				}
-			}
-	    }
-	    proposal.proposalIndex = greatestProposalIndex + 1
-	    proposal.timeout = parseInt(new Date()/1000) + 180
-		return proposal
-	},
-
-	voteProposal: async (proposal) => {
-		let web3 = getWeb3()
-		let publicAddress = await web3.eth.getCoinbase()
-		let tokenNumberIndex = proposal.tokenNumberIndex
-
-		let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
-	      method: 'GET',
-	      mode: 'cors'
-	    })
-	    let body = await response.json()
-	    let dao
-	    for(let i=0; i < body.daos.length; i++){
-	      dao = body.daos[i]
-	      if(dao.tokenNumberIndex 
-	      	&& dao.tokenNumberIndex===tokenNumberIndex 
-	      	&& dao.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK){
-	        dao.balances[publicAddress] -= proposal.stake
-	    	dao.balances["semcore"] += proposal.stake
-	    	break
-	      }
-	    }
-	    let vote = {}
-	    vote["from"] = publicAddress
-	    vote["rep"] = parseInt(proposal.stake)
-	    vote["vote"] = proposal.vote==='yes' ? true : false
-	    proposal.votes.push(vote)
-		// persist dao
-	    let url = `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos/${dao._id}`
-	    await fetch(url, {
-	      method: 'PUT',
-	      mode: 'cors',
-	      headers: {
-	        'Accept': 'application/json',
-	        'Content-Type': 'application/json'
-	      },
-	      body: JSON.stringify(dao)
-	    })
-        if (proposal.vote==='yes') {
-          proposal.yesRepStaked = parseInt(proposal.yesRepStaked) + parseInt(proposal.stake)
-        } else {
-          proposal.noRepStaked = parseInt(proposal.noRepStaked) + parseInt(proposal.stake)
-        }
-        proposal.vote='no'
-		return proposal
-	},
-
-	getProposalVotes: async (proposalIndex, proposalId) => {
-		let response = await fetch(
-	      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/${proposalId}`, {
-	      method: 'GET',
-	      mode: 'cors'
-	    })
-	    let proposal = await response.json()
-	    let votes = proposal.votes
-	    let status = 1;
-	    let totalRep = 0;
-	    let totalYesRep = 0;
-	    let noSlashRep = 0;
-
-	    for(let i = 0; i < votes.length; i++){
-	      totalRep += votes[i].rep
-	      if(votes[i].vote){
-	        totalYesRep += votes[i].rep
-	      } else if(!votes[i].vote && votes[i].from === 0) {
-	        noSlashRep = votes[i].rep
-	      }
-	    }
-	    let now = Math.floor(new Date().getTime()/1000)
-	    if(now >= proposal.voteTimeEnd){
-	      if(totalYesRep >= Math.floor(totalRep/2)){
-	        status = 2
-	        //reset as we aren't going to slash rep if YES wins
-	        noSlashRep = 0
-	      } else {
-	        status = 3
-	        totalRep = totalRep - noSlashRep
-	      }
-	    } else {
-	      if(totalYesRep >= Math.floor(totalRep/2)){
-	        //reset as we aren't going to slash rep if YES wins
-	        noSlashRep = 0
-	      } else {
-	        totalRep = totalRep - noSlashRep
-	      }
-	      status = 1
-	    }
-
-		let proposalStatus = []
-		proposalStatus.push(parseInt(status))
-		proposalStatus.push(parseInt(totalYesRep))
-		proposalStatus.push(parseInt(totalRep - totalYesRep))
-		proposalStatus.push(parseInt(noSlashRep))
-		return proposalStatus
-	},
-
-	distributeRepAndSem: async (proposalId, proposalIndex, 
-    		totalRepStaked, yesRepStaked, noRepStaked, tokenNumberIndex) => {
-	    let response = await fetch(
-	      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/proposals/${proposalId}`, {
-	      method: 'GET',
-	      mode: 'cors'
-	    })
-	    let proposal = await response.json()
-	    let votes = proposal.votes
-	    let noSlashRep = proposal.noSlashRep ? proposal.noSlashRep : 0
-
-	    let dao
-		let daosResponse = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
-	      method: 'GET',
-	      mode: 'cors'
-	    })
-	    let body = await daosResponse.json()
-	    for(let i=0; i < body.daos.length; i++){
-	      let temp = body.daos[i]
-	      if(temp.tokenNumberIndex 
-	      	&& temp.tokenNumberIndex===tokenNumberIndex 
-	      	&& temp.chain===process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK){
-	        dao = temp
-	    	break
-	      }
-	    }
-	    let balances = dao.balances 
-	    let totalSupply = dao.totalSupply   
-	    //slash the no REP if NO wins.
-	    if(noSlashRep > 0) {
-	      if (balances["semcore"]){
-	      	let rem = balances["semcore"] - noSlashRep
-	      	if (rem > 0){
-	      		balances["semcore"] = rem
-	      	} else {
-	      		balances["semcore"] = 0
-	      	}
-	      	totalSupply -= noSlashRep
-	      }
-	    }
-	  
-	    for(let j = 0; j < votes.length; j++){
-	      let betAmtWon;
-	      if(noSlashRep === 0 && votes[j].vote){
-	        betAmtWon = parseFloat(votes[j].rep * totalRepStaked / yesRepStaked).toFixed(2)
-	        if (balances[votes[j].from]) {
-		        balances[votes[j].from] += betAmtWon
-		    } else {
-		    	balances[votes[j].from] = betAmtWon
-		    }
-	        balances["semcore"] -= betAmtWon
-	      } else if (noSlashRep > 0
-	          && !votes[j].vote 
-	          && votes[j].from !== 0){
-	        betAmtWon = parseFloat(votes[j].rep * totalRepStaked / noRepStaked).toFixed(2)        
-	        if (balances[votes[j].from]) {
-		        balances[votes[j].from] += betAmtWon
-		    } else {
-		    	balances[votes[j].from] = betAmtWon
-		    }
-	        balances["semcore"] -= betAmtWon
-	      }
-	    }
-	    dao.balances = balances
-	    dao.totalSupply = totalSupply
-	    let url = `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos/${dao._id}`
-	    await fetch(url, {
-	      method: 'PUT',
-	      mode: 'cors',
-	      headers: {
-	        'Accept': 'application/json',
-	        'Content-Type': 'application/json'
-	      },
-	      body: JSON.stringify(dao)
-	    })
-
-	    let web3 = getWeb3()
-		let publicAddress = await web3.eth.getCoinbase()
-	    let rep = dao.balances[publicAddress]
-	 	return rep
-	}
+  // 
+  // setSemBalance: async (account, sem) => {
+  //   if(!semBalances[`${account}`]){
+  //     semBalances[`${account}`] = {account: account, sem: sem}
+  //   } else {
+  //     semBalances[`${account}`].sem = sem  
+  //   }
+  // 
+  // },
+  // 
+	// getSemBalance: async (account) => {
+  // 
+  //   if(semBalances[`${account}`]) {
+  //     return semBalances[`${account}`].sem
+  //   } else {
+  //     return 0
+  //   }
+  // 
+	// },
+  // 
+  // getProposalVotes: async (proposalIndex, now) => {
+  //   let status = 1
+  //   let totalRep = 0
+  //   let totalYesRep = 0
+  //   let noSlashRep = 0
+  // 
+  //   let pool = validationPool[proposalIndex]
+  //   for(let i = 0; i<pool.votes.length; i++) {
+  //     totalRep += pool.votes[i].rep
+  // 
+  //     if(pool.votes[i].vote){
+  //       totalYesRep += pool.votes[i].rep
+  //     } else if (!pool.votes[i].vote && pool.votes[i].from === 'semcore') {
+  //       noSlashRep += pool.votes[i].rep
+  //     }
+  //   }
+  //   if(now >= pool.timeout){
+  //     if(totalYesRep >= totalRep / 2){
+  //       status = 2;
+  //       noSlashRep = 0;
+  //     } else {
+  //       status = 3;
+  //       totalRep = totalRep - noSlashRep;
+  //     }
+  //   } else {
+  //     if(totalYesRep >= totalRep / 2){
+  //       //reset as we aren't going to slash rep if YES wins
+  //       noSlashRep = 0;
+  //     } else {
+  //       totalRep = totalRep - noSlashRep;
+  //     }
+  //     status = 1;
+  //   } 
+  //   return [status , totalYesRep, totalRep - totalYesRep, noSlashRep]
+  // },
+  // 
+  // distributeRep: async (
+  //   proposalIndex, 
+  //   totalRepStaked, 
+  //   yesRepStaked,
+  //   noRepStaked,
+  //   noSlashRep) => {
+  // 
+  //   let pool = validationPool[proposalIndex]
+  //   let rep = repContracts[pool.tokenNumberIndex]
+  // 
+  //   if(noSlashRep > 0) {
+  //     rep.totalSupply -= noSlashRep
+  //     rep.balances['semcore']['rep'] -= noSlashRep
+  //   }
+  //   for(let j = 0; j < pool.votes.length; j++){
+  //     let betAmtWon = 0
+  //     if(noSlashRep == 0 && pool.votes[j].vote){
+  //       betAmtWon = parseFloat(((pool.votes[j].rep / yesRepStaked) * totalRepStaked).toFixed(2))
+  //       rep.balances['semcore']['rep'] -= betAmtWon
+  //       if (rep.balances[pool.votes[j].from]){
+  //         rep.balances[pool.votes[j].from]['rep'] += betAmtWon
+  //       } else {
+  //         let act = {}
+  //         act['account'] = pool.votes[j].from
+  //         act['rep'] = betAmtWon
+  //         rep.balances[pool.votes[j].from] = act
+  //       }
+  //     } else if (noSlashRep > 0
+  //         && !pool.votes[j].vote 
+  //         && pool.votes[j].from !== 'semcore'){
+  // 
+  //       betAmtWon = parseFloat(((pool.votes[j].rep / noRepStaked) * totalRepStaked).toFixed(2))
+  //       rep.balances['semcore']['rep'] -= betAmtWon
+  //       if (rep.balances[pool.votes[j].from]){
+  //         rep.balances[pool.votes[j].from]['rep'] += betAmtWon
+  //       } else {
+  //         let act = {}
+  //         act['account'] = pool.votes[j].from
+  //         act['rep'] = betAmtWon
+  //         rep.balances[pool.votes[j].from] = act
+  //       }
+  // 
+  //     }
+  //   }
+  // },
+  // 
+  // distributeSem: async (tokenNumberIndex) => {
+  //   let rep = repContracts[tokenNumberIndex]
+  //   let salary = 0
+  // 
+  //   let balances = values(rep.balances)
+  // 
+  //   for(let i = 0; i < balances.length; i++) {
+  //     if(balances[i].rep > 0) {
+  //       salary = (balances[i].rep / rep.totalSupply) * rep.sem
+  // 
+  //       semBalances[balances[i].account].sem += salary
+  //     }
+  //   }
+  //   rep.sem = 0
+  // },
+  // 
+  // joinDao: async (tokenNumberIndex, fromAccount , sem) => {
+  // 
+  //   proposalIndex += 1
+  // 
+  //   let timeout = 180
+  // 
+  //   repContracts[tokenNumberIndex].totalSupply += parseInt(sem)
+  //   if(repContracts[tokenNumberIndex].balances[fromAccount]){
+  //     repContracts[tokenNumberIndex].balances[fromAccount]['rep'] += sem
+  //   } else {
+  //     let act = {}
+  //     act['account'] = fromAccount
+  //     act['rep'] = sem
+  //     repContracts[tokenNumberIndex].balances[fromAccount] = act
+  //   }
+  //   repContracts[tokenNumberIndex].sem += sem
+  // 
+  //   if(!semBalances[`${fromAccount}`]){
+  //     semBalances[`${fromAccount}`] = {account: fromAccount, sem: sem}
+  //   } else {
+  //     semBalances[`${fromAccount}`].sem += sem  
+  //   }
+  // 
+  //   //insert proposal
+  //   validationPool[proposalIndex] = {
+  //     from: fromAccount,
+  //     tokenNumberIndex: tokenNumberIndex,
+  //     name: "Join DAO",
+  //     timeout: timeout,
+  //     evidence: "Join DAO"
+  //   }
+  // 
+  //   //insert 2 votes
+  //   validationPool[proposalIndex].votes = []
+  //   validationPool[proposalIndex].votes.push(
+  //     {
+  //       from: fromAccount,
+  //       rep: sem / 2,
+  //       vote: true         
+  //     }
+  //   )
+  //   validationPool[proposalIndex].votes.push(
+  //     {
+  //       from: 0,
+  //       rep: sem / 2,
+  //       vote: false
+  //     }
+  //   )
+  //   return {
+  //     tokenNumberIndex: tokenNumberIndex,
+  //     proposalIndex: proposalIndex
+  //   }
+  // },
+  // 
+  // newProposal: async (tokenNumberIndex, name, description, fromAccount, sem) => {
+  //   proposalIndex += 1
+  // 
+  //   let timeout = 180
+  // 
+  //   //subtract SEM from fromAccount
+  //   //add SEM to repContract
+  //   //mint REP in repContract for 0 address and increase totalSupply
+  // 
+  //   repContracts[tokenNumberIndex].totalSupply += sem
+  // 
+  //   if(repContracts[tokenNumberIndex].balances['semcore']){
+  //     repContracts[tokenNumberIndex].balances['semcore']['rep'] += sem
+  //   } else {
+  //     let act = {}
+  //     act['account'] = 'semcore'
+  //     act['rep'] = sem
+  //     repContracts[tokenNumberIndex].balances['semcore'] = act
+  //   }
+  //   repContracts[tokenNumberIndex].sem += sem
+  // 
+  //   if(semBalances[`${fromAccount}`]){
+  //     semBalances[`${fromAccount}`].sem -= sem
+  //   }
+  // 
+  //   //insert proposal
+  //   validationPool[proposalIndex] = {
+  //     from: fromAccount,
+  //     tokenNumberIndex: tokenNumberIndex,
+  //     name: name,
+  //     timeout: timeout,
+  //     evidence: description
+  //   }
+  //   //insert 2 votes
+  //   validationPool[proposalIndex].votes = []
+  //   validationPool[proposalIndex].votes.push(
+  //     {
+  //       from: fromAccount,
+  //       rep: sem / 2,
+  //       vote: true         
+  //     }
+  //   )
+  //   validationPool[proposalIndex].votes.push(
+  //     {
+  //       from: 0,
+  //       rep: sem / 2,
+  //       vote: false
+  //     }
+  //   )
+  //   return {
+  //     tokenNumberIndex: tokenNumberIndex,
+  //     proposalIndex: proposalIndex
+  //   }
+  // },
+  // 
+  // mintRep: async (tokenNumberIndex, account, sem) => {
+  //   repContracts[tokenNumberIndex].totalSupply += parseInt(sem)
+  //   if(repContracts[tokenNumberIndex].balances[account]){
+  //     repContracts[tokenNumberIndex].balances[account]['rep'] += sem
+  //   } else {
+  //     let act = {}
+  //     act['account'] = account
+  //     act['rep'] = sem
+  //     repContracts[tokenNumberIndex].balances[account] = act
+  //   }
+  //   repContracts[tokenNumberIndex].sem += sem
+  // 
+  //   if(!semBalances[`${account}`]){
+  //     semBalances[`${account}`] = {account: account, sem: sem}
+  //   } else {
+  //     semBalances[`${account}`].sem += sem  
+  //   }
+  // },
+  // 
+  // vote: async (tokenNumberIndex, proposalIndex, fromAccount, vote, rep) => {
+  //   let pool = validationPool[proposalIndex]
+  //   let now = Math.floor(new Date().getTime()/1000)
+  //   if (now > pool.timeout && repContracts[tokenNumberIndex].balances[fromAccount]['rep'] < rep){
+  //     return
+  //   }
+  //   validationPool[proposalIndex].votes.push(
+  //     {
+  //       from: fromAccount,
+  //       rep: rep,
+  //       vote: vote         
+  //     }
+  //   )
+  //   repContracts[tokenNumberIndex].balances[fromAccount]['rep'] -= rep
+  //   repContracts[tokenNumberIndex].balances['semcore']['rep'] += rep
+  // },
+  // 
+  // getVote: async (proposalIndex, voteIndex) => {
+  //   let vote = validationPool[proposalIndex].votes[voteIndex]
+  //   return [vote.vote, vote.rep]
+  // },
+	
 }
 
 export default SemadaApi

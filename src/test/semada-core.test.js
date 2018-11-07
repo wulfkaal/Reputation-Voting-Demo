@@ -51,7 +51,16 @@ test('Join DAO and mint 8 REP', async () => {
 })
 
 test('Submit proposal to DAO', async () => {
+  await SemadaCore.setSemBalance(0, 10)
+  let startingSemBalance = await SemadaCore.getSemBalance(0)
+  
   let newDao = await SemadaCore.createDao(0, {name: 'test'}, 10)
+  let startingRepBalance = 
+    await SemadaCore.getRepBalance(newDao.tokenNumberIndex, 0)
+  let repContract = 
+      await SemadaCore.getRepContract(newDao.tokenNumberIndex)
+  let startingRepContractSemBalance = repContract.sem
+  
   await SemadaCore.newProposal(newDao.tokenNumberIndex,
     "Test Proposal",
     "Evidence",
@@ -61,7 +70,21 @@ test('Submit proposal to DAO', async () => {
   let totalRepSupply = await SemadaCore
     .getRepTotalSupply(newDao.tokenNumberIndex)
 
+  let endingSemBalance = await SemadaCore.getSemBalance(0)
+  let endingRepBalance = 
+    await SemadaCore.getRepBalance(newDao.tokenNumberIndex, 0)
+    
+  repContract = 
+      await SemadaCore.getRepContract(newDao.tokenNumberIndex)
+  let endingRepContractSemBalance = repContract.sem
+
   expect(totalRepSupply).toBe(20)
+  expect(startingSemBalance).toBe(10)
+  expect(endingSemBalance).toBe(0)
+  expect(startingRepBalance).toBe(0)
+  expect(endingRepBalance).toBe(0)
+  expect(startingRepContractSemBalance).toBe(10)
+  expect(endingRepContractSemBalance).toBe(20)
 })
 
 test('Vote on proposal', async () => {
@@ -75,7 +98,13 @@ test('Vote on proposal', async () => {
 
   await SemadaCore.mintRep(newDao.tokenNumberIndex, 0, 5)
 
-  await SemadaCore.vote(newDao.tokenNumberIndex, newDao.proposalIndex, 0, true, 5)
+  await SemadaCore.vote(
+    newDao.tokenNumberIndex, 
+    newDao.proposalIndex, 
+    0, 
+    true, 
+    5
+  )
 
   let vote = await SemadaCore.getVote(newDao.proposalIndex, 0)
 
@@ -98,7 +127,8 @@ test('YES votes win', async () => {
     true, 
     fees)
   let now = Math.floor(new Date().getTime()/1000) +  180
-  let proposalStatus = await SemadaCore.getProposalVotes(newDao.proposalIndex, now)
+  let proposalStatus = 
+    await SemadaCore.getProposalVotes(newDao.proposalIndex, now)
   await SemadaCore.distributeRep(
     newDao.proposalIndex,
     parseInt(proposalStatus[1]) + parseInt(proposalStatus[2]),
@@ -126,12 +156,16 @@ test('NO votes win', async () => {
   await SemadaCore.mintRep(newDao.tokenNumberIndex, 3, 6)
   await SemadaCore.mintRep(newDao.tokenNumberIndex, 4, 4)
 
-  await SemadaCore.vote(newDao.tokenNumberIndex, newDao.proposalIndex, 2, true, 5)
-  await SemadaCore.vote(newDao.tokenNumberIndex, newDao.proposalIndex, 3, false, 6)
-  await SemadaCore.vote(newDao.tokenNumberIndex, newDao.proposalIndex, 4, false, 2)
+  await SemadaCore
+    .vote(newDao.tokenNumberIndex, newDao.proposalIndex, 2, true, 5)
+  await SemadaCore
+    .vote(newDao.tokenNumberIndex, newDao.proposalIndex, 3, false, 6)
+  await SemadaCore
+    .vote(newDao.tokenNumberIndex, newDao.proposalIndex, 4, false, 2)
 
   let now = Math.floor(new Date().getTime()/1000) +  180
-  let proposalStatus = await SemadaCore.getProposalVotes(newDao.proposalIndex, now)
+  let proposalStatus = 
+    await SemadaCore.getProposalVotes(newDao.proposalIndex, now)
   await SemadaCore.distributeRep(
     newDao.proposalIndex,
     proposalStatus[1] + proposalStatus[2],
@@ -159,3 +193,4 @@ test('NO votes win', async () => {
 
   expect(totalRepSupply).toBe(20)
 })
+

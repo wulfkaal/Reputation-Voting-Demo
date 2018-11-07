@@ -16,7 +16,6 @@ import {
 } from '../actions/auth'
 import { receiveRepBalance } from '../actions/daos'
 import getWeb3 from '../utils/get-web3'
-import ChainFactory from '../utils/chainFactory'
 
 const mapStateToProps = (state, ownProps) => {  
   return {
@@ -48,38 +47,43 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       let nonce = Math.floor(Math.random() * 10000)
       let email = "test20@test.com"
       let signature = null
-      let response = await fetch(
-              `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/publicaddress/${publicAddress}`
-              )
-      const usersRes = await response.json()
-      let userRes
-      if(usersRes['users'].length){
-        userRes = usersRes['users'][0]
-      } else {
-        let user = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users`, {
-                            body: JSON.stringify({ publicAddress, nonce, email }),
-                            headers: {
-                              'Content-Type': 'application/json'
-                            },
-                            method: 'POST'
-                                                  })
-        userRes = await user.json()
+      
+      try {
+        let response = await fetch(
+                `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/publicaddress/${publicAddress}`
+                )
+        const usersRes = await response.json()
+        let userRes
+        if(usersRes['users'].length){
+          userRes = usersRes['users'][0]
+        } else {
+          let user = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users`, {
+                              body: JSON.stringify({ publicAddress, nonce, email }),
+                              headers: {
+                                'Content-Type': 'application/json'
+                              },
+                              method: 'POST'
+                                                    })
+          userRes = await user.json()
+        }
+        nonce = userRes['nonce']
+        signature = await web3.eth.personal.sign(
+                                  web3.utils.utf8ToHex(`I am signing my one-time nonce: ${nonce}`),
+                                  publicAddress
+                                )
+      // Send signature to backend on the /auth route
+        let authRes = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/auth`, {
+          body: JSON.stringify({ publicAddress, signature }),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          method: 'POST'
+        })
+        let tokenRes = await authRes.json()
+        dispatch(login(tokenRes['accessToken']))
+      } catch (err) {
+        alert('Please sign in with MetaMask')
       }
-      nonce = userRes['nonce']
-      signature = await web3.eth.personal.sign(
-                                web3.utils.utf8ToHex(`I am signing my one-time nonce: ${nonce}`),
-                                publicAddress
-                              )
-    // Send signature to backend on the /auth route
-      let authRes = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/auth`, {
-        body: JSON.stringify({ publicAddress, signature }),
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        method: 'POST'
-      })
-      let tokenRes = await authRes.json()
-      dispatch(login(tokenRes['accessToken']))
     }
   }
 }
@@ -106,7 +110,7 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     
     clearInterval(this.timer)
     this.timer = setInterval(() => {
-      this.refreshData()
+      // this.refreshData()
     }, 1000)
     
   }
@@ -119,42 +123,42 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     4. distribute SEM when timeout
     */
         
-    let proposals = this.props.baseProposals
-    for(let i = 0; i < proposals.length; i++){
-      let proposal = {...proposals[i]}
-      let chain = await ChainFactory.getChain()
-      let proposalStatus = await chain.getProposalVotes(proposal.proposalIndex, proposal._id)
-      try{
-        proposal.status = proposalStatus[0].toNumber()
-        proposal.yesRepStaked = proposalStatus[1].toNumber()
-        proposal.noRepStaked = proposalStatus[2].toNumber()
-        proposal.noSlashRep = proposalStatus[3].toNumber()
-      } catch (e){
-        proposal.status = proposalStatus[0]
-        proposal.yesRepStaked = proposalStatus[1]
-        proposal.noRepStaked = proposalStatus[2]
-        proposal.noSlashRep = proposalStatus[3]
-      }
-      let now = Math.floor(new Date().getTime()/1000)
-      let remaining = proposal.voteTimeEnd - now
-      remaining = remaining < 0 ? 0 : remaining
-      proposal.voteTimeRemaining = remaining
-      
-      // save/persist proposal to API with new status
-      await this.props.baseSaveProposal(proposal)
-      await this.props.basePersistProposal(proposal)
-      
-      //if not active, then proposal has completed
-      if(proposal.status !== PROPOSAL_STATUSES.active) {
-        let chain = await ChainFactory.getChain()
-        let rep = await chain.distributeRepAndSem(proposal._id, proposal.proposalIndex,
-          proposal.yesRepStaked + proposal.noRepStaked,
-          proposal.yesRepStaked,
-          proposal.noRepStaked,
-          proposal.tokenNumberIndex)
-        await this.props.saveRepBalance(rep)
-      }
-    }
+    // let proposals = this.props.baseProposals
+    // for(let i = 0; i < proposals.length; i++){
+    //   let proposal = {...proposals[i]}
+    //   // let chain = await ChainFactory.getChain()
+    //   // let proposalStatus = await chain.getProposalVotes(proposal.proposalIndex, proposal._id)
+    //   try{
+    //     proposal.status = proposalStatus[0].toNumber()
+    //     proposal.yesRepStaked = proposalStatus[1].toNumber()
+    //     proposal.noRepStaked = proposalStatus[2].toNumber()
+    //     proposal.noSlashRep = proposalStatus[3].toNumber()
+    //   } catch (e){
+    //     proposal.status = proposalStatus[0]
+    //     proposal.yesRepStaked = proposalStatus[1]
+    //     proposal.noRepStaked = proposalStatus[2]
+    //     proposal.noSlashRep = proposalStatus[3]
+    //   }
+    //   let now = Math.floor(new Date().getTime()/1000)
+    //   let remaining = proposal.voteTimeEnd - now
+    //   remaining = remaining < 0 ? 0 : remaining
+    //   proposal.voteTimeRemaining = remaining
+    // 
+    //   // save/persist proposal to API with new status
+    //   await this.props.baseSaveProposal(proposal)
+    //   await this.props.basePersistProposal(proposal)
+    // 
+    //   //if not active, then proposal has completed
+    //   if(proposal.status !== PROPOSAL_STATUSES.active) {
+    //     let chain = await ChainFactory.getChain()
+    //     let rep = await chain.distributeRepAndSem(proposal._id, proposal.proposalIndex,
+    //       proposal.yesRepStaked + proposal.noRepStaked,
+    //       proposal.yesRepStaked,
+    //       proposal.noRepStaked,
+    //       proposal.tokenNumberIndex)
+    //     await this.props.saveRepBalance(rep)
+    //   }
+    // }
     // 2. refresh REP balance for DAO if a DAO is currently selected
   }
   

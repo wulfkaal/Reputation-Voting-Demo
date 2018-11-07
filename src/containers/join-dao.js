@@ -13,8 +13,6 @@ import {
   receiveRepBalance,
   showRepBalance
 } from '../actions/daos'
-import ChainFactory from '../utils/chainFactory'
-
 
 const mapStateToProps = (state, ownProps) => {  
   let daoId = ownProps.match.params.id
@@ -38,10 +36,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(saveProposal(proposal))
     },
     joinDao: async (proposal, userId, dao) => {
-      let chain = await ChainFactory.getChain()
-      proposal = await chain.joinDao(
-        proposal,
-        dao.tokenNumberIndex)
+      // let chain = await ChainFactory.getChain()
+      // proposal = await chain.joinDao(
+      //   proposal,
+      //   dao.tokenNumberIndex)
       await dispatch(persistProposal({
           _id: proposal._id,
           userId: userId,
@@ -58,9 +56,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           yesRepStaked: proposal.stake/2,
           votes: proposal.votes
         }))
-      let tokenBal = await chain.getTokenBalance(dao.tokenNumberIndex)
-      dispatch(receiveRepBalance(tokenBal))
-      dispatch(resetNewProposal())
+      // let tokenBal = await chain.getTokenBalance(dao.tokenNumberIndex)
+      // dispatch(receiveRepBalance(tokenBal))
+      // dispatch(resetNewProposal())
       ownProps.history.push(`/daos/${dao._id}/proposals`)
     }
   }

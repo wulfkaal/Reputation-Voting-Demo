@@ -2,12 +2,13 @@ import React, { Component } from 'react'
 import ProposalsLayout from '../hocs/proposals-layout'
 import {connect} from 'react-redux'
 import DaoScreen from '../presenters/dao/screen'
-import ChainFactory from '../utils/chainFactory'
 import { 
   getDao,
   receiveRepBalance,
   showRepBalance
 } from '../actions/daos'
+import SemadaCore from '../utils/semada-core'
+import getWeb3 from '../utils/get-web3'
 
 const mapStateToProps = (state, ownProps) => {  
   let id = ownProps.match.params.id
@@ -23,8 +24,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       return dispatch(getDao(id))
     },
     getRepBalance: async(dao) =>{
-      let chain = await ChainFactory.getChain()
-      let tokenBal = await chain.getTokenBalance(dao.tokenNumberIndex)
+      let web3 = await getWeb3()
+      let publicAddress = await web3.eth.getCoinbase()
+      let tokenBal = 
+        await SemadaCore.getRepBalance(dao.tokenNumberIndex, publicAddress)
       dispatch(receiveRepBalance(tokenBal))
     },
     showRepBalance: () => {

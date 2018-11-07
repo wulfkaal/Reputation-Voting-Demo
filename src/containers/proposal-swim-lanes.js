@@ -7,12 +7,13 @@ import {
   saveProposal
 } from '../actions/proposals'
 import values from 'lodash/values'
-import ChainFactory from '../utils/chainFactory'
-import { getDaos } from '../actions/daos'
+import { getDao } from '../actions/daos'
 import {
   receiveRepBalance,
   showRepBalance
 } from '../actions/daos'
+import SemadaCore from '../utils/semada-core'
+import getWeb3 from '../utils/get-web3'
 
 const mapStateToProps = (state, ownProps) => {  
   let daoId = ownProps.match.params.id
@@ -29,15 +30,17 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     showRepBalanceFunc: () => {
       dispatch(showRepBalance())
     },
-    getDaos: () => {
-      dispatch(getDaos())
+    getDao: id => {
+      return dispatch(getDao(id))
     },
     getProposals: daoId => {
       dispatch(getProposals(daoId))
     },
-    getRepBalance: async(tokenNumberIndex) => {
-      let chain = await ChainFactory.getChain()
-      let tokenBal = await chain.getTokenBalance(tokenNumberIndex)
+    getRepBalance: async(dao) => {
+      let web3 = await getWeb3()
+      let publicAddress = await web3.eth.getCoinbase()
+      let tokenBal = 
+        await SemadaCore.getRepBalance(dao.tokenNumberIndex, publicAddress)
       dispatch(receiveRepBalance(tokenBal))
     },
     startTimer: () => {
@@ -62,8 +65,12 @@ class ProposalSwimLanes extends Component {
 
   componentDidMount() {
     let daoId = this.props.match.params.id
-    this.props.getDaos()
-    this.props.getProposals(daoId)
+    this.props.getDao(daoId)
+    .then(response => {
+      this.props.getProposals(daoId)
+      this.props.getRepBalance(response.dao)
+    })
+    
     if(!this.props.showRepBalance){
       this.props.showRepBalanceFunc()
     }
@@ -71,8 +78,6 @@ class ProposalSwimLanes extends Component {
   }
 
   render() {
-    this.props.dao &&  
-    this.props.getRepBalance(this.props.dao.tokenNumberIndex)
       
     return (
       <div>

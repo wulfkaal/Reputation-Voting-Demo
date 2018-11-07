@@ -13,8 +13,6 @@ import {
   receiveRepBalance,
   showRepBalance
 } from '../actions/daos'
-import ChainFactory from '../utils/chainFactory'
-
 
 const mapStateToProps = (state, ownProps) => {  
   let daoId = ownProps.match.params.id
@@ -38,15 +36,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(saveProposal(proposal))
     },
     persistProposal: async (proposal, userId, dao) => {
-      let chain = await ChainFactory.getChain()
-      proposal = await chain.newProposal(proposal, dao.tokenNumberIndex)
+      // let chain = await ChainFactory.getChain()
+      // proposal = await chain.newProposal(proposal, dao.tokenNumberIndex)
       let result = await dispatch(persistProposal({
                       _id: proposal._id,
                       userId: userId,
                       daoId: dao._id,
                       name: proposal.name,
                       evidence: proposal.evidence,
-                      chain: process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK,
                       proposalIndex: proposal.proposalIndex,
                       tokenNumberIndex: dao.tokenNumberIndex,
                       status: PROPOSAL_STATUSES.active,
@@ -56,8 +53,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                       yesRepStaked: proposal.stake/2,
                       votes: proposal.votes
                     }))
-      let tokenBal = await chain.getTokenBalance(dao.tokenNumberIndex)
-      dispatch(receiveRepBalance(tokenBal))
+      // let tokenBal = await chain.getTokenBalance(dao.tokenNumberIndex)
+      // dispatch(receiveRepBalance(tokenBal))
       dispatch(resetNewProposal())
       ownProps.history.push(`/${dao._id}/proposals/${result.proposal._id}`)
     }

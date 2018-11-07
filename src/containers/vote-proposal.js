@@ -12,8 +12,6 @@ import {
   receiveRepBalance,
   showRepBalance
 } from '../actions/daos'
-import ChainFactory from '../utils/chainFactory'
-
 
 const mapStateToProps = (state, ownProps) => {  
   let id = ownProps.match.params.id
@@ -40,11 +38,11 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(saveProposal(proposal))
     },
     voteProposal: async (proposal) => {
-      let chain = await ChainFactory.getChain()
-      proposal = await chain.voteProposal(proposal)
-      await dispatch(persistProposal(proposal))
-      let tokenBal = await chain.getTokenBalance(proposal.tokenNumberIndex)
-      dispatch(receiveRepBalance(tokenBal))
+      // let chain = await ChainFactory.getChain()
+      // proposal = await chain.voteProposal(proposal)
+      // await dispatch(persistProposal(proposal))
+      // let tokenBal = await chain.getTokenBalance(proposal.tokenNumberIndex)
+      // dispatch(receiveRepBalance(tokenBal))
       ownProps.history.push(`/proposals/${proposal._id}`)
     }
   }

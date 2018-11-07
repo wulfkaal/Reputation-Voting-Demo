@@ -16,7 +16,7 @@ import {
   getUser
 } from '../actions/users'
 import SemadaCore from '../utils/semada-core'
-
+import getWeb3 from '../utils/get-web3'
 
 const mapStateToProps = (state, ownProps) => {  
   return {
@@ -36,27 +36,24 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(saveDao(dao))
     },
     saveSem: async() => {
-      let chain = await ChainFactory.getChain()
-      let semBalance = await chain.getSemBalance()
-      dispatch(saveSemBalance(semBalance))
+      // let chain = await ChainFactory.getChain()
+      // let semBalance = await chain.getSemBalance()
+      // dispatch(saveSemBalance(semBalance))
     },
     persistDao: async(dao) => {
-
-      let chain = await ChainFactory.getChain()
-      let totalSupply = 20
-      dao = await chain.createDao(dao, totalSupply)
+      let web3 = await getWeb3()
+      let publicAddress = await web3.eth.getCoinbase()
+      let repContract = await SemadaCore.createDao(publicAddress, dao, dao.sem)
       await dispatch(persistProposal({
         _id: 'new',
         name: 'New DAO',
         evidence: '',
-        chain: process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK,
-        tokenNumberIndex: dao.tokenNumberIndex,
-        tokenAddress: dao.tokenAddress,
-        proposalIndex: dao.proposalIndex,
-        totalSupply: totalSupply
+        tokenNumberIndex: repContract.tokenNumberIndex,
+        tokenAddress: repContract.tokenAddress,
+        proposalIndex: repContract.proposalIndex,
+        totalSupply: dao.sem
       }))
       // This proposal belongs to the Anchor DAO
-      dao.chain = process.env.REACT_APP_SEMADA_DEMO_SEMADA_NETWORK
       let newDao = await dispatch(persistDao(dao))
       await dispatch(resetNewDao())
       
@@ -75,7 +72,7 @@ class NewDao extends Component {
   async componentDidMount() {
     // TODO : Remove hard coding
     this.props.getUser('wulf@semada.io')
-    this.props.saveSem()
+    // this.props.saveSem()
     if(this.props.showRepBalance){
       this.props.hideRepBalance()
     }
