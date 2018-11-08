@@ -12,6 +12,8 @@ import {
   receiveRepBalance,
   showRepBalance
 } from '../actions/daos'
+import SemadaCore from '../utils/semada-core'
+import getWeb3 from '../utils/get-web3'
 
 const mapStateToProps = (state, ownProps) => {  
   let id = ownProps.match.params.id
@@ -38,7 +40,13 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(saveProposal(proposal))
     },
     voteProposal: async (proposal) => {
-      // let chain = await ChainFactory.getChain()
+      // let publicAddress = await web3.eth.getCoinbase()
+      // proposal = await SemadaCore.vote(proposal.tokenNumberIndex, 
+      //   proposal.proposalIndex,
+      //   publicAddress,
+      //   yes/no,
+      //   rep
+      //   )
       // proposal = await chain.voteProposal(proposal)
       // await dispatch(persistProposal(proposal))
       // let tokenBal = await chain.getTokenBalance(proposal.tokenNumberIndex)

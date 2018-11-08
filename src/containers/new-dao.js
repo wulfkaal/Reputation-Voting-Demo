@@ -35,11 +35,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     saveDao: (dao) => {
       dispatch(saveDao(dao))
     },
-
-      // let chain = await ChainFactory.getChain()
-      // let semBalance = await chain.getSemBalance()
-      // dispatch(saveSemBalance(semBalance))
-    },
     persistDao: async(dao) => {
       let web3 = await getWeb3()
       let publicAddress = await web3.eth.getCoinbase()
