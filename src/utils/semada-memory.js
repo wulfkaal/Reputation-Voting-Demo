@@ -299,7 +299,6 @@ const SemadaMemory = {
       }
     )
     return {
-      tokenNumberIndex: tokenNumberIndex,
       proposalIndex: proposalIndex
     }
   },
@@ -316,11 +315,8 @@ const SemadaMemory = {
     }
     repContracts[tokenNumberIndex].sem += sem
 
-    if(!semBalances[`${account}`]){
-      semBalances[`${account}`] = {account: account, sem: sem}
-    } else {
-      semBalances[`${account}`].sem += sem  
-    }
+    semBalances[`${account}`].sem -= sem  
+    
   },
   
   vote: async (tokenNumberIndex, proposalIndex, fromAccount, vote, rep) => {

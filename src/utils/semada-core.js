@@ -80,8 +80,7 @@ const SemadaCore = {
     await persistence.joinDao(tokenNumberIndex, account, sem)
   },
   
-  newProposal: async (
-    tokenNumberIndex, name, description, account, sem) => {
+  newProposal: async (tokenNumberIndex, name, description, account, sem) => {
     let persistence = await semadaCoreFactory.getPersistenceLayer()
     
     await persistence.newProposal(

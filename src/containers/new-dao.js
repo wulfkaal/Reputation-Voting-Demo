@@ -35,7 +35,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     saveDao: (dao) => {
       dispatch(saveDao(dao))
     },
-    saveSem: async() => {
+
       // let chain = await ChainFactory.getChain()
       // let semBalance = await chain.getSemBalance()
       // dispatch(saveSemBalance(semBalance))
