@@ -8,6 +8,7 @@ import {
   resetNewProposal,
   PROPOSAL_STATUSES
 } from '../actions/proposals'
+import { saveSemBalance } from '../actions/auth'
 import { 
   getDaos,
   receiveRepBalance,
@@ -22,7 +23,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     dao: state.daos[daoId],
     proposal: state.proposals.new,
-    user: state.users['wulf@semada.io']
+    // user: state.users['wulf@semada.io']
   }
 }
 
@@ -37,29 +38,32 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     saveProposal: proposal => {
       dispatch(saveProposal(proposal))
     },
-    joinDao: async (proposal, userId, dao) => {
+    joinDao: async (proposal, dao) => {
       let web3 = await getWeb3()
       let publicAddress = await web3.eth.getCoinbase()
-      proposal = await SemadaCore.joinDao(proposal, publicAddress, dao.tokenNumberIndex)
+      let coreProposal = await SemadaCore
+        .joinDao(dao.tokenNumberIndex, publicAddress, proposal.stake)
       
       await dispatch(persistProposal({
           _id: proposal._id,
-          userId: userId,
           daoId: dao._id,
+          tokenNumberIndex: dao.tokenNumberIndex,
+          proposalIndex: coreProposal.proposalIndex,
           name: 'Join DAO',
           evidence: '',
-          proposalIndex: proposal.proposalIndex,
-          tokenNumberIndex: dao.tokenNumberIndex,
           status: PROPOSAL_STATUSES.active,
-          voteTimeEnd: proposal.timeout,
-          voteTimeRemaining: proposal.timeout - (parseInt(new Date()/1000)),
+          voteTimeEnd: coreProposal.timeout,
+          voteTimeRemaining: coreProposal.timeout - (parseInt(new Date()/1000)),
           noRepStaked: proposal.stake/2,
           yesRepStaked: proposal.stake/2,
-          votes: proposal.votes
+          totalRepStaked: proposal.stake
         }))
-      let tokenBal = await SemadaCore.getTokenBalance(dao.tokenNumberIndex)
-      dispatch(receiveRepBalance(tokenBal))
+      
       dispatch(resetNewProposal())
+      
+      let semBalance = await SemadaCore.getSemBalance(publicAddress)
+      dispatch(saveSemBalance(publicAddress))
+      
       ownProps.history.push(`/daos/${dao._id}/proposals`)
     }
   }
@@ -75,9 +79,14 @@ class JoinDao extends Component {
   }
 
   render() {
+    let screen 
+    if(this.props.proposal) {
+      screen = <JoinDaoScreen {...this.props} />
+    }
+    
     return (
       <div>
-        <JoinDaoScreen {...this.props} />
+        {screen}
       </div>
     )
   }

@@ -12,7 +12,8 @@ const initialState = {
     name: '',
     tokenNumberIndex: null,
     proposalIndex: null,
-    tokenAddress: null
+    tokenAddress: null,
+    sem: 0
   },
   showRepBalance: true,
   rep: 0,

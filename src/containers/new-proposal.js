@@ -13,6 +13,7 @@ import {
   receiveRepBalance,
   showRepBalance
 } from '../actions/daos'
+import { saveSemBalance } from '../actions/auth'
 import SemadaCore from '../utils/semada-core'
 import getWeb3 from '../utils/get-web3'
 
@@ -21,8 +22,7 @@ const mapStateToProps = (state, ownProps) => {
   
   return {
     dao: state.daos[daoId],
-    proposal: state.proposals.new,
-    user: state.users['wulf@semada.io']
+    proposal: state.proposals.new
   }
 }
 
@@ -37,28 +37,33 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     saveProposal: proposal => {
       dispatch(saveProposal(proposal))
     },
-    persistProposal: async (proposal, userId, dao) => {
+    persistProposal: async (proposal, dao) => {
       let web3 = await getWeb3()
       let publicAddress = await web3.eth.getCoinbase()
-      proposal = await SemadaCore.newProposal(proposal, dao.tokenNumberIndex)
+      let coreProposal = await SemadaCore.newProposal(dao.tokenNumberIndex,
+        proposal.name,
+        proposal.evidence,
+        publicAddress,
+        proposal.stake)
       
       let result = await dispatch(persistProposal({
-                      _id: proposal._id,
-                      userId: userId,
+                      _id: proposal._id,  
                       daoId: dao._id,
+                      tokenNumberIndex: dao.tokenNumberIndex,
+                      proposalIndex: coreProposal.proposalIndex,
                       name: proposal.name,
                       evidence: proposal.evidence,
-                      proposalIndex: proposal.proposalIndex,
-                      tokenNumberIndex: dao.tokenNumberIndex,
                       status: PROPOSAL_STATUSES.active,
-                      voteTimeEnd: proposal.timeout,
-                      voteTimeRemaining: proposal.timeout - (parseInt(new Date()/1000)),
-                      noRepStaked: proposal.stake/2,
+                      voteTimeEnd: coreProposal.timeout,
+                      voteTimeRemaining: coreProposal.timeout - (parseInt(new Date()/1000)),
                       yesRepStaked: proposal.stake/2,
-                      votes: proposal.votes
+                      noRepStaked: proposal.stake/2,
+                      totalRepStaked: proposal.stake
                     }))
-      let tokenBal = await SemadaCore.getTokenBalance(dao.tokenNumberIndex)
-      dispatch(receiveRepBalance(tokenBal))
+      
+      let semBalance = await SemadaCore.getSemBalance(publicAddress)
+      dispatch(saveSemBalance(publicAddress))
+      
       dispatch(resetNewProposal())
       ownProps.history.push(`/${dao._id}/proposals/${result.proposal._id}`)
     }
@@ -75,9 +80,14 @@ class NewProposal extends Component {
   }
 
   render() {
+    let screen 
+    if(this.props.proposal && this.props.dao) {
+      screen = <NewProposalScreen {...this.props} />
+    }
+    
     return (
       <div>
-        <NewProposalScreen {...this.props} />
+        {screen}
       </div>
     )
   }

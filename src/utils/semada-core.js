@@ -8,7 +8,11 @@ const SemadaCore = {
     dao.tokenNumberIndex = newDao.tokenNumberIndex
     dao.proposalIndex = newDao.proposalIndex
     
-    return dao
+    return {
+      tokenNumberIndex: newDao.tokenNumberIndex,
+      proposalIndex: newDao.proposalIndex,
+      timeout: newDao.timeout
+    }
   },
   
   getRepContract: async (tokenNumberIndex) => {
@@ -77,18 +81,28 @@ const SemadaCore = {
   joinDao: async (tokenNumberIndex, account, sem) => {
     let persistence = await semadaCoreFactory.getPersistenceLayer()
     
-    await persistence.joinDao(tokenNumberIndex, account, sem)
+    let proposal = await persistence.joinDao(tokenNumberIndex, account, sem)
+    
+    return {
+      proposalIndex: proposal.proposalIndex,
+      timeout: proposal.timeout
+    }
   },
   
   newProposal: async (tokenNumberIndex, name, description, account, sem) => {
     let persistence = await semadaCoreFactory.getPersistenceLayer()
     
-    await persistence.newProposal(
+    let proposal = await persistence.newProposal(
       tokenNumberIndex, 
       name, 
       description, 
       account, 
       sem)
+      
+    return {
+      proposalIndex: proposal.proposalIndex,
+      timeout: proposal.timeout
+    }
   },
   
   mintRep: async (tokenNumberIndex, account, sem) => {

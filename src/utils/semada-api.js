@@ -209,6 +209,9 @@ const SemadaApi = {
       })
     })
     
+    let proposal = await response.json()
+    
+    return proposal
   },
   
   newProposal: async (tokenNumberIndex, name, description, account, sem) => {
@@ -232,7 +235,7 @@ const SemadaApi = {
     })
     
     let body = await response.json()
-    return body.proposalIndex
+    return body
   },
   
   mintRep: async (tokenNumberIndex, account, sem) => {

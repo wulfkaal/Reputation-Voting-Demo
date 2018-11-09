@@ -74,18 +74,12 @@ const screen = (props) => {
                 No
                 <Switch
                   onChange={(e) => {
-                   let vote
-                   if (e.target.value==='yes'){
-                     vote='no'
-                   } else {
-                     vote='yes'
-                   }
                    props.saveProposal({
                      _id: props.proposal._id, 
-                     vote: vote
+                     vote: e.target.checked
                    })
                   }}
-                  value={props.proposal.vote}
+                  checked={props.proposal.vote}
                 />
                 Yes
               </Grid>

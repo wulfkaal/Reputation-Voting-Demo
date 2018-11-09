@@ -20,8 +20,7 @@ const mapStateToProps = (state, ownProps) => {
   
   return {
     proposal: state.proposals[id],
-    dao: state.daos.dao,
-    user: state.users['wulf@semada.io']
+    dao: state.daos.dao
   }
 }
 
@@ -40,17 +39,31 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(saveProposal(proposal))
     },
     voteProposal: async (proposal) => {
-      // let publicAddress = await web3.eth.getCoinbase()
-      // proposal = await SemadaCore.vote(proposal.tokenNumberIndex, 
-      //   proposal.proposalIndex,
-      //   publicAddress,
-      //   yes/no,
-      //   rep
-      //   )
-      // proposal = await chain.voteProposal(proposal)
-      // await dispatch(persistProposal(proposal))
+      let web3 = await getWeb3()
+      let publicAddress = await web3.eth.getCoinbase()
+      
+      await SemadaCore.vote(proposal.tokenNumberIndex, 
+        proposal.proposalIndex,
+        publicAddress,
+        proposal.vote,
+        proposal.stake
+        )
+      
+      if(proposal.vote){
+        proposal.yesRepStaked = parseInt(proposal.yesRepStaked) + 
+          parseInt(proposal.stake)
+      } else {
+        proposal.noRepStaked = parseInt(proposal.noRepStaked) +
+          parseInt(proposal.stake)
+      }
+      proposal.totalRepStaked = parseInt(proposal.totalRepStaked) +
+        parseInt(proposal.stake)
+      
+      await dispatch(persistProposal(proposal))
       // let tokenBal = await chain.getTokenBalance(proposal.tokenNumberIndex)
-      // dispatch(receiveRepBalance(tokenBal))
+      let repBalance = 
+        await SemadaCore.getRepBalance(proposal.tokenNumberIndex, publicAddress)
+      dispatch(receiveRepBalance(repBalance))
       ownProps.history.push(`/proposals/${proposal._id}`)
     }
   }

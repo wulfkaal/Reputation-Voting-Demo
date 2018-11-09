@@ -8,9 +8,7 @@ import {
 const initialState = {
   new: {
     _id: 'new', 
-    url: '', 
-    vote: 'no',
-    stake: 2, 
+    stake: 0, 
     status: PROPOSAL_STATUSES.active,
     voteTimeRemaining: '',
     noRepStaked: 0,

@@ -16,6 +16,7 @@ import {
 } from '../actions/auth'
 import { receiveRepBalance } from '../actions/daos'
 import getWeb3 from '../utils/get-web3'
+import SemadaCore from '../utils/semada-core'
 
 const mapStateToProps = (state, ownProps) => {  
   return {
@@ -81,6 +82,17 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         })
         let tokenRes = await authRes.json()
         dispatch(login(tokenRes['accessToken']))
+        
+        try {
+          //this is to handle initializing the wallet when using the 
+          //API persistence layer instead of blockchain
+          let balance = await SemadaCore.getSemBalance(publicAddress)
+          if(balance === 0){
+            await SemadaCore.setSemBalance(publicAddress, 0)
+          }
+        } catch (err) {
+          //do nothing as the blockchain layer doesn't need this.
+        }
       } catch (err) {
         alert('Please sign in with MetaMask')
       }

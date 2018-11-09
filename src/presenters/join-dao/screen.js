@@ -15,7 +15,7 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.joinDao({...props.proposal}, props.user._id, props.dao)
+          props.joinDao({...props.proposal}, props.dao)
         }}
         onError={errors => console.log(errors)}
       >
