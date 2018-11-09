@@ -123,57 +123,7 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
 
     
   }
-  
-  //Voting simulation
-  //This isn't used right now, but could be in the future so I'm not deleting
-  async manageProposals() {
-    let proposals = this.props.baseProposals
-        
-    for(let i = 0; i < proposals.length; i++){
-      let proposal = {...proposals[i]}
-      //check proposal voteTimeEnd, 
-      // if time remaining, do random vote (yes, no, skip)
-      // if no time remaining, update status based on votes
-      // saveProposal,persistProposal every time anything is changed
-      // (including voteTimeRemaining)
-     
-      if(proposal.voteTimeRemaining > 0) {
-        // random vote
-        let vote = Math.floor(Math.random() * 5)
-        let repStaked = Math.floor(Math.random() * 5)
-        switch(vote){
-        case 0:
-        case 1:
-          proposal.yesVotes += 1
-          proposal.yesRepStaked += repStaked
-          break;
-        case 2:
-          proposal.noVotes += 1
-          proposal.noRepStaked += repStaked
-          break;
-        default:
-          break;
-        }
-      } else {
-        // out of time, update status
-        let quorumReached = (proposal.yesVotes + proposal.noVotes) >= 6
-        if(quorumReached && proposal.yesVotes >= proposal.noVotes) {
-          proposal.status = PROPOSAL_STATUSES.pass
-        } else if(quorumReached && proposal.yesVotes < proposal.noVotes) {
-          proposal.status = PROPOSAL_STATUSES.fail
-        } else {
-          proposal.status = PROPOSAL_STATUSES.timeout
-        }
-        
-        //set random REP % once voting is complete/timed out
-        proposal.repPercent = Math.floor(Math.random() * 100)
-      }
-      this.props.baseSaveProposal(proposal)
-      this.props.basePersistProposal(proposal)
-      
-    }
-  }
-  
+   
   componentWillUnmount () {
     clearInterval(this.timer)
   }
