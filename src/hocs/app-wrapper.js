@@ -120,58 +120,8 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
       jssStyles.parentNode.removeChild(jssStyles);
     }
     
-    clearInterval(this.timer)
-    this.timer = setInterval(() => {
-      // this.refreshData()
-    }, 1000)
+
     
-  }
-  
-  async refreshData() {
-    /*
-    1. get staked rep by yes/no vote on active proposals
-    2. update proposal in API with staked rep and status
-    3. distribute REP when timeout
-    4. distribute SEM when timeout
-    */
-        
-    // let proposals = this.props.baseProposals
-    // for(let i = 0; i < proposals.length; i++){
-    //   let proposal = {...proposals[i]}
-    //   // let chain = await ChainFactory.getChain()
-    //   // let proposalStatus = await chain.getProposalVotes(proposal.proposalIndex, proposal._id)
-    //   try{
-    //     proposal.status = proposalStatus[0].toNumber()
-    //     proposal.yesRepStaked = proposalStatus[1].toNumber()
-    //     proposal.noRepStaked = proposalStatus[2].toNumber()
-    //     proposal.noSlashRep = proposalStatus[3].toNumber()
-    //   } catch (e){
-    //     proposal.status = proposalStatus[0]
-    //     proposal.yesRepStaked = proposalStatus[1]
-    //     proposal.noRepStaked = proposalStatus[2]
-    //     proposal.noSlashRep = proposalStatus[3]
-    //   }
-    //   let now = Math.floor(new Date().getTime()/1000)
-    //   let remaining = proposal.voteTimeEnd - now
-    //   remaining = remaining < 0 ? 0 : remaining
-    //   proposal.voteTimeRemaining = remaining
-    // 
-    //   // save/persist proposal to API with new status
-    //   await this.props.baseSaveProposal(proposal)
-    //   await this.props.basePersistProposal(proposal)
-    // 
-    //   //if not active, then proposal has completed
-    //   if(proposal.status !== PROPOSAL_STATUSES.active) {
-    //     let chain = await ChainFactory.getChain()
-    //     let rep = await chain.distributeRepAndSem(proposal._id, proposal.proposalIndex,
-    //       proposal.yesRepStaked + proposal.noRepStaked,
-    //       proposal.yesRepStaked,
-    //       proposal.noRepStaked,
-    //       proposal.tokenNumberIndex)
-    //     await this.props.saveRepBalance(rep)
-    //   }
-    // }
-    // 2. refresh REP balance for DAO if a DAO is currently selected
   }
   
   //Voting simulation
