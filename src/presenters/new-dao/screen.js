@@ -64,8 +64,6 @@ const screen = (props) => {
                   onChange={(e) => {
                     if (isNaN(e.target.value)){
                       alert("Stake has to be a number")
-                    } else if (e.target.value > props.semBalance){
-                      alert("Stake cannot be greater than wei balance")
                     } else {
                       props.saveDao({
                         _id: props.dao._id, 
