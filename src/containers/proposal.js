@@ -49,6 +49,15 @@ class Proposal extends Component {
     if(!this.props.showRepBalance){
       this.props.showRepBalance()
     }
+    
+    clearInterval(this.timer)
+    this.timer = setInterval(() => {
+     this.props.getProposal(id)
+   }, 1000)
+  }
+  
+  componentWillUnmount () {
+    clearInterval(this.timer)
   }
 
   render() {

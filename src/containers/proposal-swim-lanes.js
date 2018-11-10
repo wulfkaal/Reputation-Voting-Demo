@@ -50,6 +50,7 @@ class ProposalSwimLanes extends Component {
 
   componentDidMount() {
     let daoId = this.props.match.params.id
+    
     this.props.getDao(daoId)
     .then(response => {
       this.props.getProposals(daoId)
@@ -59,7 +60,20 @@ class ProposalSwimLanes extends Component {
     if(!this.props.showRepBalance){
       this.props.showRepBalanceFunc()
     }
+    
+    clearInterval(this.timer)
+    this.timer = setInterval(() => {
+     this.props.getDao(daoId)
+     .then(response => {
+       this.props.getProposals(daoId)
+       this.props.getRepBalance(response.dao)
+     })
+   }, 5000)
 
+  }
+  
+  componentWillUnmount () {
+    clearInterval(this.timer)
   }
 
   render() {

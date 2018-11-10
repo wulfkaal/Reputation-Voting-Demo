@@ -140,22 +140,9 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
       jssStyles.parentNode.removeChild(jssStyles);
     }
     
-    clearInterval(this.timer)
-    this.timer = setInterval(() => {
-      this.props.getDaos()
-      
-      this.props.daos.forEach((dao) => {
-        this.props.getProposals(dao._id)
-        this.props.getRepBalance(dao)
-      })
-      
-    }, 1000)
-    
   }
    
-  componentWillUnmount () {
-    clearInterval(this.timer)
-  }
+  
   
   render () {
     
