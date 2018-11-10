@@ -93,7 +93,7 @@ const screen = (props) => {
                   onChange={(e) => {
                    props.saveProposal({
                      _id: props.proposal._id, 
-                     stake: Number(e.target.value)
+                     stake: e.target.value
                    })
                   }}
                   InputProps={{

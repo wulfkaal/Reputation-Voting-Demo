@@ -5,7 +5,8 @@ import VoteProposalScreen from '../presenters/vote-proposal/screen'
 import {
   getProposal,
   saveProposal,
-  persistProposal
+  persistProposal,
+  saveVote
 } from '../actions/proposals'
 import { getDao } from '../actions/daos'
 import { 
@@ -20,7 +21,9 @@ const mapStateToProps = (state, ownProps) => {
   
   return {
     proposal: state.proposals[id],
-    dao: state.daos.dao
+    dao: state.daos.dao,
+    vote: state.proposals.vote,
+    rep: state.proposals.rep
   }
 }
 
@@ -38,29 +41,20 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     saveProposal: (proposal) => {
       dispatch(saveProposal(proposal))
     },
-    voteProposal: async (proposal) => {
+    saveVote: (vote, rep) => {
+      dispatch(saveVote(vote, rep))
+    },
+    voteProposal: async (proposal, vote, rep) => {
       let web3 = await getWeb3()
       let publicAddress = await web3.eth.getCoinbase()
       
       await SemadaCore.vote(proposal.tokenNumberIndex, 
         proposal.proposalIndex,
         publicAddress,
-        proposal.vote,
-        proposal.stake
+        vote,
+        parseInt(rep)
         )
       
-      if(proposal.vote){
-        proposal.yesRepStaked = parseInt(proposal.yesRepStaked) + 
-          parseInt(proposal.stake)
-      } else {
-        proposal.noRepStaked = parseInt(proposal.noRepStaked) +
-          parseInt(proposal.stake)
-      }
-      proposal.totalRepStaked = parseInt(proposal.totalRepStaked) +
-        parseInt(proposal.stake)
-      
-      await dispatch(persistProposal(proposal))
-      // let tokenBal = await chain.getTokenBalance(proposal.tokenNumberIndex)
       let repBalance = 
         await SemadaCore.getRepBalance(proposal.tokenNumberIndex, publicAddress)
       dispatch(receiveRepBalance(repBalance))

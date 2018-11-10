@@ -1,5 +1,6 @@
 export const RECEIVE_PROPOSAL = 'RECEIVE_PROPOSAL'
 export const RESET_NEW_PROPOSAL = 'RESET_NEW_PROPOSAL'
+export const SAVE_VOTE = 'SAVE_VOTE'
 
 export const PROPOSAL_STATUSES = Object.freeze({
   active: 1, 
@@ -12,6 +13,13 @@ export const saveProposal = proposal => {
   return {
     proposal: proposal,
     type: RECEIVE_PROPOSAL
+  }
+}
+
+export const saveVote = (vote) => {
+  return {
+    vote: vote,
+    type: SAVE_VOTE
   }
 }
 

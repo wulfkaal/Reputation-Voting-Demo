@@ -23,6 +23,10 @@ const initialState = {
 const daos = (state = initialState, action) => {
   switch(action.type) {
   case RECEIVE_DAO:
+    if(!action.dao){
+      console.log(`DAO: ${action.dao}`)
+    }
+    
     let dao = merge({}, state[action.dao._id], action.dao)
     return merge({}, state, {[action.dao._id]: dao})
   case RESET_NEW_DAO:

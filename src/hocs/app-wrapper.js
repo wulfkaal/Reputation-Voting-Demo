@@ -8,13 +8,17 @@ import values from 'lodash/values'
 import {
   PROPOSAL_STATUSES,
   saveProposal,
-  persistProposal
+  persistProposal,
+  getProposals
 } from '../actions/proposals'
+import {
+  receiveRepBalance,
+  getDaos
+} from '../actions/daos'
 import {
   login,
   logout
 } from '../actions/auth'
-import { receiveRepBalance } from '../actions/daos'
 import getWeb3 from '../utils/get-web3'
 import SemadaCore from '../utils/semada-core'
 
@@ -27,7 +31,10 @@ const mapStateToProps = (state, ownProps) => {
     repBalance: state.daos.rep,
     baseProposals: values(state.proposals)
       .filter(p => p._id !== 'new' && 
-        p.status === PROPOSAL_STATUSES.active)
+        p.status === PROPOSAL_STATUSES.active),
+    daos: values(state.daos).filter(d => {
+        return d && d.hasOwnProperty('_id') && d._id !== 'new'
+    })
   }
 }
 
@@ -40,6 +47,19 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(persistProposal(proposal))
     },
     saveRepBalance: async (tokenBal) => {
+      dispatch(receiveRepBalance(tokenBal))
+    },
+    getDaos: () => {
+      dispatch(getDaos())
+    },
+    getProposals: daoId => {
+      dispatch(getProposals(daoId))
+    },
+    getRepBalance: async(dao) => {
+      let web3 = await getWeb3()
+      let publicAddress = await web3.eth.getCoinbase()
+      let tokenBal = 
+        await SemadaCore.getRepBalance(dao.tokenNumberIndex, publicAddress)
       dispatch(receiveRepBalance(tokenBal))
     },
     login: async () =>{
@@ -120,7 +140,16 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
       jssStyles.parentNode.removeChild(jssStyles);
     }
     
-
+    clearInterval(this.timer)
+    this.timer = setInterval(() => {
+      this.props.getDaos()
+      
+      this.props.daos.forEach((dao) => {
+        this.props.getProposals(dao._id)
+        this.props.getRepBalance(dao)
+      })
+      
+    }, 1000)
     
   }
    

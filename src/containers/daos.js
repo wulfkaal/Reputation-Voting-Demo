@@ -11,7 +11,8 @@ import values from 'lodash/values'
 const mapStateToProps = (state, ownProps) => {  
   return {
     daos: values(state.daos).filter(d => {
-      return d.hasOwnProperty('_id') && d._id !== 'new'
+      
+      return d && d.hasOwnProperty('_id') && d._id !== 'new'
     })
   }
 }

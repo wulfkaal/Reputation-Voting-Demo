@@ -2,7 +2,8 @@ import merge from 'lodash/merge'
 import {
   PROPOSAL_STATUSES,
   RECEIVE_PROPOSAL,
-  RESET_NEW_PROPOSAL
+  RESET_NEW_PROPOSAL,
+  SAVE_VOTE
 } from '../actions/proposals'
 
 const initialState = {
@@ -15,7 +16,9 @@ const initialState = {
     yesRepStaked: 0,
     evidence: '',
     name: ''
-  }
+  },
+  vote: false,
+  rep: 0
 }
 
 const proposals = (state = initialState, action) => {
@@ -25,6 +28,8 @@ const proposals = (state = initialState, action) => {
     return merge({}, state, {[action.proposal._id]: proposal})
   case RESET_NEW_PROPOSAL:
     return merge({}, state, {new: initialState.new})
+  case SAVE_VOTE:
+    return merge({}, state, action.vote)
   default:
     return state
   }

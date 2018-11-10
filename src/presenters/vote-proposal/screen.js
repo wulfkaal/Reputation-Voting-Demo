@@ -16,7 +16,7 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.voteProposal(props.proposal)
+          props.voteProposal(props.proposal, props.vote, props.rep)
         }}
         onError={errors => console.log(errors)}
       >
@@ -48,18 +48,15 @@ const screen = (props) => {
                     className={props.classes.inputFullWidth}
                     margin="normal"
                     autoFocus={true}
-                    value={props.proposal.stake}
+                    value={props.rep}
                     validators={['required']}
                     errorMessages={['required']}
                     onChange={(e) => {
-                     if (e.target.value > props.repBalance){
-                      alert("Stake cannot be greater than rep balance")
-                     } else {
-                       props.saveProposal({
-                         _id: props.proposal._id, 
-                         stake: e.target.value
-                       })
-                     }
+                      if (e.target.value > props.repBalance){
+                        alert("Stake cannot be greater than rep balance")
+                      } else {
+                        props.saveVote({rep: e.target.value})
+                      }
                     }}
                     InputProps={{
                       endAdornment: 
@@ -74,12 +71,9 @@ const screen = (props) => {
                 No
                 <Switch
                   onChange={(e) => {
-                   props.saveProposal({
-                     _id: props.proposal._id, 
-                     vote: e.target.checked
-                   })
+                   props.saveVote({vote: e.target.checked})
                   }}
-                  checked={props.proposal.vote}
+                  checked={props.vote}
                 />
                 Yes
               </Grid>
