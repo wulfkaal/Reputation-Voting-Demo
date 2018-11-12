@@ -12,8 +12,10 @@ const screen = (props) => {
   .toUTCString()
   
   let totalRepStaked = props.proposal.yesRepStaked + props.proposal.noRepStaked
-  let yesRepPercent = Math.floor(100 * (props.proposal.yesRepStaked / totalRepStaked))
-  let noRepPercent = Math.floor(100 * (props.proposal.noRepStaked / totalRepStaked))
+  let yesRepPercent = 
+      Math.floor(100 * (props.proposal.yesRepStaked / totalRepStaked))
+  let noRepPercent = 
+      Math.floor(100 * (props.proposal.noRepStaked / totalRepStaked))
   
   yesRepPercent = isNaN(yesRepPercent) ? 0 : yesRepPercent
   noRepPercent = isNaN(noRepPercent) ? 0 : noRepPercent

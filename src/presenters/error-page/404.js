@@ -20,7 +20,8 @@ const screen = (props) => {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small" color="primary" onClick={() => props.history.push('/')}>
+        <Button size="small" color="primary" 
+            onClick={() => props.history.push('/')}>
           Home
         </Button>
         <Button size="small" color="primary">

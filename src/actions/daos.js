@@ -72,7 +72,8 @@ export const persistDao = (dao) => {
 
 export const getDao = (id) => {
   return async (dispatch) => {
-    let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos/${id}`, {
+    let response = await fetch(
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos/${id}`, {
       method: 'GET',
       mode: 'cors'
     })
@@ -89,7 +90,8 @@ export const getDao = (id) => {
 
 export const getDaos = () => {
   return async (dispatch) => {
-    let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
+    let response = await fetch(
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/daos`, {
       method: 'GET',
       mode: 'cors'
     })

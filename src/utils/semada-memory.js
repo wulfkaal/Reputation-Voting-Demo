@@ -150,7 +150,9 @@ const SemadaMemory = {
     for(let j = 0; j < pool.votes.length; j++){
       let betAmtWon = 0
       if(noSlashRep == 0 && pool.votes[j].vote){
-        betAmtWon = parseFloat(((pool.votes[j].rep / yesRepStaked) * totalRepStaked).toFixed(2))
+        betAmtWon = 
+          parseFloat(
+            ((pool.votes[j].rep / yesRepStaked) * totalRepStaked).toFixed(2))
         rep.balances['semcore']['rep'] -= betAmtWon
         if (rep.balances[pool.votes[j].from]){
           rep.balances[pool.votes[j].from]['rep'] += betAmtWon
@@ -164,7 +166,9 @@ const SemadaMemory = {
           && !pool.votes[j].vote 
           && pool.votes[j].from !== 'semcore'){
         
-        betAmtWon = parseFloat(((pool.votes[j].rep / noRepStaked) * totalRepStaked).toFixed(2))
+        betAmtWon = 
+          parseFloat(
+            ((pool.votes[j].rep / noRepStaked) * totalRepStaked).toFixed(2))
         rep.balances['semcore']['rep'] -= betAmtWon
         if (rep.balances[pool.votes[j].from]){
           rep.balances[pool.votes[j].from]['rep'] += betAmtWon
@@ -322,7 +326,8 @@ const SemadaMemory = {
   vote: async (tokenNumberIndex, proposalIndex, fromAccount, vote, rep) => {
     let pool = validationPool[proposalIndex]
     let now = Math.floor(new Date().getTime()/1000)
-    if (now > pool.timeout && repContracts[tokenNumberIndex].balances[fromAccount]['rep'] < rep){
+    if (now > pool.timeout && 
+      repContracts[tokenNumberIndex].balances[fromAccount]['rep'] < rep){
       return
     }
     validationPool[proposalIndex].votes.push(

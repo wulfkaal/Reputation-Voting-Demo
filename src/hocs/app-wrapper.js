@@ -71,29 +71,32 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       
       try {
         let response = await fetch(
-                `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/publicaddress/${publicAddress}`
+                `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/` +
+                `users/publicaddress/${publicAddress}`
                 )
         const usersRes = await response.json()
         let userRes
         if(usersRes['users'].length){
           userRes = usersRes['users'][0]
         } else {
-          let user = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users`, {
-                              body: JSON.stringify({ publicAddress, nonce, email }),
-                              headers: {
-                                'Content-Type': 'application/json'
-                              },
-                              method: 'POST'
-                                                    })
+          let user = await fetch(
+            `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users`, {
+                  body: JSON.stringify({ publicAddress, nonce, email }),
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  method: 'POST'
+                                        })
           userRes = await user.json()
         }
         nonce = userRes['nonce']
         signature = await web3.eth.personal.sign(
-                                  web3.utils.utf8ToHex(`I am signing my one-time nonce: ${nonce}`),
-                                  publicAddress
-                                )
+              web3.utils.utf8ToHex(`I am signing my one-time nonce: ${nonce}`),
+              publicAddress
+            )
       // Send signature to backend on the /auth route
-        let authRes = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/auth`, {
+        let authRes = await fetch(
+          `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/auth`, {
           body: JSON.stringify({ publicAddress, signature }),
           headers: {
             'Content-Type': 'application/json'

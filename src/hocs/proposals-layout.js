@@ -111,7 +111,8 @@ const LayoutHOC = Page => class Layout extends React.Component {
         <AppBar position="static">
           <Toolbar>
             <div className={this.props.classes.logoContainer}>
-              <img src={logoImage} className={this.props.classes.logo} alt='Semada' />  
+              <img src={logoImage} className={this.props.classes.logo} 
+                alt='Semada' />  
             </div>
             { (this.props.dao && this.props.dao.name) && (
               <Typography className={this.props.classes.title} >
@@ -130,15 +131,14 @@ const LayoutHOC = Page => class Layout extends React.Component {
               onClick={() => {
                 this.props.handleViewDaosClick()
               }}
-            >
-              <ListIcon />
-              View DAO's
-            </Button>
+            ><ListIcon />
+              View DAO's</Button>
 
             { ( this.props.access_token ) && (
             <div>
                 <IconButton
-                  aria-owns={ Boolean(this.props.profileMenuAnchorEl) ? 'menu-appbar' : null}
+                aria-owns={ 
+                Boolean(this.props.profileMenuAnchorEl) ? 'menu-appbar' : null}
                   aria-haspopup="true"
                   onClick={this.props.handleProfileMenu}
                   color="inherit"

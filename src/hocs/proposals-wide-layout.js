@@ -135,7 +135,8 @@ const LayoutHOC = Page => class Layout extends React.Component {
             { ( this.props.access_token ) && (
             <div>
               <IconButton
-                aria-owns={ Boolean(this.props.profileMenuAnchorEl) ? 'menu-appbar' : null}
+                aria-owns={ 
+                Boolean(this.props.profileMenuAnchorEl) ? 'menu-appbar' : null}
                 aria-haspopup="true"
                 onClick={this.props.handleProfileMenu}
                 color="inherit"

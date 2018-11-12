@@ -55,7 +55,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                       evidence: proposal.evidence,
                       status: PROPOSAL_STATUSES.active,
                       voteTimeEnd: coreProposal.timeout,
-                      voteTimeRemaining: coreProposal.timeout - (parseInt(new Date()/1000)),
+                      voteTimeRemaining: 
+                          coreProposal.timeout - (parseInt(new Date()/1000)),
                       yesRepStaked: proposal.stake/2,
                       noRepStaked: proposal.stake/2,
                       totalRepStaked: proposal.stake

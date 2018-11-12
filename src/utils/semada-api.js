@@ -35,7 +35,8 @@ const SemadaApi = {
   
   getRepContract: async (tokenNumberIndex) => {
     let url = 
-      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/semada-core/daos/${tokenNumberIndex}`
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}` +
+      `/semada-core/daos/${tokenNumberIndex}`
     
     let response = await fetch(url, {
       method: 'GET',
@@ -53,7 +54,8 @@ const SemadaApi = {
   
   getRepTotalSupply: async (tokenNumberIndex) => {
     let url = 
-      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/semada-core/daos/${tokenNumberIndex}/total-supply`
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}` +
+      `/semada-core/daos/${tokenNumberIndex}/total-supply`
     
     let response = await fetch(url, {
       method: 'GET',
@@ -71,7 +73,8 @@ const SemadaApi = {
   
   getRepBalance: async (tokenNumberIndex, account) => {
     let url = 
-      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/semada-core/daos/${tokenNumberIndex}/rep-balance/${account}`
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/` + 
+      `semada-core/daos/${tokenNumberIndex}/rep-balance/${account}`
     
     let response = await fetch(url, {
       method: 'GET',
@@ -89,7 +92,8 @@ const SemadaApi = {
   
   setSemBalance: async (account, sem) => {
     let url = 
-      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/semada-core/balances/${account}`
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}` + 
+      `/semada-core/balances/${account}`
     
     let response = await fetch(url, {
       method: 'PUT',
@@ -109,7 +113,8 @@ const SemadaApi = {
 	getSemBalance: async (account) => {
   
     let url = 
-      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/semada-core/balances/${account}`
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}` + 
+      `/semada-core/balances/${account}`
     
     let response = await fetch(url, {
       method: 'GET',
@@ -129,7 +134,8 @@ const SemadaApi = {
   getProposalVotes: async (proposalIndex, now) => {
 
     let url = 
-      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/semada-core/proposals/${proposalIndex}/votes/${now}/proposal-votes`
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}` + 
+      `/semada-core/proposals/${proposalIndex}/votes/${now}/proposal-votes`
     
     let response = await fetch(url, {
       method: 'GET',
@@ -156,7 +162,8 @@ const SemadaApi = {
     noRepStaked, 
     noSlashRep) => {
     let url = 
-      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/semada-core/proposals/${proposalIndex}/distribute-rep`
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}` + 
+      `/semada-core/proposals/${proposalIndex}/distribute-rep`
     
     let response = await fetch(url, {
       method: 'PUT',
@@ -178,7 +185,8 @@ const SemadaApi = {
   
   distributeSem: async (tokenNumberIndex) => {
     let url = 
-      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/semada-core/daos/${tokenNumberIndex}/distribute-sem`
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}` + 
+      `/semada-core/daos/${tokenNumberIndex}/distribute-sem`
     
     let response = await fetch(url, {
       method: 'PUT',
@@ -194,7 +202,8 @@ const SemadaApi = {
   
   joinDao: async (tokenNumberIndex, account , sem) => {
     let url = 
-      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/semada-core/daos/${tokenNumberIndex}/join`
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}` + 
+      `/semada-core/daos/${tokenNumberIndex}/join`
     
     let response = await fetch(url, {
       method: 'PUT',
@@ -240,7 +249,8 @@ const SemadaApi = {
   
   mintRep: async (tokenNumberIndex, account, sem) => {
     let url = 
-      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/semada-core/daos/${tokenNumberIndex}/mint-rep`
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}` + 
+      `/semada-core/daos/${tokenNumberIndex}/mint-rep`
     
     let response = await fetch(url, {
       method: 'PUT',
@@ -259,7 +269,8 @@ const SemadaApi = {
   
   vote: async (tokenNumberIndex, proposalIndex, fromAccount, vote, rep) => {
     let url = 
-      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/semada-core/proposals/${proposalIndex}/vote`
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}` + 
+      `/semada-core/proposals/${proposalIndex}/vote`
     
     let response = await fetch(url, {
       method: 'PUT',
@@ -279,7 +290,8 @@ const SemadaApi = {
   
   getVote: async (proposalIndex, voteIndex) => {
     let url = 
-      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/semada-core/proposals/${proposalIndex}/votes/${voteIndex}`
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}` + 
+      `/semada-core/proposals/${proposalIndex}/votes/${voteIndex}`
     
     let response = await fetch(url, {
       method: 'GET',

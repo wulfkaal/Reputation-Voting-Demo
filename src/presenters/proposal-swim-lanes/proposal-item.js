@@ -9,8 +9,10 @@ import ListItem from '@material-ui/core/ListItem';
 const proposalItem = (props) => {
 
   let totalRepStaked = props.proposal.yesRepStaked + props.proposal.noRepStaked
-  let yesRepPercent = Math.floor(100 * (props.proposal.yesRepStaked / totalRepStaked))
-  let noRepPercent = Math.floor(100 * (props.proposal.noRepStaked / totalRepStaked))
+  let yesRepPercent = 
+          Math.floor(100 * (props.proposal.yesRepStaked / totalRepStaked))
+  let noRepPercent = 
+          Math.floor(100 * (props.proposal.noRepStaked / totalRepStaked))
   
   yesRepPercent = isNaN(yesRepPercent) ? 0 : yesRepPercent
   noRepPercent = isNaN(noRepPercent) ? 0 : noRepPercent
@@ -19,7 +21,9 @@ const proposalItem = (props) => {
     <div>
       <ListItem 
         button
-        onClick={() => props.history.push(`/${props.dao._id}/proposals/${props.proposal._id}`)}>
+        onClick={() => {
+        props.history.push(`/${props.dao._id}/proposals/${props.proposal._id}`)
+        }}>
         
         <div className={props.classes.root}>
           <Grid container spacing={8}>

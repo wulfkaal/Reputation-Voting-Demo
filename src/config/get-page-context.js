@@ -1,10 +1,10 @@
 /* eslint-disable no-underscore-dangle */
 
-import { SheetsRegistry } from 'jss';
-import { createMuiTheme, createGenerateClassName } from '@material-ui/core/styles';
-import blue from '@material-ui/core/colors/blueGrey';
-import cyan from '@material-ui/core/colors/green';
-import red from '@material-ui/core/colors/red';
+import { SheetsRegistry } from 'jss'
+import { createMuiTheme, createGenerateClassName } from '@material-ui/core/styles'
+import blue from '@material-ui/core/colors/blueGrey'
+import cyan from '@material-ui/core/colors/green'
+import red from '@material-ui/core/colors/red'
 
 // A theme with custom primary and secondary color.
 // It's optional.
