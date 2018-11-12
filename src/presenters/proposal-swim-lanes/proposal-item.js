@@ -44,6 +44,14 @@ const proposalItem = (props) => {
                   </Typography>
                 </Grid>
               </Grid>
+              <Grid container spacing={8}>
+                <Grid item xs={12}>
+                  <Typography 
+                    variant='caption'>
+                    Voting Time Left : { props.proposal.voteTimeRemaining }
+                  </Typography>
+                </Grid>
+              </Grid>
             </Grid>
             <Grid item xs={6}>
               <Grid container spacing={8}>
