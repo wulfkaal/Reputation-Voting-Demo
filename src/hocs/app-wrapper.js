@@ -17,7 +17,8 @@ import {
 } from '../actions/daos'
 import {
   login,
-  logout
+  logout,
+  receiveSemBalance
 } from '../actions/auth'
 import getWeb3 from '../utils/get-web3'
 import SemadaCore from '../utils/semada-core'
@@ -61,6 +62,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       let tokenBal = 
         await SemadaCore.getRepBalance(dao.tokenNumberIndex, publicAddress)
       dispatch(receiveRepBalance(tokenBal))
+    },
+    getSemBalance: async(dao) => {
+      let web3 = await getWeb3()
+      let publicAddress = await web3.eth.getCoinbase()
+      let tokenBal = 
+        await SemadaCore.getSemBalance(publicAddress)
+      console.log(tokenBal)
+      dispatch(receiveSemBalance(tokenBal))
     },
     login: async () =>{
       let web3 = await getWeb3()
@@ -106,16 +115,16 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         let tokenRes = await authRes.json()
         dispatch(login(tokenRes['accessToken']))
         
-        try {
-          //this is to handle initializing the wallet when using the 
-          //API persistence layer instead of blockchain
-          let balance = await SemadaCore.getSemBalance(publicAddress)
-          if(balance === 0){
-            await SemadaCore.setSemBalance(publicAddress, 0)
-          }
-        } catch (err) {
-          //do nothing as the blockchain layer doesn't need this.
-        }
+        // try {
+        //   //this is to handle initializing the wallet when using the 
+        //   //API persistence layer instead of blockchain
+        //   let balance = await SemadaCore.getSemBalance(publicAddress)
+        //   if(balance === 0){
+        //     await SemadaCore.setSemBalance(publicAddress, 0)
+        //   }
+        // } catch (err) {
+        //   //do nothing as the blockchain layer doesn't need this.
+        // }
       } catch (err) {
         alert('Please sign in with MetaMask')
       }
@@ -137,6 +146,7 @@ const AppWrapperHOC = Page => class AppWrapper extends React.Component {
     if (!(this.props.access_token)){
       this.props.login() 
     }
+    this.props.getSemBalance()
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side');
     if (jssStyles && jssStyles.parentNode) {

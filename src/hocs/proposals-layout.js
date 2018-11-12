@@ -67,6 +67,7 @@ const mapStateToProps = (state, ownProps) => {
     user: state.users['wulf@semada.io'],
     web3: state.auth.web3,
     access_token: state.auth.access_token,
+    sem: state.auth.sem,
     profileMenuAnchorEl: state.ui.profileMenuAnchorEl,
     daoMenuAnchorEl: state.ui.daoMenuAnchorEl,
     repBalance: state.daos.rep
@@ -117,6 +118,13 @@ const LayoutHOC = Page => class Layout extends React.Component {
             { (this.props.dao && this.props.dao.name) && (
               <Typography className={this.props.classes.title} >
                 DAO Name: <b> {this.props.dao.name}</b>
+              </Typography>
+            )}
+            { (this.props.access_token) && (
+              <Typography>
+                SEM Balance: <b> {
+                  isNaN(this.props.sem) ? '' : this.props.sem
+                }</b>
               </Typography>
             )}
             { (this.props.showRepBalance) && (
