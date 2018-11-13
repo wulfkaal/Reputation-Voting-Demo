@@ -19,8 +19,8 @@ import getWeb3 from '../utils/get-web3'
 
 const mapStateToProps = (state, ownProps) => {  
   let daoId = ownProps.match.params.id
-  
   return {
+    rep: state.daos.rep,
     dao: state.daos[daoId],
     proposal: state.proposals.new
   }
