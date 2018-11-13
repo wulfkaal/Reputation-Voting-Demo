@@ -1,16 +1,28 @@
 import SemadaCore from '../utils/semada-core'
+import BigNumber from 'bignumber.js'
+BigNumber.config({DECIMAL_PLACES: 18, ROUNDING_MODE: BigNumber.ROUND_HALF_UP})
+
+test('BigNumber', async () => {
+  let roundDown = new BigNumber('0.1234567891234567891', 10)
+  let roundUp = new BigNumber('0.1234567891234567895', 10)
+  
+  expect(roundDown.toString()).toBe('0.123456789123456789')
+  expect(roundUp.toString()).toBe('0.12345678912345679')
+  
+  
+})
 
 test('Create DAO and mint 10 REP', async () => {
   let dao = {
     name: 'Test'
   }
 
-  let sem = 10
+  let sem = new BigNumber(10, 10)
   await SemadaCore.setSemBalance('0', sem)
   let newDao = await SemadaCore.createDao('0', dao, sem)
   let totalSupply = await SemadaCore.getRepTotalSupply(newDao.tokenNumberIndex)
 
-  expect(totalSupply).toBe(10)
+  expect(totalSupply).toBe(sem)
 })
 
 test('Create DAO and Distribute REP', async () => {
