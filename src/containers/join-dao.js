@@ -23,6 +23,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     dao: state.daos[daoId],
     proposal: state.proposals.new,
+    semBalance: state.auth.semBalance
     // user: state.users['wulf@semada.io']
   }
 }
@@ -37,6 +38,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     saveProposal: proposal => {
       dispatch(saveProposal(proposal))
+    },
+    saveSemBalance: async() => {
+      let web3 = await getWeb3()
+      let publicAddress = await web3.eth.getCoinbase()
+      let semBalance = await SemadaCore.getSemBalance(publicAddress)
+      dispatch(saveSemBalance(semBalance))
     },
     joinDao: async (proposal, dao) => {
       let web3 = await getWeb3()
@@ -62,7 +69,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(resetNewProposal())
       
       let semBalance = await SemadaCore.getSemBalance(publicAddress)
-      dispatch(saveSemBalance(publicAddress))
+      dispatch(saveSemBalance(semBalance))
       
       ownProps.history.push(`/daos/${dao._id}/proposals`)
     }
@@ -76,6 +83,7 @@ class JoinDao extends Component {
     if(!this.props.showRepBalance){
       this.props.showRepBalanceFunc()
     }
+    this.props.saveSemBalance()
   }
 
   render() {
