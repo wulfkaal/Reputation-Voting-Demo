@@ -68,6 +68,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       //TODO: Call SemadaCore.checkProposal() to close validation pool
       
     },
+    saveSemBalance: async() => {
+      let web3 = await getWeb3()
+      let publicAddress = await web3.eth.getCoinbase()
+      let semBalance = await SemadaCore.getSemBalance(publicAddress)
+      dispatch(saveSemBalance(semBalance))
+    },
     getUser: email => {
       return dispatch(getUser(email))
     }
@@ -83,6 +89,7 @@ class NewDao extends Component {
     if(this.props.showRepBalance){
       this.props.hideRepBalance()
     }
+    this.props.saveSemBalance()
   }
 
   render() {

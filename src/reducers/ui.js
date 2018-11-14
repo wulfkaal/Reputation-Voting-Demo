@@ -10,7 +10,7 @@ const initialState = {
 const ui = (state = initialState, action) => {
   switch(action.type) {
   case HANDLE_PROFILE_MENU:
-    return merge({}, state, {profileMenuAnchorEl : action.profileMenuAnchorEl});
+    return merge({}, state, {profileMenuAnchorEl : action.profileMenuAnchorEl})
   default:
     return state
   }

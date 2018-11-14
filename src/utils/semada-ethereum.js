@@ -129,9 +129,11 @@ class SemadaEthereum {
 	         proposal.stake,
 	         {from: publicAddress})
 	        if (proposal.vote==='yes') {
-	          proposal.yesRepStaked = parseInt(proposal.yesRepStaked) + parseInt(proposal.stake)
+	          proposal.yesRepStaked = 
+	          		parseInt(proposal.yesRepStaked) + parseInt(proposal.stake)
 	        } else {
-	          proposal.noRepStaked = parseInt(proposal.noRepStaked) + parseInt(proposal.stake)
+	          proposal.noRepStaked = 
+	          		parseInt(proposal.noRepStaked) + parseInt(proposal.stake)
 	        }
 	        proposal.vote='no'
 		} catch (e) {

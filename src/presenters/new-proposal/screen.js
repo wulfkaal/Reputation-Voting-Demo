@@ -91,10 +91,14 @@ const screen = (props) => {
                   validators={['required']}
                   errorMessages={['required']}
                   onChange={(e) => {
-                   props.saveProposal({
-                     _id: props.proposal._id, 
-                     stake: e.target.value
-                   })
+                     if (e.target.value > props.rep){
+                      alert("Stake cannot be greater than rep balance")
+                     } else {
+                       props.saveProposal({
+                         _id: props.proposal._id, 
+                         stake: e.target.value
+                       })
+                     }
                   }}
                   InputProps={{
                     endAdornment: 

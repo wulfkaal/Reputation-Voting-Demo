@@ -63,6 +63,7 @@ const mapStateToProps = (state, ownProps) => {
     user: state.users['wulf@semada.io'],
     web3: state.auth.web3,
     access_token: state.auth.access_token,
+    sem: state.auth.sem,
     profileMenuAnchorEl: state.ui.profileMenuAnchorEl,
     daoMenuAnchorEl: state.ui.daoMenuAnchorEl,
     repBalance: state.daos.rep
@@ -115,6 +116,13 @@ const LayoutHOC = Page => class Layout extends React.Component {
                 DAO Name: <b> {this.props.dao.name}</b>
               </Typography>
             )}
+            { (this.props.access_token) && (
+              <Typography>
+                SEM Balance: <b> {
+                  isNaN(this.props.sem) ? '' : this.props.sem
+                }</b>
+              </Typography>
+            )}
             { (this.props.showRepBalance) && (
               <Typography>
                 REP Balance: <b> {
@@ -135,7 +143,8 @@ const LayoutHOC = Page => class Layout extends React.Component {
             { ( this.props.access_token ) && (
             <div>
               <IconButton
-                aria-owns={ Boolean(this.props.profileMenuAnchorEl) ? 'menu-appbar' : null}
+                aria-owns={ 
+                Boolean(this.props.profileMenuAnchorEl) ? 'menu-appbar' : null}
                 aria-haspopup="true"
                 onClick={this.props.handleProfileMenu}
                 color="inherit"

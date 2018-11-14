@@ -19,8 +19,8 @@ import getWeb3 from '../utils/get-web3'
 
 const mapStateToProps = (state, ownProps) => {  
   let daoId = ownProps.match.params.id
-  
   return {
+    rep: state.daos.rep,
     dao: state.daos[daoId],
     proposal: state.proposals.new
   }
@@ -55,7 +55,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                       evidence: proposal.evidence,
                       status: PROPOSAL_STATUSES.active,
                       voteTimeEnd: coreProposal.timeout,
-                      voteTimeRemaining: coreProposal.timeout - (parseInt(new Date()/1000)),
+                      voteTimeRemaining: 
+                          coreProposal.timeout - (parseInt(new Date()/1000)),
                       yesRepStaked: proposal.stake/2,
                       noRepStaked: proposal.stake/2,
                       totalRepStaked: proposal.stake

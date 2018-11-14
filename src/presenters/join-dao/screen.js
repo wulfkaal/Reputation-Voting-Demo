@@ -44,10 +44,16 @@ const screen = (props) => {
                   validators={['required']}
                   errorMessages={['required']}
                   onChange={(e) => {
-                   props.saveProposal({
-                     _id: props.proposal._id, 
-                     stake: Number(e.target.value)
-                   })
+                    if (isNaN(e.target.value)){
+                      alert("Stake has to be a number")
+                    } else if ( e.target.value > props.semBalance ) {
+                      alert("Stake cannot be greater than your sem balance")
+                    } else {
+                      props.saveProposal({
+                        _id: props.proposal._id, 
+                        stake: Number(e.target.value)
+                      })
+                    }
                   }}
                   InputProps={{
                     endAdornment: 

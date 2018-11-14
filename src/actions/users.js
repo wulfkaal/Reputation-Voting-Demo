@@ -43,7 +43,8 @@ export const persistUser = (user) => {
 
 export const getUser = (email) => {
   return async (dispatch) => {
-    let response = await fetch(`${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/${email}`, {
+    let response = await fetch(
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/users/${email}`, {
       method: 'GET',
       mode: 'cors'
     })
