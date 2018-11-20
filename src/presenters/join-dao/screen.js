@@ -8,6 +8,7 @@ import baseComponentStyle from '../../jss/base-component'
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import Typography from '@material-ui/core/Typography'
+import {BigNumber} from 'bignumber.js'
 
 const screen = (props) => {
   return (
@@ -40,7 +41,7 @@ const screen = (props) => {
                   className={props.classes.inputFullWidth}
                   margin="normal"
                   autoFocus={true}
-                  value={props.proposal.stake}
+                  value={Number(props.proposal.stake)}
                   validators={['required']}
                   errorMessages={['required']}
                   onChange={(e) => {
@@ -51,7 +52,7 @@ const screen = (props) => {
                     } else {
                       props.saveProposal({
                         _id: props.proposal._id, 
-                        stake: Number(e.target.value)
+                        stake: new BigNumber(e.target.value, 10).toString()
                       })
                     }
                   }}

@@ -1,4 +1,4 @@
-import {BigNumber} from 'bignumber.js';
+import {BigNumber} from 'bignumber.js'
 import {values} from 'lodash'
 
 let tokenNumberIndex = 1

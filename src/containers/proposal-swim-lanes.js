@@ -17,8 +17,8 @@ import getWeb3 from '../utils/get-web3'
 
 const mapStateToProps = (state, ownProps) => {  
   let daoId = ownProps.match.params.id
-  
   return {
+    notification: state.ui.notification,
     dao: state.daos[daoId],
     proposals: values(state.proposals)
       .filter(e => e.daoId === daoId)
@@ -43,6 +43,16 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         await SemadaCore.getRepBalance(dao.tokenNumberIndex, publicAddress)
       dispatch(receiveRepBalance(tokenBal))
     },
+    addNotification: (notification, content) => {
+      notification.notice({
+        content: <span>{ content }</span>,
+        duration: null,
+        onClose() {
+          console.log('closed notification')
+        },
+        closable: true,
+      })
+    }
   }
 }
 
@@ -69,6 +79,7 @@ class ProposalSwimLanes extends Component {
        this.props.getRepBalance(response.dao)
      })
    }, 5000)
+   this.props.addNotification(this.props.notification, 'blah')
 
   }
   

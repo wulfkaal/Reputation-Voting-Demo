@@ -6,9 +6,9 @@ import { withStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import baseComponentStyle from '../../jss/base-component'
 import {PROPOSAL_STATUSES} from '../../actions/proposals'
-import List from '@material-ui/core/List';
+import List from '@material-ui/core/List'
 import ProposalItem from './proposal-item'
-import Button from '@material-ui/core/Button';
+import Button from '@material-ui/core/Button'
 
 const screen = (props) => {
   

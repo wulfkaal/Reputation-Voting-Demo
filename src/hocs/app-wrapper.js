@@ -5,6 +5,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import {connect} from 'react-redux'
 import values from 'lodash/values'
+import 'rc-notification/assets/index.css'
 import {
   PROPOSAL_STATUSES,
   saveProposal,
@@ -68,7 +69,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       let publicAddress = await web3.eth.getCoinbase()
       let tokenBal = 
         await SemadaCore.getSemBalance(publicAddress)
-      console.log(tokenBal)
       dispatch(receiveSemBalance(tokenBal))
     },
     login: async () =>{
