@@ -8,6 +8,7 @@ import {
   resetNewProposal,
   PROPOSAL_STATUSES
 } from '../actions/proposals'
+import { persistNotification } from '../actions/notifications'
 import { saveSemBalance } from '../actions/auth'
 import { 
   getDaos,
@@ -23,6 +24,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     dao: state.daos[daoId],
     proposal: state.proposals.new,
+    notification: state.ui.notification,
     semBalance: state.auth.semBalance
     // user: state.users['wulf@semada.io']
   }
@@ -45,7 +47,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       let semBalance = await SemadaCore.getSemBalance(publicAddress)
       dispatch(saveSemBalance(semBalance))
     },
-    joinDao: async (proposal, dao) => {
+    joinDao: async (proposal, dao, notification) => {
       let web3 = await getWeb3()
       let publicAddress = await web3.eth.getCoinbase()
       let coreProposal = await SemadaCore
@@ -65,6 +67,19 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           yesRepStaked: proposal.stake/2,
           totalRepStaked: proposal.stake
         }))
+      await dispatch(persistNotification({
+        email : "wulf@semada.io", 
+        title : "Joined a DAO with id : " + dao._id, 
+        message : proposal.stake.toString() + " wei debited"
+      }))
+      notification.notice({
+        content: <span>{ proposal.stake.toString() } wei debited to join DAO</span>,
+        duration: null,
+        onClose() {
+          console.log('closed join dao notification')
+        },
+        closable: true,
+      })
       
       dispatch(resetNewProposal())
       

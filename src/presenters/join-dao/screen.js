@@ -16,7 +16,7 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.joinDao({...props.proposal}, props.dao)
+          props.joinDao({...props.proposal}, props.dao, props.notification)
         }}
         onError={errors => console.log(errors)}
       >
@@ -52,7 +52,7 @@ const screen = (props) => {
                     } else {
                       props.saveProposal({
                         _id: props.proposal._id, 
-                        stake: new BigNumber(e.target.value, 10).toString()
+                        stake: e.target.value
                       })
                     }
                   }}
