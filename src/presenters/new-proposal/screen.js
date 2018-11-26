@@ -15,7 +15,8 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.persistProposal({...props.proposal}, props.dao)
+          props.persistProposal(
+            {...props.proposal}, props.dao, props.notification)
         }}
         onError={errors => console.log(errors)}
       >

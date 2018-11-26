@@ -13,7 +13,7 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.persistDao(props.dao)
+          props.persistDao(props.dao, props.notification)
         }} 
         onError={errors => console.log(errors)}
       >

@@ -6,10 +6,12 @@ import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import { withStyles } from '@material-ui/core/styles'
 import ListIcon from '@material-ui/icons/List'
-import IconButton from '@material-ui/core/IconButton';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
+import IconButton from '@material-ui/core/IconButton'
+import AccountCircle from '@material-ui/icons/AccountCircle'
+import NotificationsActive from '@material-ui/icons/NotificationsActive'
+import NotificationsNone from '@material-ui/icons/NotificationsNone'
+import MenuItem from '@material-ui/core/MenuItem'
+import Menu from '@material-ui/core/Menu'
 import {connect} from 'react-redux'
 import {getUser} from '../actions/users'
 import {
@@ -18,6 +20,7 @@ import {
 import {
   logout
 } from '../actions/auth'
+import {markNotificationsAsSeen} from '../actions/notifications'
 import {resetNewProposal} from '../actions/proposals'
 import logoImage from './logo.png'
 
@@ -78,6 +81,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     getUser: email => {
       return dispatch(getUser(email))
+    },
+    markNotificationsAsSeen: email => {
+      return dispatch(markNotificationsAsSeen(email))
     },
     handleNewProposalClick: () => {
       dispatch(resetNewProposal())
@@ -178,6 +184,20 @@ const LayoutHOC = Page => class Layout extends React.Component {
                 </Menu>
               </div>
             )}
+            <IconButton
+                onClick={() => {
+                  this.props.markNotificationsAsSeen('wulf@semada.io')
+                  this.props.history.push(`/notifications/${this.props.user.email}`)
+                }}
+                color="inherit"
+              >
+                { ( this.props.noOfUnseenNotification > 0 ) && (
+                  <NotificationsActive />
+                )} 
+                { ( this.props.noOfUnseenNotification === 0 ) && (
+                  <NotificationsNone />
+                )}
+            </IconButton>
           </Toolbar>
         </AppBar>
         <div className={this.props.classes.contentBase}>

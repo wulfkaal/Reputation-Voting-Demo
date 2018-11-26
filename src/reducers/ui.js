@@ -2,9 +2,13 @@ import merge from 'lodash/merge'
 import {
   HANDLE_PROFILE_MENU
 } from '../actions/ui'
+import Notification from 'rc-notification'
+let notification = null
+Notification.newInstance({}, (n) => notification = n)
 
 const initialState = {
   profileMenuAnchorEl: null,
+  notification: notification
 }
 
 const ui = (state = initialState, action) => {

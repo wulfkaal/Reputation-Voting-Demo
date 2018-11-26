@@ -14,6 +14,7 @@ import {
   showRepBalance
 } from '../actions/daos'
 import { saveSemBalance } from '../actions/auth'
+import { persistNotification } from '../actions/notifications'
 import SemadaCore from '../utils/semada-core'
 import getWeb3 from '../utils/get-web3'
 
@@ -22,6 +23,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     rep: state.daos.rep,
     dao: state.daos[daoId],
+    notification: state.ui.notification,
     proposal: state.proposals.new
   }
 }
@@ -37,7 +39,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     saveProposal: proposal => {
       dispatch(saveProposal(proposal))
     },
-    persistProposal: async (proposal, dao) => {
+    persistProposal: async (proposal, dao, notification) => {
       let web3 = await getWeb3()
       let publicAddress = await web3.eth.getCoinbase()
       let coreProposal = await SemadaCore.newProposal(dao.tokenNumberIndex,
@@ -45,6 +47,21 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         proposal.evidence,
         publicAddress,
         proposal.stake)
+      await dispatch(persistNotification({
+        email : "wulf@semada.io", 
+        title : "New proposal created", 
+        message : proposal.stake.toString() + " rep debited"
+      }))
+      notification.notice({
+        content: <span>
+                  { proposal.stake.toString() } rep debited to create proposal
+                  </span>,
+        duration: null,
+        onClose() {
+          console.log('closed new proposal notification')
+        },
+        closable: true,
+      })
       
       let result = await dispatch(persistProposal({
                       _id: proposal._id,  

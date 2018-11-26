@@ -8,6 +8,7 @@ import {
 import ProposalContainer from './containers/proposal'
 import DaoContainer from './containers/dao'
 import UserContainer from './containers/user-profile'
+import NotificationsContainer from './containers/user-notifications'
 import VoteProposalContainer from './containers/vote-proposal'
 import NewProposalContainer from './containers/new-proposal'
 import NewDaoContainer from './containers/new-dao'
@@ -31,6 +32,7 @@ ReactDOM.render(
         <Route path="/daos/:id" component={DaoContainer} />
         <Route path="/daos" component={DaosContainer} />
         <Route path="/users/:email" component={UserContainer} />
+        <Route path="/notifications/:email" component={NotificationsContainer} />
         <Route path="/" component={DaosContainer} />
       </Switch>
     </Router>

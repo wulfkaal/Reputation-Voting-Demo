@@ -9,6 +9,7 @@ import {
   hideRepBalance
 } from '../actions/daos'
 import { saveSemBalance } from '../actions/auth'
+import { persistNotification } from '../actions/notifications'
 import {
   persistProposal,
   PROPOSAL_STATUSES
@@ -23,6 +24,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     proposal: state.proposal,
     dao: state.daos.new,
+    notification: state.ui.notification,
     semBalance: state.auth.semBalance
   }
 }
@@ -35,7 +37,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     saveDao: (dao) => {
       dispatch(saveDao(dao))
     },
-    persistDao: async(dao) => {
+    persistDao: async(dao, notification) => {
       let web3 = await getWeb3()
       let publicAddress = await web3.eth.getCoinbase()
       let proposal = await SemadaCore.createDao(publicAddress, dao, dao.sem)
@@ -60,10 +62,22 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         noRepStaked: dao.sem / 2,
         totalRepStaked: dao.sem
       }))
+      dispatch(saveSemBalance(publicAddress))
+      await dispatch(persistNotification({
+        email : "wulf@semada.io", 
+        title : "New DAO created", 
+        message : dao.sem.toString() + " wei debited"
+      }))
+      notification.notice({
+        content: <span>{ dao.sem.toString() } wei debited to create DAO</span>,
+        duration: null,
+        onClose() {
+          console.log('closed new dao notification')
+        },
+        closable: true,
+      })
       
       let semBalance = await SemadaCore.getSemBalance(publicAddress)
-      dispatch(saveSemBalance(publicAddress))
-      
       ownProps.history.push(`/daos/${newDao.dao._id}/proposals`)
       //TODO: Call SemadaCore.checkProposal() to close validation pool
       

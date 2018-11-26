@@ -17,7 +17,6 @@ import getWeb3 from '../utils/get-web3'
 
 const mapStateToProps = (state, ownProps) => {  
   let daoId = ownProps.match.params.id
-  
   return {
     dao: state.daos[daoId],
     proposals: values(state.proposals)
@@ -42,7 +41,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       let tokenBal = 
         await SemadaCore.getRepBalance(dao.tokenNumberIndex, publicAddress)
       dispatch(receiveRepBalance(tokenBal))
-    },
+    }
   }
 }
 
@@ -69,7 +68,6 @@ class ProposalSwimLanes extends Component {
        this.props.getRepBalance(response.dao)
      })
    }, 5000)
-
   }
   
   componentWillUnmount () {

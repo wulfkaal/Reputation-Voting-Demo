@@ -9,6 +9,7 @@
     "chart.js": "^2.7.2",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.10",
+    "rc-notification": "^3.3.0",
     "react": "^16.4.2",
     "react-chartjs-2": "^2.7.4",
     "react-dom": "^16.4.2",
@@ -16,7 +17,7 @@
     "react-material-ui-form-validator": "^2.0.1",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "1.1.4",
+    "react-scripts": "^2.1.1",
     "redux": "^4.0.0",
     "redux-thunk": "^2.3.0",
     "truffle-contract": "^3.0.6",
@@ -36,5 +37,11 @@
   "devDependencies": {
     "run-script-os": "^1.0.3",
     "uninstall": "0.0.0"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
