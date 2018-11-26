@@ -22,9 +22,7 @@ export const persistNotification = (notification) => {
     let url = `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/notifications`
     
     // mongo requires _id to be a valid 24 char hex string, so remove new
-    if(notification._id === 'new'){
-      delete notification._id  
-    } else {
+    if(notification._id ){
       url = url + `/${notification._id}`
     }
             
