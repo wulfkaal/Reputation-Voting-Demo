@@ -1,5 +1,7 @@
 export const RECEIVE_NOTIFICATION = 'RECEIVE_NOTIFICATION'
+export const RECEIVE_NOTIFICATIONS = 'RECEIVE_NOTIFICATIONS'
 export const RESET_NEW_NOTIFICATION = 'RESET_NEW_NOTIFICATION'
+export const MARK_NOTIFICATIONS_AS_SEEN = 'MARK_NOTIFICATIONS_AS_SEEN'
 
 export const saveNotification = (notification) => {
   return {
@@ -47,22 +49,33 @@ export const persistNotification = (notification) => {
   }
 }
 
-export const getNotifications = (userId) => {
+export const markNotificationsAsSeen = (email) => {
   return async (dispatch) => {
     let response = await fetch(
-      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/notifications/${userId}`, {
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/notifications/` +
+      `markasseen/${email}`, {
+      method: 'GET',
+      mode: 'cors'
+    })
+    dispatch({
+      type: MARK_NOTIFICATIONS_AS_SEEN
+    })
+  }
+}
+
+
+export const getNotifications = (email) => {
+  return async (dispatch) => {
+    let response = await fetch(
+      `${process.env.REACT_APP_SEMADA_DEMO_API_URL}/notifications/${email}`, {
       method: 'GET',
       mode: 'cors'
     })
     
     let body = await response.json()
-    for(let i=0; i < body.notifications.length; i++){
-      let notification = body.notifications[i]
-      
-      dispatch({
-        notification: notification,
-        type: RECEIVE_NOTIFICATION
-      })
-    }    
+    dispatch({
+      notifications: body.notifications,
+      type: RECEIVE_NOTIFICATIONS
+    })
   }
 }
