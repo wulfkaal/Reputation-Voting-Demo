@@ -16,7 +16,8 @@ const screen = (props) => {
       <ValidatorForm
         name="form"
         onSubmit={e => {
-          props.voteProposal(props.proposal, props.vote, props.rep)
+          props.voteProposal(
+            props.proposal, props.vote, props.rep, props.notification)
         }}
         onError={errors => console.log(errors)}
       >

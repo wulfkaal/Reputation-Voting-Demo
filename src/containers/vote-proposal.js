@@ -8,6 +8,7 @@ import {
   persistProposal,
   saveVote
 } from '../actions/proposals'
+import { persistNotification } from '../actions/notifications'
 import { getDao } from '../actions/daos'
 import { 
   receiveRepBalance,
@@ -23,6 +24,7 @@ const mapStateToProps = (state, ownProps) => {
     proposal: state.proposals[id],
     dao: state.daos.dao,
     vote: state.proposals.vote,
+    notification: state.ui.notification,
     rep: state.proposals.rep
   }
 }
@@ -44,7 +46,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     saveVote: (vote, rep) => {
       dispatch(saveVote(vote, rep))
     },
-    voteProposal: async (proposal, vote, rep) => {
+    voteProposal: async (proposal, vote, rep, notification) => {
       let web3 = await getWeb3()
       let publicAddress = await web3.eth.getCoinbase()
       
@@ -54,6 +56,19 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         vote,
         parseInt(rep)
         )
+      await dispatch(persistNotification({
+        email : "wulf@semada.io", 
+        title : "Voted", 
+        message : rep.toString() + " rep debited"
+      }))
+      notification.notice({
+        content: <span>{ rep.toString() } rep debited to vote</span>,
+        duration: null,
+        onClose() {
+          console.log('closed vote notification')
+        },
+        closable: true,
+      })
       
       let repBalance = 
         await SemadaCore.getRepBalance(proposal.tokenNumberIndex, publicAddress)
