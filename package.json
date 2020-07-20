@@ -8,7 +8,7 @@
     "auth0-js": "^9.7.3",
     "chart.js": "^2.7.2",
     "isomorphic-fetch": "^2.2.1",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.19",
     "rc-notification": "^3.3.0",
     "react": "^16.4.2",
     "react-chartjs-2": "^2.7.4",
