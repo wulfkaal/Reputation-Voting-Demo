@@ -17,7 +17,7 @@
     "react-material-ui-form-validator": "^2.0.1",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "^2.1.1",
+    "react-scripts": "^5.0.1",
     "redux": "^4.0.0",
     "redux-thunk": "^2.3.0",
     "truffle-contract": "^3.0.6",
